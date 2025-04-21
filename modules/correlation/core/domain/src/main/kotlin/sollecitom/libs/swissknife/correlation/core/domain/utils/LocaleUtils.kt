@@ -5,6 +5,6 @@ import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationCont
 import sollecitom.libs.swissknife.correlation.core.domain.context.localeOrNull
 import java.util.*
 
-context(InvocationContext<*>, WithDefaultLocale)
+context(context: InvocationContext<*>, withLocale: WithDefaultLocale)
 val locale: Locale
-    get() = localeOrNull ?: defaultLocale
+    get() = context.localeOrNull ?: withLocale.defaultLocale

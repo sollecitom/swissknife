@@ -11,20 +11,20 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
-context(MessagePropertyNames)
+context(propertyNames: MessagePropertyNames)
 fun <EVENT : Event> Message<EVENT>.eventType(): Happening.Type {
 
-    val rawType = properties[forEvents.type]!!
+    val rawType = properties[propertyNames.forEvents.type]!!
     return Happening.Type.parse(rawType)
 }
 
-context(MessagePropertyNames)
+context(_: MessagePropertyNames)
 fun <EVENT : Event> Message<EVENT>.hasType(type: Happening.Type): Boolean = eventType() == type
 
-context(MessagePropertyNames)
+context(_: MessagePropertyNames)
 fun <EVENT : Event> Flow<ReceivedMessage<EVENT>>.skipIfTypeIsNot(type: Happening.Type, logger: Logger) = onlyWithTypeIn(setOf(type), logger)
 
-context(MessagePropertyNames)
+context(_: MessagePropertyNames)
 fun <EVENT : Event> Flow<ReceivedMessage<EVENT>>.onlyWithTypeIn(types: Set<Happening.Type>, logger: Logger) = filter {
 
     val needsProcessing = it.eventType() in types
@@ -36,18 +36,18 @@ fun <EVENT : Event> Flow<ReceivedMessage<EVENT>>.onlyWithTypeIn(types: Set<Happe
     needsProcessing
 }
 
-context(MessagePropertyNames)
+context(_: MessagePropertyNames)
 @Suppress("UNCHECKED_CAST")
 fun <EVENT : Event, SUB_TYPE : EVENT> Flow<ReceivedMessage<EVENT>>.onlyWithType(type: Happening.Type, logger: Logger): Flow<ReceivedMessage<SUB_TYPE>> {
 
     return skipIfTypeIsNot(type, logger).map { it as ReceivedMessage<SUB_TYPE> }
 }
 
-context(MessagePropertyNames, Loggable)
-fun <EVENT : Event> Flow<ReceivedMessage<EVENT>>.onlyWithTypeIn(types: Set<Happening.Type>) = onlyWithTypeIn(types, logger)
+context(_: MessagePropertyNames, loggable: Loggable)
+fun <EVENT : Event> Flow<ReceivedMessage<EVENT>>.onlyWithTypeIn(types: Set<Happening.Type>) = onlyWithTypeIn(types, loggable.logger)
 
-context(MessagePropertyNames, Loggable)
+context(_: MessagePropertyNames, _: Loggable)
 fun <EVENT : Event> Flow<ReceivedMessage<EVENT>>.onlyWithTypeIn(type: Happening.Type, vararg otherTypes: Happening.Type) = onlyWithTypeIn(setOf(type) + otherTypes)
 
-context(MessagePropertyNames, Loggable)
-fun <EVENT : Event, SUB_TYPE : EVENT> Flow<ReceivedMessage<EVENT>>.onlyWithType(type: Happening.Type) = onlyWithType<EVENT, SUB_TYPE>(type, logger)
+context(_: MessagePropertyNames, loggable: Loggable)
+fun <EVENT : Event, SUB_TYPE : EVENT> Flow<ReceivedMessage<EVENT>>.onlyWithType(type: Happening.Type) = onlyWithType<EVENT, SUB_TYPE>(type, loggable.logger)

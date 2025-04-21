@@ -16,5 +16,5 @@ private data class UlidMessageId(val ulid: ULID, override val topic: Topic, over
     }
 }
 
-context(UniqueIdGenerator)
-fun Message.Id.Companion.ulid(topic: Topic, value: ULID = newId.ulid.monotonic(), partition: Topic.Partition? = null): Message.Id = UlidMessageId(ulid = value, topic = topic, partition = partition)
+context(ids: UniqueIdGenerator)
+fun Message.Id.Companion.ulid(topic: Topic, value: ULID = ids.newId.ulid.monotonic(), partition: Topic.Partition? = null): Message.Id = UlidMessageId(ulid = value, topic = topic, partition = partition)

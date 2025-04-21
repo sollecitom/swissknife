@@ -14,5 +14,5 @@ fun <EVENT : Event> Message<EVENT>.wasTriggeredByInvocationId(externalInvocation
 fun <EVENT : Event> Message<EVENT>.wasCausedBy(event: Event) = value.wasCausedBy(event)
 fun <EVENT : Event> Message<EVENT>.wasCausedBy(message: Message<Event>) = value.wasTriggeredByInvocationId(message.externalInvocationId)
 
-context(InvocationContext<*>)
-fun <EVENT : Event> Message<EVENT>.wasCausedByTheInvocationContextInScope() = externalTrace == this@InvocationContext.trace.external
+context(context: InvocationContext<*>)
+fun <EVENT : Event> Message<EVENT>.wasCausedByTheInvocationContextInScope() = externalTrace == context.trace.external

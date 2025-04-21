@@ -7,5 +7,5 @@ import sollecitom.libs.swissknife.pagination.domain.Pagination
 
 fun <ITEM> List<ITEM>.withPaginationInformation(information: Pagination.Information): Page<ITEM> = Page(items = this, information = information)
 
-context(RandomGenerator, UniqueIdGenerator)
+context(_: RandomGenerator, _: UniqueIdGenerator)
 fun <ITEM> List<ITEM>.withPaginationInformation(): Page<ITEM> = withPaginationInformation(information = Pagination.Information.create())

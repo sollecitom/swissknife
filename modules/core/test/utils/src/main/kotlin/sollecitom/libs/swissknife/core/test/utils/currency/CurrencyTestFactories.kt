@@ -11,5 +11,5 @@ private val knownCurrencyValues = setOf(Currency.USD, Currency.EUR, Currency.GBP
 
 val Currency.Companion.knownCurrencies: Set<Currency<*>> get() = knownCurrencyValues
 
-context(RandomGenerator)
-fun Currency.Companion.random(): Currency<*> = knownCurrencies.random(random)
+context(generator: RandomGenerator)
+fun Currency.Companion.random(): Currency<*> = knownCurrencies.random(generator.random)

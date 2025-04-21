@@ -11,20 +11,20 @@ import kotlinx.datetime.Instant
 import sollecitom.libs.swissknife.core.domain.identity.factory.invoke
 import kotlin.time.Duration.Companion.seconds
 
-context(TimeGenerator)
-fun Trace.ElapsedTimeSelector.sinceInvocationStarted() = sinceInvocationStarted(clock.now())
+context(time: TimeGenerator)
+fun Trace.ElapsedTimeSelector.sinceInvocationStarted() = sinceInvocationStarted(time.now())
 
-context(TimeGenerator)
-fun Trace.ElapsedTimeSelector.sinceParentInvocationStarted() = sinceParentInvocationStarted(clock.now())
+context(time: TimeGenerator)
+fun Trace.ElapsedTimeSelector.sinceParentInvocationStarted() = sinceParentInvocationStarted(time.now())
 
-context(TimeGenerator)
-fun Trace.ElapsedTimeSelector.sinceOriginatingInvocationStarted() = sinceOriginatingInvocationStarted(clock.now())
+context(time: TimeGenerator)
+fun Trace.ElapsedTimeSelector.sinceOriginatingInvocationStarted() = sinceOriginatingInvocationStarted(time.now())
 
-context(UniqueIdGenerator, TimeGenerator)
-fun InvocationTrace.Companion.create(id: SortableTimestampedUniqueIdentifier<*> = newId(), createdAt: Instant = clock.now()) = InvocationTrace(id, createdAt)
+context(ids: UniqueIdGenerator, time: TimeGenerator)
+fun InvocationTrace.Companion.create(id: SortableTimestampedUniqueIdentifier<*> = ids.newId(), createdAt: Instant = time.now()) = InvocationTrace(id, createdAt)
 
-context(UniqueIdGenerator)
-fun ExternalInvocationTrace.Companion.create(invocationId: Id = newId.external(), actionId: Id = newId.external()) = ExternalInvocationTrace(invocationId = invocationId, actionId = actionId)
+context(ids: UniqueIdGenerator)
+fun ExternalInvocationTrace.Companion.create(invocationId: Id = ids.newId.external(), actionId: Id = ids.newId.external()) = ExternalInvocationTrace(invocationId = invocationId, actionId = actionId)
 
-context(TimeGenerator, UniqueIdGenerator)
-fun Trace.Companion.create(timeNow: Instant = clock.now(), externalInvocationTrace: ExternalInvocationTrace = ExternalInvocationTrace.create(), originatingTrace: InvocationTrace = timeNow.minus(3.seconds).let { InvocationTrace.create(id = newId.internal(it), createdAt = it) }, parentTrace: InvocationTrace = timeNow.minus(2.seconds).let { InvocationTrace.create(id = newId.internal(it), createdAt = it) }, invocationId: SortableTimestampedUniqueIdentifier<*> = newId.internal(timeNow)): Trace = Trace(invocation = InvocationTrace.create(id = invocationId, createdAt = timeNow), parent = parentTrace, originating = originatingTrace, external = externalInvocationTrace)
+context(time: TimeGenerator, ids: UniqueIdGenerator)
+fun Trace.Companion.create(timeNow: Instant = time.now(), externalInvocationTrace: ExternalInvocationTrace = ExternalInvocationTrace.create(), originatingTrace: InvocationTrace = timeNow.minus(3.seconds).let { InvocationTrace.create(id = ids.newId.internal(it), createdAt = it) }, parentTrace: InvocationTrace = timeNow.minus(2.seconds).let { InvocationTrace.create(id = ids.newId.internal(it), createdAt = it) }, invocationId: SortableTimestampedUniqueIdentifier<*> = ids.newId.internal(timeNow)): Trace = Trace(invocation = InvocationTrace.create(id = invocationId, createdAt = timeNow), parent = parentTrace, originating = originatingTrace, external = externalInvocationTrace)

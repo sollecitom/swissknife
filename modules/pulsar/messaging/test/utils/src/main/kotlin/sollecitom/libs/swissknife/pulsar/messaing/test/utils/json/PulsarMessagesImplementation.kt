@@ -15,7 +15,7 @@ import org.apache.pulsar.client.api.ConsumerBuilder
 import org.apache.pulsar.client.api.ProducerBuilder
 import org.apache.pulsar.client.api.PulsarClient
 
-context(RandomGenerator)
+context(_: RandomGenerator)
 fun <EVENT : Event> PulsarClient.messages(serde: JsonSerde.SchemaAware<EVENT>, topic: Topic, messageConverter: MessageConverter<EVENT>, groupName: Name = Name.random(), nodeName: Name = Name.random(), customizeConsumer: ConsumerBuilder<EVENT>.() -> ConsumerBuilder<EVENT> = { defaultConsumerCustomization() }, customizeProducer: ProducerBuilder<EVENT>.() -> ProducerBuilder<EVENT> = { defaultProducerCustomization() }): Messages<EVENT, EVENT> {
 
     val consumer = newMessageConsumer(serde = serde, topic = topic, groupName = groupName, nodeName = nodeName, customizeConsumer)

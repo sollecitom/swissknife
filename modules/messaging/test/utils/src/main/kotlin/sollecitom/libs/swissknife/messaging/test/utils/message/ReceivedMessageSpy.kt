@@ -65,14 +65,14 @@ data class ReceivedMessageSpy<VALUE>(override val id: Message.Id, override val k
     override fun toString() = "ReceivedMessageSpy(id=$id, properties=$properties, topic=$topic, context=$context, wasAcknowledgedSuccessfully=$wasAcknowledgedSuccessfully, wasAcknowledgedAsFailed=$wasAcknowledgedAsFailed)"
 }
 
-context(UniqueIdGenerator, TimeGenerator, RandomGenerator)
-fun <VALUE> ReceivedMessage.Companion.inMemorySpy(value: VALUE, key: String = Name.random().value, topic: Topic = Topic.create(), partition: Topic.Partition? = null, properties: Map<String, String> = emptyMap(), context: Message.Context = Message.Context(), producerName: Name = Name.random(), id: Message.Id = Message.Id.ulid(topic = topic, partition = partition), publishedAt: Instant = clock.now(), acknowledgeAsFailed: suspend (ReceivedMessage<VALUE>) -> Unit = {}, acknowledge: suspend (ReceivedMessage<VALUE>) -> Unit = {}) = ReceivedMessageSpy(id = id, key = key, value, properties = properties, context = context, topic = topic, producerName = producerName, publishedAt = publishedAt, acknowledge = acknowledge, acknowledgeAsFailed = acknowledgeAsFailed)
+context(_: UniqueIdGenerator, time: TimeGenerator, _: RandomGenerator)
+fun <VALUE> ReceivedMessage.Companion.inMemorySpy(value: VALUE, key: String = Name.random().value, topic: Topic = Topic.create(), partition: Topic.Partition? = null, properties: Map<String, String> = emptyMap(), context: Message.Context = Message.Context(), producerName: Name = Name.random(), id: Message.Id = Message.Id.ulid(topic = topic, partition = partition), publishedAt: Instant = time.now(), acknowledgeAsFailed: suspend (ReceivedMessage<VALUE>) -> Unit = {}, acknowledge: suspend (ReceivedMessage<VALUE>) -> Unit = {}) = ReceivedMessageSpy(id = id, key = key, value, properties = properties, context = context, topic = topic, producerName = producerName, publishedAt = publishedAt, acknowledge = acknowledge, acknowledgeAsFailed = acknowledgeAsFailed)
 
-context(UniqueIdGenerator, TimeGenerator, RandomGenerator)
-fun <VALUE> Message<VALUE>.asReceivedMessageSpy(topic: Topic = Topic.create(), partition: Topic.Partition? = null, producerName: Name = Name.random(), id: Message.Id = Message.Id.ulid(topic = topic, partition = partition), publishedAt: Instant = clock.now(), acknowledgeAsFailed: suspend (ReceivedMessage<VALUE>) -> Unit = {}, acknowledge: suspend (ReceivedMessage<VALUE>) -> Unit = {}) = ReceivedMessage.inMemorySpy(value = this.value, key = this.key, properties = this.properties, context = this.context, topic = topic, producerName = producerName, id = id, partition = partition, publishedAt = publishedAt, acknowledgeAsFailed = acknowledgeAsFailed, acknowledge = acknowledge)
+context(_: UniqueIdGenerator, time: TimeGenerator, _: RandomGenerator)
+fun <VALUE> Message<VALUE>.asReceivedMessageSpy(topic: Topic = Topic.create(), partition: Topic.Partition? = null, producerName: Name = Name.random(), id: Message.Id = Message.Id.ulid(topic = topic, partition = partition), publishedAt: Instant = time.now(), acknowledgeAsFailed: suspend (ReceivedMessage<VALUE>) -> Unit = {}, acknowledge: suspend (ReceivedMessage<VALUE>) -> Unit = {}) = ReceivedMessage.inMemorySpy(value = this.value, key = this.key, properties = this.properties, context = this.context, topic = topic, producerName = producerName, id = id, partition = partition, publishedAt = publishedAt, acknowledgeAsFailed = acknowledgeAsFailed, acknowledge = acknowledge)
 
-context(UniqueIdGenerator, TimeGenerator, RandomGenerator, MessageConverter<VALUE>)
-fun <VALUE> VALUE.asReceivedMessageSpy(topic: Topic = Topic.create(), partition: Topic.Partition? = null, producerName: Name = Name.random(), id: Message.Id = Message.Id.ulid(topic = topic, partition = partition), publishedAt: Instant = clock.now(), parentMessageId: Message.Id? = null, originatingMessageId: Message.Id? = null, acknowledgeAsFailed: suspend (ReceivedMessage<VALUE>) -> Unit = {}, acknowledge: suspend (ReceivedMessage<VALUE>) -> Unit = {}) = asMessage(parentMessageId = parentMessageId, originatingMessageId = originatingMessageId).asReceivedMessageSpy(topic = topic, producerName = producerName, id = id, partition = partition, publishedAt = publishedAt, acknowledgeAsFailed = acknowledgeAsFailed, acknowledge = acknowledge)
+context(_: UniqueIdGenerator, time: TimeGenerator, _: RandomGenerator, _: MessageConverter<VALUE>)
+fun <VALUE> VALUE.asReceivedMessageSpy(topic: Topic = Topic.create(), partition: Topic.Partition? = null, producerName: Name = Name.random(), id: Message.Id = Message.Id.ulid(topic = topic, partition = partition), publishedAt: Instant = time.now(), parentMessageId: Message.Id? = null, originatingMessageId: Message.Id? = null, acknowledgeAsFailed: suspend (ReceivedMessage<VALUE>) -> Unit = {}, acknowledge: suspend (ReceivedMessage<VALUE>) -> Unit = {}) = asMessage(parentMessageId = parentMessageId, originatingMessageId = originatingMessageId).asReceivedMessageSpy(topic = topic, producerName = producerName, id = id, partition = partition, publishedAt = publishedAt, acknowledgeAsFailed = acknowledgeAsFailed, acknowledge = acknowledge)
 
 fun Assert<ReceivedMessageSpy<*>>.wasAcknowledgedSuccessfully() = given { message ->
 
@@ -94,11 +94,11 @@ fun Assert<ReceivedMessageSpy<*>>.wasNotAcknowledgedAsFailed() = given { message
     assertThat(message.wasAcknowledgedAsFailed).isFalse()
 }
 
-context(CoroutineScope)
-suspend fun Iterable<ReceivedMessageSpy<*>>.waitUntilAllAcked(pollingPeriod: Duration = 20.milliseconds) = map { launch { it.awaitAnyAck(pollingPeriod) } }.joinAll()
+context(scope: CoroutineScope)
+suspend fun Iterable<ReceivedMessageSpy<*>>.waitUntilAllAcked(pollingPeriod: Duration = 20.milliseconds) = map { scope.launch { it.awaitAnyAck(pollingPeriod) } }.joinAll()
 
-context(CoroutineScope)
-suspend fun Iterable<ReceivedMessageSpy<*>>.waitUntilAllAckedSuccessfully(pollingPeriod: Duration = 20.milliseconds) = map { launch { it.awaitSuccessfulAck(pollingPeriod) } }.joinAll()
+context(scope: CoroutineScope)
+suspend fun Iterable<ReceivedMessageSpy<*>>.waitUntilAllAckedSuccessfully(pollingPeriod: Duration = 20.milliseconds) = map { scope.launch { it.awaitSuccessfulAck(pollingPeriod) } }.joinAll()
 
-context(CoroutineScope)
-suspend fun Iterable<ReceivedMessageSpy<*>>.waitUntilAllAckedAsFailed(pollingPeriod: Duration = 20.milliseconds) = map { launch { it.awaitNegativeAck(pollingPeriod) } }.joinAll()
+context(scope: CoroutineScope)
+suspend fun Iterable<ReceivedMessageSpy<*>>.waitUntilAllAckedAsFailed(pollingPeriod: Duration = 20.milliseconds) = map { scope.launch { it.awaitNegativeAck(pollingPeriod) } }.joinAll()

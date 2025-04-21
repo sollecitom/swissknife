@@ -7,10 +7,10 @@ import sollecitom.libs.swissknife.correlation.core.domain.toggles.standard.invoc
 import sollecitom.libs.swissknife.logger.core.Logger
 import sollecitom.libs.swissknife.logger.core.LoggingLevel
 
-context(InvocationContext<*>)
+context(context: InvocationContext<*>)
 fun Logger.log(error: Throwable? = null, evaluateMessage: () -> String) {
 
-    log(logLevel, error, evaluateMessage)
+    log(context.logLevel, error, evaluateMessage)
 }
 
 val InvocationContext<*>.logLevel: LoggingLevel

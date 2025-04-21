@@ -8,8 +8,9 @@ import sollecitom.libs.swissknife.jwt.domain.StringOrURI
 import sollecitom.libs.swissknife.jwt.jose4j.utils.X25519JoseAudienceAdapter
 import sollecitom.libs.swissknife.kotlin.extensions.text.string
 import org.jose4j.jwk.OctetKeyPairJsonWebKey
+import sollecitom.libs.swissknife.core.utils.string
 
-context(RandomGenerator)
+context(random: RandomGenerator)
 fun newX25519JwtAudience(keyId: String = random.string(wordLength = 6), id: StringOrURI = Name.random().value.let(::StringOrURI)): JwtAudience {
 
     val keyPair = newKeyPair(OctetKeyPairJsonWebKey.SUBTYPE_X25519)

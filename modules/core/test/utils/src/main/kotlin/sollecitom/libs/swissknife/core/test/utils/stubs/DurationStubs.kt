@@ -4,10 +4,10 @@ import sollecitom.libs.swissknife.core.utils.TimeGenerator
 import kotlinx.datetime.Instant
 import kotlin.time.Duration
 
-context(TimeGenerator)
+context(generator: TimeGenerator)
 val Duration.ago: Instant
-    get() = clock.now() - this
+    get() = generator.now() - this
 
-context(TimeGenerator)
+context(generator: TimeGenerator)
 val Duration.fromNow: Instant
-    get() = clock.now() + this
+    get() = generator.now() + this

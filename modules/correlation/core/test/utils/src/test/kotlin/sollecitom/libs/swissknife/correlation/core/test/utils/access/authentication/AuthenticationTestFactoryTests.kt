@@ -29,8 +29,8 @@ class AuthenticationTestFactoryTests : CoreDataGenerator by CoreDataGenerator.te
         fun `with an explicit arguments`() {
 
             val id = newId.external()
-            val validFrom = clock.now() - 1.hours
-            val validTo = clock.now() + 2.hours
+            val validFrom = now() - 1.hours
+            val validTo = now() + 2.hours
 
             val token = Authentication.Token.create(id = id, validFrom = validFrom, validTo = validTo)
 
@@ -42,7 +42,7 @@ class AuthenticationTestFactoryTests : CoreDataGenerator by CoreDataGenerator.te
         @Test
         fun `with default values`() {
 
-            val timeNow = clock.now()
+            val timeNow = now()
 
             val token = Authentication.Token.create(timeNow = timeNow)
 

@@ -10,8 +10,8 @@ interface ReadinessAware {
     val readinessCheck: suspend CoroutineScope.() -> ReadinessCheckResult
 }
 
-context(CoroutineScope)
-suspend fun ReadinessAware.checkReadiness(): ReadinessCheckResult = readinessCheck.invoke(this@CoroutineScope)
+context(scope: CoroutineScope)
+suspend fun ReadinessAware.checkReadiness(): ReadinessCheckResult = readinessCheck.invoke(scope)
 
 interface RequiresConnection {
 

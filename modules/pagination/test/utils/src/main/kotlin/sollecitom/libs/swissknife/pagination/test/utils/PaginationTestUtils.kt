@@ -8,8 +8,9 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
+import sollecitom.libs.swissknife.core.utils.nextInt
 
-context(RandomGenerator)
+context(random: RandomGenerator)
 fun <T> pagesAsFlow(getPage: suspend (Pagination.Arguments) -> Page<T>): Flow<Pair<Page<T>, Pagination.Arguments>> = flow {
 
     var continuationToken: Name? = null

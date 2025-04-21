@@ -14,8 +14,7 @@ import org.apache.pulsar.client.api.Consumer
 import org.apache.pulsar.client.api.Message
 import org.apache.pulsar.client.api.MessageIdAdv as PulsarMessageIdAdv
 
-context (Consumer<VALUE>)
-internal class PulsarReceivedMessage<out VALUE>(private val delegate: Message<VALUE>) : ReceivedMessage<VALUE> {
+internal class PulsarReceivedMessage<out VALUE>(private val delegate: Message<VALUE>, private val consumer: Consumer<VALUE>) : ReceivedMessage<VALUE> {
 
     override val id: Id by lazy { (delegate.messageId as PulsarMessageIdAdv).adapted(topic = delegate.topicName.withoutPartitionId().let(Topic.Companion::parse)) }
     override val key: String get() = delegate.key
@@ -26,8 +25,8 @@ internal class PulsarReceivedMessage<out VALUE>(private val delegate: Message<VA
     override val context by lazy { MessageContextPropertiesSerde.deserialize(delegate.properties) }
     override val producerName by lazy { Name(delegate.producerName) }
 
-    override suspend fun acknowledge() = this@Consumer.acknowledgeAsync(delegate).await()
-    override suspend fun acknowledgeAsFailed() = withContext(Dispatchers.VirtualThreads) { this@Consumer.negativeAcknowledge(delegate) }
+    override suspend fun acknowledge() = consumer.acknowledgeAsync(delegate).await()
+    override suspend fun acknowledgeAsFailed() = withContext(Dispatchers.VirtualThreads) { consumer.negativeAcknowledge(delegate) }
 
     private fun String.withoutPartitionId(): String = removeFromLast(PARTITION_TOPIC_PREFIX)
 
@@ -37,5 +36,5 @@ internal class PulsarReceivedMessage<out VALUE>(private val delegate: Message<VA
     }
 }
 
-context(Consumer<VALUE>)
-internal fun <VALUE> Message<VALUE>.toReceivedMessage(): ReceivedMessage<VALUE> = PulsarReceivedMessage(this)
+context(consumer: Consumer<VALUE>)
+internal fun <VALUE> Message<VALUE>.toReceivedMessage(): ReceivedMessage<VALUE> = PulsarReceivedMessage(this, consumer)

@@ -6,8 +6,8 @@ import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationCont
 import sollecitom.libs.swissknife.ddd.domain.Event
 import sollecitom.libs.swissknife.ddd.domain.asEvent
 
-context(UniqueIdGenerator, TimeGenerator)
+context(_: UniqueIdGenerator, _: TimeGenerator)
 fun <DATA : Event.Data> DATA.asEvent(metadata: Event.Metadata = Event.Metadata.create()) = asEvent(metadata)
 
-context(UniqueIdGenerator, TimeGenerator, InvocationContext<*>)
+context(_: UniqueIdGenerator, _: TimeGenerator, _: InvocationContext<*>)
 fun <DATA : Event.Data> DATA.asEventWithContext(metadata: Event.Metadata = Event.Metadata.createWithContext()) = asEvent(metadata)

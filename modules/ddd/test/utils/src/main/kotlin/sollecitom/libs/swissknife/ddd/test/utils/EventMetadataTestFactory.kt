@@ -7,8 +7,8 @@ import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationCont
 import sollecitom.libs.swissknife.ddd.domain.Event
 import kotlinx.datetime.Instant
 
-context(TimeGenerator, UniqueIdGenerator)
-fun Event.Metadata.Companion.create(id: Id = newId.external(), timestamp: Instant = clock.now(), context: Event.Context = Event.Context.create()) = Event.Metadata(id, timestamp, context)
+context(time: TimeGenerator, ids: UniqueIdGenerator)
+fun Event.Metadata.Companion.create(id: Id = ids.newId.external(), timestamp: Instant = time.now(), context: Event.Context = Event.Context.create()) = Event.Metadata(id, timestamp, context)
 
-context(TimeGenerator, UniqueIdGenerator, InvocationContext<*>)
-fun Event.Metadata.Companion.createWithContext(id: Id = newId.external(), timestamp: Instant = clock.now(), parentEventReference: Event.Reference? = null, originatingEventReference: Event.Reference? = null) = Event.Metadata(id, timestamp, Event.Context.create(invocation = this@InvocationContext, parent = parentEventReference, originating = originatingEventReference))
+context(time: TimeGenerator, ids: UniqueIdGenerator, context: InvocationContext<*>)
+fun Event.Metadata.Companion.createWithContext(id: Id = ids.newId.external(), timestamp: Instant = time.now(), parentEventReference: Event.Reference? = null, originatingEventReference: Event.Reference? = null) = Event.Metadata(id, timestamp, Event.Context.create(invocation = context, parent = parentEventReference, originating = originatingEventReference))

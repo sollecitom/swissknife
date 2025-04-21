@@ -8,5 +8,5 @@ import sollecitom.libs.swissknife.correlation.core.domain.tenancy.Tenant
 import sollecitom.libs.swissknife.correlation.core.test.utils.customer.create
 import sollecitom.libs.swissknife.correlation.core.test.utils.tenancy.create
 
-context(UniqueIdGenerator)
+context(_: UniqueIdGenerator)
 fun IdentityProvider.Companion.create(name: Name = "Octa".let(::Name), customer: Customer = Customer.create(), tenant: Tenant = Tenant.create()): IdentityProvider = IdentityProvider(name, customer, tenant)

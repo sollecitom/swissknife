@@ -1,12 +1,5 @@
 package sollecitom.libs.swissknife.openapi.checking.checker.rules
 
-import sollecitom.libs.swissknife.compliance.checker.domain.ComplianceRule
-import sollecitom.libs.swissknife.json.utils.JsonSchema
-import sollecitom.libs.swissknife.json.utils.asSchema
-import sollecitom.libs.swissknife.json.utils.jsonSchemaAt
-import sollecitom.libs.swissknife.openapi.checking.checker.model.OperationWithContext
-import sollecitom.libs.swissknife.openapi.checking.checker.model.allOperations
-import sollecitom.libs.swissknife.openapi.checking.checker.model.allResponses
 import com.fasterxml.jackson.databind.node.ObjectNode
 import io.swagger.v3.core.util.Json
 import io.swagger.v3.oas.models.OpenAPI
@@ -17,6 +10,13 @@ import io.swagger.v3.oas.models.parameters.Parameter
 import io.swagger.v3.oas.models.parameters.RequestBody
 import io.swagger.v3.oas.models.responses.ApiResponse
 import org.json.JSONObject
+import sollecitom.libs.swissknife.compliance.checker.domain.ComplianceRule
+import sollecitom.libs.swissknife.json.utils.JsonSchema
+import sollecitom.libs.swissknife.json.utils.asSchema
+import sollecitom.libs.swissknife.json.utils.jsonSchemaAt
+import sollecitom.libs.swissknife.openapi.checking.checker.model.OperationWithContext
+import sollecitom.libs.swissknife.openapi.checking.checker.model.allOperations
+import sollecitom.libs.swissknife.openapi.checking.checker.model.allResponses
 import io.swagger.v3.oas.models.media.JsonSchema as SwaggerJsonSchema
 
 // TODO doesn't work when 'const' is specified in the schemata (use 'enum' instead)
@@ -72,10 +72,10 @@ class ExamplesSchemaComplianceRule(private val mediaTypesToCheck: Set<String>, p
 
     private data class OpenApiLocation(val location: Location, val operation: OperationWithContext)
 
-    context(OpenApiLocation)
+    context(apiLocation: OpenApiLocation)
     private fun Parameter.jsonSchemaViolations() = examplesWithSchema.mapNotNull { example -> example.applicationJsonSchemaViolations() }.toSet()
 
-    context(OpenApiLocation)
+    context(apiLocation: OpenApiLocation)
     private fun MediaTypeWithName.violations(): Set<ComplianceRule.Result.Violation<OpenAPI>> = when (name) {
         APPLICATION_JSON -> {
             examplesWithSchema.mapNotNull { example -> example.applicationJsonSchemaViolations() }.toSet()
@@ -84,7 +84,7 @@ class ExamplesSchemaComplianceRule(private val mediaTypesToCheck: Set<String>, p
         else -> emptySet() // other media types aren't supported yet
     }
 
-    context(OpenApiLocation)
+    context(apiLocation: OpenApiLocation)
     private fun ExampleInfo.applicationJsonSchemaViolations(): ComplianceRule.Result.Violation<OpenAPI>? {
 
         val jsonSchema = if (!schema.properties.isNullOrEmpty() || schema.oneOf != null || schema.allOf != null) {
@@ -95,7 +95,7 @@ class ExamplesSchemaComplianceRule(private val mediaTypesToCheck: Set<String>, p
             runCatching { schemaLocation.let(::jsonSchemaAt) }.getOrElse { error -> return invalidJsonSchemaReference(error, schemaLocation) }
         }
         val jsonValue = runCatching { toJson(value) }.getOrElse { return invalidJsonViolation(value) }
-        val path = validationPath + location.path
+        val path = validationPath + apiLocation.location.path
         val validationFailure = jsonSchema.validate(jsonValue, path)
         if (validationFailure != null) return incompatibleJsonSchemaViolation(validationFailure, jsonSchema)
         return null
@@ -106,20 +106,20 @@ class ExamplesSchemaComplianceRule(private val mediaTypesToCheck: Set<String>, p
         else -> JSONObject(value.toString())
     }
 
-    context(OpenApiLocation, ExampleInfo)
-    private fun invalidJsonSchema(error: Throwable, schemaValue: Any) = InvalidJsonSchemaViolation(error, schemaValue, this@ExampleInfo, location, operation)
+    context(apiLocation: OpenApiLocation, exampleInfo: ExampleInfo)
+    private fun invalidJsonSchema(error: Throwable, schemaValue: Any) = InvalidJsonSchemaViolation(error, schemaValue, exampleInfo, apiLocation.location, apiLocation.operation)
 
-    context(OpenApiLocation, ExampleInfo)
-    private fun noRefForSchema() = NoRefForSchemaViolation(this@ExampleInfo, APPLICATION_JSON, location, operation)
+    context(apiLocation: OpenApiLocation, exampleInfo: ExampleInfo)
+    private fun noRefForSchema() = NoRefForSchemaViolation(exampleInfo, APPLICATION_JSON, apiLocation.location, apiLocation.operation)
 
-    context(OpenApiLocation, ExampleInfo)
-    private fun invalidJsonSchemaReference(error: Throwable, schemaLocation: String) = InvalidJsonSchemaReferenceViolation(error, schemaLocation, this@ExampleInfo, location, operation)
+    context(apiLocation: OpenApiLocation, exampleInfo: ExampleInfo)
+    private fun invalidJsonSchemaReference(error: Throwable, schemaLocation: String) = InvalidJsonSchemaReferenceViolation(error, schemaLocation, exampleInfo, apiLocation.location, apiLocation.operation)
 
-    context(OpenApiLocation, ExampleInfo)
-    private fun invalidJsonViolation(value: Any) = InvalidJsonViolation(value, this@ExampleInfo, location, operation)
+    context(apiLocation: OpenApiLocation, exampleInfo: ExampleInfo)
+    private fun invalidJsonViolation(value: Any) = InvalidJsonViolation(value, exampleInfo, apiLocation.location, apiLocation.operation)
 
-    context(OpenApiLocation, ExampleInfo)
-    private fun incompatibleJsonSchemaViolation(validationFailure: JsonSchema.ValidationFailure, jsonSchema: JsonSchema) = IncompatibleJsonSchemaViolation(validationFailure, jsonSchema, this@ExampleInfo, location, operation)
+    context(apiLocation: OpenApiLocation, exampleInfo: ExampleInfo)
+    private fun incompatibleJsonSchemaViolation(validationFailure: JsonSchema.ValidationFailure, jsonSchema: JsonSchema) = IncompatibleJsonSchemaViolation(validationFailure, jsonSchema, exampleInfo, apiLocation.location, apiLocation.operation)
 
     private fun Schema<*>.asJsonSchema() = jsonObject(this).asSchema()
 

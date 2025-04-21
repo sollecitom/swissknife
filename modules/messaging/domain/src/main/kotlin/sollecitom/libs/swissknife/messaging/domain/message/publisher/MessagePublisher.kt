@@ -9,14 +9,14 @@ import sollecitom.libs.swissknife.messaging.domain.message.originatingMessageIdO
 
 interface MessagePublisher<in VALUE> : Startable, Stoppable {
 
-    context(InvocationContext<*>)
+    context(_: InvocationContext<*>)
     suspend fun publish(value: VALUE, parentMessageId: Message.Id? = null, originatingMessageId: Message.Id? = null)
 
     companion object
 }
 
-context(InvocationContext<*>)
+context(_: InvocationContext<*>)
 suspend fun <VALUE> MessagePublisher<VALUE>.publish(event: VALUE, parent: ReceivedMessage<*>) = publish(value = event, parentMessageId = parent.id, originatingMessageId = parent.originatingMessageIdOrFallback)
 
-context(InvocationContext<*>, ReceivedMessage<*>)
-suspend fun <VALUE> MessagePublisher<VALUE>.publishWithParentMessageContext(event: VALUE) = publish(event = event, parent = this@ReceivedMessage)
+context(_: InvocationContext<*>, parentMessage: ReceivedMessage<*>)
+suspend fun <VALUE> MessagePublisher<VALUE>.publishWithParentMessageContext(event: VALUE) = publish(event = event, parent = parentMessage)

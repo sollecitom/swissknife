@@ -23,9 +23,9 @@ import sollecitom.libs.swissknife.correlation.core.test.utils.trace.create
 import kotlinx.datetime.Instant
 import java.util.*
 
-context(UniqueIdGenerator, TimeGenerator)
+context(_: UniqueIdGenerator, time: TimeGenerator)
 fun InvocationContext.Companion.create(
-    timeNow: Instant = clock.now(),
+    timeNow: Instant = time.now(),
     access: (Instant) -> Access = { Access.authenticated() },
     trace: (Instant) -> Trace = { Trace.create(timeNow = timeNow) },
     toggles: (Instant) -> Toggles = { Toggles.create() },
@@ -37,9 +37,9 @@ fun InvocationContext.Companion.create(
     return InvocationContext(access = access(timeNow), trace = trace(timeNow), toggles = toggles(timeNow), specifiedLocale = specifiedLocale(timeNow), specifiedTargetCustomer = specifiedTargetCustomer(timeNow), specifiedTargetTenant = specifiedTargetTenant(timeNow))
 }
 
-context(UniqueIdGenerator, TimeGenerator)
+context(_: UniqueIdGenerator, time: TimeGenerator)
 fun InvocationContext.Companion.authenticated(
-    timeNow: Instant = clock.now(),
+    timeNow: Instant = time.now(),
     access: (Instant) -> Access.Authenticated = { Access.authenticated() },
     trace: (Instant) -> Trace = { Trace.create(timeNow = timeNow) },
     toggles: (Instant) -> Toggles = { Toggles.create() },
@@ -51,9 +51,9 @@ fun InvocationContext.Companion.authenticated(
     return InvocationContext(access = access(timeNow), trace = trace(timeNow), toggles = toggles(timeNow), specifiedLocale = specifiedLocale(timeNow), specifiedTargetCustomer = specifiedTargetCustomer(timeNow), specifiedTargetTenant = specifiedTargetTenant(timeNow))
 }
 
-context(UniqueIdGenerator, TimeGenerator)
+context(_: UniqueIdGenerator, time: TimeGenerator)
 fun InvocationContext.Companion.unauthenticated(
-    timeNow: Instant = clock.now(),
+    timeNow: Instant = time.now(),
     access: (Instant) -> Access.Unauthenticated = { Access.unauthenticated() },
     trace: (Instant) -> Trace = { Trace.create(timeNow = timeNow) },
     toggles: (Instant) -> Toggles = { Toggles.create() },
@@ -65,9 +65,9 @@ fun InvocationContext.Companion.unauthenticated(
     return InvocationContext(access = access(timeNow), trace = trace(timeNow), toggles = toggles(timeNow), specifiedLocale = specifiedLocale(timeNow), specifiedTargetCustomer = specifiedTargetCustomer(timeNow), specifiedTargetTenant = specifiedTargetTenant(timeNow))
 }
 
-context(UniqueIdGenerator, TimeGenerator)
+context(ids: UniqueIdGenerator, time: TimeGenerator)
 fun InvocationContext.Companion.create(
-    timeNow: Instant = clock.now(),
+    timeNow: Instant = time.now(),
     authenticated: Boolean = true,
     roles: Roles = if (authenticated) TestRoles.default else TestRoles.none,
     actor: (Instant) -> Actor = { Actor.direct() },

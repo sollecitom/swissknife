@@ -16,38 +16,38 @@ import sollecitom.libs.swissknife.correlation.core.test.utils.customer.create
 import sollecitom.libs.swissknife.correlation.core.test.utils.tenancy.create
 import java.util.*
 
-context(UniqueIdGenerator)
-fun Actor.Account.Companion.user(id: Id = newId(), locale: Locale = Locale.UK, customer: Customer = Customer.create(), tenant: Tenant = Tenant.create()) = Actor.UserAccount(id, locale, customer, tenant)
+context(ids: UniqueIdGenerator)
+fun Actor.Account.Companion.user(id: Id = ids.newId(), locale: Locale = Locale.UK, customer: Customer = Customer.create(), tenant: Tenant = Tenant.create()) = Actor.UserAccount(id, locale, customer, tenant)
 
-context(UniqueIdGenerator)
-fun Actor.UserAccount.Companion.create(id: Id = newId(), locale: Locale = Locale.UK, customer: Customer = Customer.create(), tenant: Tenant = Tenant.create()): Actor.UserAccount = Actor.UserAccount(id, locale, customer, tenant)
+context(ids: UniqueIdGenerator)
+fun Actor.UserAccount.Companion.create(id: Id = ids.newId(), locale: Locale = Locale.UK, customer: Customer = Customer.create(), tenant: Tenant = Tenant.create()): Actor.UserAccount = Actor.UserAccount(id, locale, customer, tenant)
 
-context(UniqueIdGenerator)
-fun Actor.Account.Companion.externalService(id: Id = newId(), customer: Customer = Customer.create(), tenant: Tenant = Tenant.create()): Actor.ServiceAccount.External = Actor.ServiceAccount.External(id, customer, tenant)
+context(ids: UniqueIdGenerator)
+fun Actor.Account.Companion.externalService(id: Id = ids.newId(), customer: Customer = Customer.create(), tenant: Tenant = Tenant.create()): Actor.ServiceAccount.External = Actor.ServiceAccount.External(id, customer, tenant)
 
-context(UniqueIdGenerator)
-fun Actor.ServiceAccount.External.Companion.create(id: Id = newId(), customer: Customer = Customer.create(), tenant: Tenant = Tenant.create()): Actor.ServiceAccount.External = Actor.ServiceAccount.External(id, customer, tenant)
+context(ids: UniqueIdGenerator)
+fun Actor.ServiceAccount.External.Companion.create(id: Id = ids.newId(), customer: Customer = Customer.create(), tenant: Tenant = Tenant.create()): Actor.ServiceAccount.External = Actor.ServiceAccount.External(id, customer, tenant)
 
-context(UniqueIdGenerator)
-fun Actor.Account.Companion.internalService(id: Id = newId()): Actor.ServiceAccount.Internal = Actor.ServiceAccount.Internal(id)
+context(ids: UniqueIdGenerator)
+fun Actor.Account.Companion.internalService(id: Id = ids.newId()): Actor.ServiceAccount.Internal = Actor.ServiceAccount.Internal(id)
 
-context(UniqueIdGenerator)
-fun Actor.ServiceAccount.Internal.Companion.create(id: Id = newId()): Actor.ServiceAccount.Internal = Actor.ServiceAccount.Internal(id)
+context(ids: UniqueIdGenerator)
+fun Actor.ServiceAccount.Internal.Companion.create(id: Id = ids.newId()): Actor.ServiceAccount.Internal = Actor.ServiceAccount.Internal(id)
 
-context(UniqueIdGenerator, TimeGenerator)
+context(_: UniqueIdGenerator, _: TimeGenerator)
 fun Actor.Companion.direct(account: Actor.Account = Actor.UserAccount.create(), authentication: Authentication = Authentication.credentialsBased()): DirectActor = DirectActor(account, authentication)
 
-context(UniqueIdGenerator, TimeGenerator)
+context(_: UniqueIdGenerator, _: TimeGenerator)
 fun DirectActor.Companion.create(account: Actor.Account = Actor.UserAccount.create(), authentication: Authentication = Authentication.credentialsBased()): DirectActor = DirectActor(account, authentication)
 
-context(UniqueIdGenerator, TimeGenerator)
+context(_: UniqueIdGenerator, _: TimeGenerator)
 fun Actor.Companion.impersonating(impersonating: Actor.Account = Actor.UserAccount.create(), impersonator: Actor.Account = Actor.UserAccount.create(), authentication: Authentication = Authentication.credentialsBased()): ImpersonatingActor = ImpersonatingActor(impersonator = impersonating, impersonated = impersonator, authentication = authentication)
 
-context(UniqueIdGenerator, TimeGenerator)
+context(_: UniqueIdGenerator, _: TimeGenerator)
 fun ImpersonatingActor.Companion.create(impersonating: Actor.Account = Actor.UserAccount.create(), impersonator: Actor.Account = Actor.UserAccount.create(), authentication: Authentication = Authentication.credentialsBased()): ImpersonatingActor = ImpersonatingActor(impersonator = impersonating, impersonated = impersonator, authentication = authentication)
 
-context(UniqueIdGenerator, TimeGenerator)
+context(_: UniqueIdGenerator, _: TimeGenerator)
 fun Actor.Companion.onBehalf(account: Actor.Account = Actor.UserAccount.create(), benefitingAccount: Actor.Account = Actor.UserAccount.create(), authentication: Authentication = Authentication.credentialsBased()): ActorOnBehalf = ActorOnBehalf(account = account, benefitingAccount = benefitingAccount, authentication = authentication)
 
-context(UniqueIdGenerator, TimeGenerator)
+context(_: UniqueIdGenerator, _: TimeGenerator)
 fun ActorOnBehalf.Companion.create(account: Actor.Account = Actor.UserAccount.create(), benefitingAccount: Actor.Account = Actor.UserAccount.create(), authentication: Authentication = Authentication.credentialsBased()): ActorOnBehalf = ActorOnBehalf(account = account, benefitingAccount = benefitingAccount, authentication = authentication)

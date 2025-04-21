@@ -41,7 +41,7 @@ class MessagesImplementation<out OUT : Event, IN : Event>(private val consumer: 
     companion object
 }
 
-context(MessagePropertyNames)
+context(_: MessagePropertyNames)
 suspend fun <OUT : Event, IN : Event> Messages<OUT, IN>.produceAndAwaitSuccessor(event: IN, successorType: Happening.Type): Pair<Message.Id, ReceivedMessage<OUT>> {
 
     val messageId = produce(event)

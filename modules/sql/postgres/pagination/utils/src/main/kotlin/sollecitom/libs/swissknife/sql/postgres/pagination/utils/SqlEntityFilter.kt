@@ -25,25 +25,29 @@ interface SqlEntityFilter<ENTITY : Any> {
     fun List<Entity<ENTITY>>.continuationToken(count: Long, pagination: Pagination.Arguments): Name?
 }
 
-context(SqlEntityFilter<T>, WithSqlConnectivity)
-suspend fun <T : Any> String.selectPage(pagination: Pagination.Arguments, sortOrder: SortOrder?, bindings: Set<Pair<String, Any?>>, fields: String = "*", mapRow: (Row, RowMetadata) -> Entity<T>): Page<T> = coroutineScope {
+context(filter: SqlEntityFilter<T>, connected: WithSqlConnectivity)
+suspend fun <T : Any> String.selectPage(pagination: Pagination.Arguments, sortOrder: SortOrder?, bindings: Set<Pair<String, Any?>>, fields: String = "*", mapRow: (Row, RowMetadata) -> Entity<T>): Page<T> = with(filter) {
+    with(connected) {
+        coroutineScope {
 
-    val count = async {
-        """SELECT COUNT(*) as n_records FROM ${this@selectPage}"""
-            .execute(bindings.toList())
-            .map { row -> row.getValue<Long>("n_records") }
-            .awaitSingle()
-    }
-    val entities = """
+            val count = async {
+                """SELECT COUNT(*) as n_records FROM ${this@selectPage}"""
+                    .execute(bindings.toList())
+                    .map { row -> row.getValue<Long>("n_records") }
+                    .awaitSingle()
+            }
+            val entities = """
             SELECT $fields FROM ${this@selectPage} ${pagination.continuationToken.whereClause(sortOrder)} ORDER BY ${sortOrder.orderByClause()} LIMIT ${pagination.limit}
         """
-        .execute(listOf(*bindings.toTypedArray(), *pagination.continuationToken.whereQueryBindings()))
-        .map { row, rowMetadata ->
-            mapRow(row, rowMetadata)
-        }
-        .flow().toList()
+                .execute(listOf(*bindings.toTypedArray(), *pagination.continuationToken.whereQueryBindings()))
+                .map { row, rowMetadata ->
+                    mapRow(row, rowMetadata)
+                }
+                .flow().toList()
 
-    val continuationToken = entities.continuationToken(count.await(), pagination)
-    val pageInformation = Pagination.Information(count.await(), continuationToken)
-    Page(items = entities.map { it.value }, information = pageInformation)
+            val continuationToken = entities.continuationToken(count.await(), pagination)
+            val pageInformation = Pagination.Information(count.await(), continuationToken)
+            Page(items = entities.map { it.value }, information = pageInformation)
+        }
+    }
 }

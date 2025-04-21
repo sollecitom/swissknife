@@ -7,4 +7,6 @@ interface TimeGenerator {
 
     val clock: Clock
     val javaClock: JavaClock
+
+    fun now() = clock.now()
 }

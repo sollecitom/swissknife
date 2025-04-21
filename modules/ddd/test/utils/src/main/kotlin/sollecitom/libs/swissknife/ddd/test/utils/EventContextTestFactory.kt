@@ -6,5 +6,5 @@ import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationCont
 import sollecitom.libs.swissknife.correlation.core.test.utils.context.create
 import sollecitom.libs.swissknife.ddd.domain.Event
 
-context(UniqueIdGenerator, TimeGenerator)
+context(_: UniqueIdGenerator, _: TimeGenerator)
 fun Event.Context.Companion.create(invocation: InvocationContext<*> = InvocationContext.create(), parent: Event.Reference? = null, originating: Event.Reference? = null): Event.Context = Event.Context(invocation = invocation, parent = parent, originating = originating)

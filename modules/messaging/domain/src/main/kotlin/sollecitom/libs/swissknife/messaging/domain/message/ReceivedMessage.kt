@@ -40,10 +40,10 @@ fun <VALUE, V : VALUE> ReceivedMessage<VALUE>.into(): ReceivedMessage<V> = this 
 
 fun ReceivedMessage<*>.forkContext(): Message.Context = context.fork(parentMessageId = id)
 
-context(CoroutineScope, UniqueIdGenerator, TimeGenerator, Loggable)
-fun <EVENT : Event> Flow<ReceivedMessage<EVENT>>.processWithForkedContext(start: CoroutineStart = LAZY, convertContext: (InvocationContext<*>) -> String, action: suspend context(InvocationContext<*>) (message: ReceivedMessage<EVENT>) -> Unit): Job = processWithForkedContext(this@CoroutineScope, start, convertContext, action)
+context(scope: CoroutineScope, _: UniqueIdGenerator, _: TimeGenerator, _: Loggable)
+fun <EVENT : Event> Flow<ReceivedMessage<EVENT>>.processWithForkedContext(start: CoroutineStart = LAZY, convertContext: (InvocationContext<*>) -> String, action: suspend context(InvocationContext<*>) (message: ReceivedMessage<EVENT>) -> Unit): Job = processWithForkedContext(scope, start, convertContext, action)
 
-context(UniqueIdGenerator, TimeGenerator, Loggable)
+context(_: UniqueIdGenerator, _: TimeGenerator, _: Loggable)
 fun <EVENT : Event> Flow<ReceivedMessage<EVENT>>.processWithForkedContext(scope: CoroutineScope, start: CoroutineStart = LAZY, convertContext: (InvocationContext<*>) -> String, action: suspend context(InvocationContext<*>) (message: ReceivedMessage<EVENT>) -> Unit): Job = scope.launch(start = start) {
     onEach { message ->
         val invocationContext = message.value.forkAndLogInvocationContext()

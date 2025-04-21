@@ -44,8 +44,8 @@ class JwtExampleTests : CoreDataGenerator by CoreDataGenerator.testProvider {
         val processor = newJwtProcessor(issuer.id, issuer.publicKey)
         val jwtId = newId.ulid.monotonic().stringValue
         val subject = "subject"
-        val issuingTime = clock.now()
-        val expiryTime = clock.now() + 30.minutes
+        val issuingTime = now()
+        val expiryTime = now() + 30.minutes
         val notBeforeTime = issuingTime - 5.seconds
         val rolesClaim = "roles"
         val roles = mutableListOf("role-1", "role-2")
@@ -83,8 +83,8 @@ class JwtExampleTests : CoreDataGenerator by CoreDataGenerator.testProvider {
         val processor = newJwtProcessor(issuer.id, issuer.publicKey)
         val jwtId = newId.ulid.monotonic().stringValue
         val subject = "subject"
-        val issuingTime = clock.now()
-        val expiryTime = clock.now() + 30.minutes
+        val issuingTime = now()
+        val expiryTime = now() + 30.minutes
         val notBeforeTime = issuingTime - 5.seconds
         val rolesClaim = "roles"
         val roles = mutableListOf("role-1", "role-2")
@@ -123,8 +123,8 @@ class JwtExampleTests : CoreDataGenerator by CoreDataGenerator.testProvider {
         val processor = newAudienceSpecificJwtProcessor(audience, issuer.id, issuer.publicKey, acceptableContentEncryptionAlgorithms = setOf(JwtContentEncryptionAlgorithm.AES_256_CBC_HMAC_SHA_512))
         val jwtId = newId.ulid.monotonic().stringValue
         val subject = "subject"
-        val issuingTime = clock.now()
-        val expiryTime = clock.now() + 30.minutes
+        val issuingTime = now()
+        val expiryTime = now() + 30.minutes
         val notBeforeTime = issuingTime - 5.seconds
         val rolesClaim = "roles"
         val roles = mutableListOf("role-1", "role-2")

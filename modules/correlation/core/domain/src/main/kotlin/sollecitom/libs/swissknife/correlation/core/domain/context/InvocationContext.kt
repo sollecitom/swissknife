@@ -62,5 +62,5 @@ fun InvocationContext<Access>.unauthenticatedOrFailure(): Result<InvocationConte
 
 val InvocationContext<*>.localeOrNull: Locale? get() = specifiedLocale ?: authenticatedOrNull()?.access?.localeOrNull
 
-context(UniqueIdGenerator, TimeGenerator)
-fun <ACCESS : Access> InvocationContext<ACCESS>.forked(id: Id = newId(), createdAt: Instant = clock.now()) = fork(invocation = InvocationTrace(id = id, createdAt = createdAt))
+context(ids: UniqueIdGenerator, time: TimeGenerator)
+fun <ACCESS : Access> InvocationContext<ACCESS>.forked(id: Id = ids.newId(), createdAt: Instant = time.now()) = fork(invocation = InvocationTrace(id = id, createdAt = createdAt))

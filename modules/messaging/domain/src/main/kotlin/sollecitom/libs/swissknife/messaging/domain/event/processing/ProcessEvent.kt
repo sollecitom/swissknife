@@ -6,6 +6,6 @@ import sollecitom.libs.swissknife.messaging.domain.message.ReceivedMessage
 
 fun interface ProcessEvent<in EVENT : Event> {
 
-    context(InvocationContext<*>)
+    context(_: InvocationContext<*>)
     suspend operator fun invoke(event: ReceivedMessage<EVENT>): EventProcessingResult
 }

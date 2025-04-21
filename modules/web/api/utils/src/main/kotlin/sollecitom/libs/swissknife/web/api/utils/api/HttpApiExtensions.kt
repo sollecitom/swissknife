@@ -13,7 +13,7 @@ import sollecitom.libs.swissknife.core.domain.networking.RequestedPort
 import sollecitom.libs.swissknife.core.utils.TimeGenerator
 import sollecitom.libs.swissknife.web.api.domain.endpoint.Endpoint
 
-context(HttpApiDefinition, TimeGenerator)
+context(_: HttpApiDefinition, _: TimeGenerator)
 fun mainHttpApi(endpoints: Set<Endpoint>, requestedPort: RequestedPort, requestFilter: Filter, responseFilter: Filter) = HttpApi(endpoints, requestedPort, requestFilter, responseFilter)
 
 fun healthHttpApi(requestedPort: RequestedPort, meterRegistry: PrometheusMeterRegistry, checks: Set<ReadinessCheck> = emptySet(), renderer: ReadinessCheckResultRenderer = DefaultReadinessCheckResultRenderer) = HttpApi(standardHealthApp(meterRegistry, checks, renderer), requestedPort)

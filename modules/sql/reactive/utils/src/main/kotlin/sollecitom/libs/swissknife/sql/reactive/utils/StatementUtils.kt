@@ -28,8 +28,8 @@ inline fun <reified T : Any> Statement.bindIndexed(binding: Pair<Int, T>) = bind
 suspend fun Statement.executeSingle(): Long = execute().awaitSingle().rowsUpdated.awaitSingle()
 suspend fun Statement.executeMulti(): List<Long> = execute().asFlow().map { it.rowsUpdated.awaitSingle() }.toList()
 
-context(Connection)
-fun String.asStatement(): Statement = createStatement(trimMargin())
+context(connection: Connection)
+fun String.asStatement(): Statement = connection.createStatement(trimMargin())
 
 fun <VALUE : Any> Statement.bindEach(values: Collection<VALUE>, bind: Statement.(VALUE) -> Unit): Statement {
 

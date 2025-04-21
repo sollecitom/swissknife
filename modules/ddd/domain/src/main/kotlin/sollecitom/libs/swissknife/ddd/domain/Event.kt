@@ -83,13 +83,13 @@ interface Event : Happening, Identifiable, Timestamped, Contextual<Event.Context
 
 val Event.isOriginating: Boolean get() = context.isOriginating
 
-context(InvocationContext<*>)
-fun Event.forkContext(): Event.Context = forkContext(invocation = this@InvocationContext.trace.invocation)
+context(context: InvocationContext<*>)
+fun Event.forkContext(): Event.Context = forkContext(invocation = context.trace.invocation)
 
-context(UniqueIdGenerator, TimeGenerator)
-fun Event.forkContext(): Event.Context = forkContext(invocation = InvocationTrace(id = newId(), createdAt = clock.now()))
+context(ids: UniqueIdGenerator, time: TimeGenerator)
+fun Event.forkContext(): Event.Context = forkContext(invocation = InvocationTrace(id = ids.newId(), createdAt = time.now()))
 
-context(UniqueIdGenerator, TimeGenerator)
+context(_: UniqueIdGenerator, _: TimeGenerator)
 fun Event.forkInvocationContext() = forkContext().invocation
 
 fun InvocationContext<*>.toEventContext(parentEvent: Event.Reference? = null, originatingEvent: Event.Reference? = null): Event.Context = Event.Context(this, parentEvent, originatingEvent)
@@ -102,11 +102,11 @@ fun Event.originatesFrom(event: Event) = originatesFromEventWithReference(event.
 
 fun <DATA : Event.Data> DATA.asEvent(metadata: Event.Metadata): Event.Composite<DATA> = Event.Composite(data = this, metadata = metadata)
 
-context(UniqueIdGenerator, TimeGenerator, Loggable)
+context(_: UniqueIdGenerator, _: TimeGenerator, loggable: Loggable)
 fun Event.forkAndLogInvocationContext(): InvocationContext<*> {
 
     val forkedContext = forkInvocationContext()
-    logger.debug { "Forked invocation context $forkedContext from event context $context." }
+    loggable.logger.debug { "Forked invocation context $forkedContext from event context $context." }
     return forkedContext
 }
 

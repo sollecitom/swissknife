@@ -12,7 +12,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-context(TimeGenerator, UniqueIdGenerator)
+context(_: TimeGenerator, _: UniqueIdGenerator)
 fun testWithInvocationContext(
     context: CoroutineContext = EmptyCoroutineContext,
     timeout: Duration = 10.seconds,

@@ -18,5 +18,5 @@ data class ServiceInfo(val instanceId: Id, val name: Name) {
     }
 }
 
-context(UniqueIdGenerator)
-fun ServiceInfo.Companion.withName(name: Name) = ServiceInfo(name = name, instanceId = newId())
+context(ids: UniqueIdGenerator)
+fun ServiceInfo.Companion.withName(name: Name) = ServiceInfo(name = name, instanceId = ids.newId())

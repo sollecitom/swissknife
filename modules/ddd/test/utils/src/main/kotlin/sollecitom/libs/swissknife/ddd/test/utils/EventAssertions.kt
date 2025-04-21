@@ -17,13 +17,12 @@ fun <EVENT : Event> Assert<EVENT>.hasType(type: Happening.Type) = given { event 
     assertThat(event.type).isEqualTo(type)
 }
 
-context(InvocationContext<*>)
-fun Assert<Event>.hasTheInvocationContextInScope() = hasInvocationContext(this@InvocationContext)
+context(context: InvocationContext<*>)
+fun Assert<Event>.hasTheInvocationContextInScope() = hasInvocationContext(context)
 
-context(InvocationContext<*>)
+context(expected: InvocationContext<*>)
 fun Assert<Event>.hasTheForkedInvocationContextInScope() = given { event ->
 
-    val expected = this@InvocationContext
     assertThat(event.context.invocation).isEqualTo(expected.fork(invocation = event.context.invocation.trace.invocation))
 }
 
@@ -48,8 +47,8 @@ fun Assert<Event>.descendsAndOriginatesFrom(parent: Event) = given { event ->
     assertThat(event).originatesFrom(parent)
 }
 
-context(InvocationContext<*>)
+context(context: InvocationContext<*>)
 fun Assert<Event>.isCorrelatedWithTheInvocationContextInScope() = given { event ->
 
-    assertThat(event).hasInvocationContext(this@InvocationContext)
+    assertThat(event).hasInvocationContext(context)
 }

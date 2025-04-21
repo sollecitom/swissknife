@@ -271,8 +271,8 @@ fun User.login(client: AuthzClient): AccessTokenResponse {
     return response
 }
 
-context(AuthzClient)
-fun User.login(): AccessTokenResponse = login(client = this@AuthzClient)
+context(client: AuthzClient)
+fun User.login(): AccessTokenResponse = login(client = client)
 
 fun User.login2(client: AuthzClient): AuthorizationResponse {
 
@@ -282,8 +282,8 @@ fun User.login2(client: AuthzClient): AuthorizationResponse {
     return response
 }
 
-context(AuthzClient)
-fun User.login2(): AuthorizationResponse = login2(client = this@AuthzClient)
+context(client: AuthzClient)
+fun User.login2(): AuthorizationResponse = login2(client = client)
 
 internal class UserAdapter(override val password: String, private val representation: UserRepresentation, private val operations: UserResource) : User {
 

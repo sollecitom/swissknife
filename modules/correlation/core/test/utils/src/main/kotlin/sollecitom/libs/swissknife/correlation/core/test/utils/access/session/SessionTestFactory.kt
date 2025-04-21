@@ -13,11 +13,11 @@ import sollecitom.libs.swissknife.correlation.core.test.utils.access.idp.create
 import sollecitom.libs.swissknife.correlation.core.test.utils.customer.create
 import sollecitom.libs.swissknife.correlation.core.test.utils.tenancy.create
 
-context(UniqueIdGenerator)
-fun Session.Companion.simple(id: Id = newId()): SimpleSession = SimpleSession(id)
+context(ids: UniqueIdGenerator)
+fun Session.Companion.simple(id: Id = ids.newId()): SimpleSession = SimpleSession(id)
 
-context(UniqueIdGenerator)
-fun Session.Companion.federated(customer: Customer = Customer.create(), tenant: Tenant = Tenant.create(), id: Id = newId(), identityProvider: IdentityProvider = IdentityProvider.create(customer = customer, tenant = tenant)): FederatedSession = FederatedSession(id, identityProvider)
+context(ids: UniqueIdGenerator)
+fun Session.Companion.federated(customer: Customer = Customer.create(), tenant: Tenant = Tenant.create(), id: Id = ids.newId(), identityProvider: IdentityProvider = IdentityProvider.create(customer = customer, tenant = tenant)): FederatedSession = FederatedSession(id, identityProvider)
 
-context(UniqueIdGenerator)
-fun Session.Companion.federated(identityProvider: IdentityProvider, id: Id = newId()): FederatedSession = FederatedSession(id, identityProvider)
+context(ids: UniqueIdGenerator)
+fun Session.Companion.federated(identityProvider: IdentityProvider, id: Id = ids.newId()): FederatedSession = FederatedSession(id, identityProvider)
