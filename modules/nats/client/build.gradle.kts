@@ -1,4 +1,4 @@
 dependencies {
     api(libs.jnats)
-    api(projects.coreDomain)
+    api(projects.swissknifeCoreDomain)
 }

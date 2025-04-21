@@ -1,9 +1,9 @@
 dependencies {
-    api(projects.pulsarAvroSerialization)
-    api(projects.messagingDomain)
+    api(projects.swissknifePulsarAvroSerialization)
+    api(projects.swissknifeMessagingDomain)
 
-    implementation(projects.pulsarMessagingAdapter)
-    implementation(projects.loggerCore)
+    implementation(projects.swissknifePulsarMessagingAdapter)
+    implementation(projects.swissknifeLoggerCore)
 
-    testImplementation(projects.coreTestUtils)
+    testImplementation(projects.swissknifeCoreTestUtils)
 }

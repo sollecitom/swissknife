@@ -1,6 +1,6 @@
 dependencies {
-    api(projects.coreDomain)
+    api(projects.swissknifeCoreDomain)
     api(libs.org.json)
 
-    implementation(projects.kotlinExtensions)
+    implementation(projects.swissknifeKotlinExtensions)
 }

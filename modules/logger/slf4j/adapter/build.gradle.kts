@@ -1,5 +1,5 @@
 dependencies {
-    api(projects.loggerCore)
+    api(projects.swissknifeLoggerCore)
 
-    testImplementation(projects.testUtils)
+    testImplementation(projects.swissknifeTestUtils)
 }

@@ -1,4 +1,4 @@
 dependencies {
-    api(projects.avroSchemaCatalogueDomain)
-    api(projects.coreTestUtils)
+    api(projects.swissknifeAvroSchemaCatalogueDomain)
+    api(projects.swissknifeCoreTestUtils)
 }

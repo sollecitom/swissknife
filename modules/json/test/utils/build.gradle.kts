@@ -1,5 +1,5 @@
 dependencies {
-    api(projects.jsonUtils)
-    api(projects.testUtils)
-    api(projects.complianceCheckerTestUtils)
+    api(projects.swissknifeJsonUtils)
+    api(projects.swissknifeTestUtils)
+    api(projects.swissknifeComplianceCheckerTestUtils)
 }

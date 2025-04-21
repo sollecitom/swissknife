@@ -1,5 +1,5 @@
 dependencies {
-    api(projects.avroSerializationUtils)
-    api(projects.coreTestUtils)
-    api(projects.complianceCheckerTestUtils)
+    api(projects.swissknifeAvroSerializationUtils)
+    api(projects.swissknifeCoreTestUtils)
+    api(projects.swissknifeComplianceCheckerTestUtils)
 }

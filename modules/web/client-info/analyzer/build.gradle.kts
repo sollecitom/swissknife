@@ -1,13 +1,13 @@
 dependencies {
-    api(projects.webClientInfoDomain)
+    api(projects.swissknifeWebClientInfoDomain)
 
-    implementation(projects.kotlinExtensions)
+    implementation(projects.swissknifeKotlinExtensions)
     implementation(libs.yet.another.user.agent.analyzer)
-    implementation(projects.loggerCore)
+    implementation(projects.swissknifeLoggerCore)
 
     runtimeOnly(libs.log4j.to.slf4j)
 
-    testImplementation(projects.correlationCoreTestUtils)
-    testImplementation(projects.coreTestUtils)
-    testRuntimeOnly(projects.loggerSlf4jAdapter)
+    testImplementation(projects.swissknifeCorrelationCoreTestUtils)
+    testImplementation(projects.swissknifeCoreTestUtils)
+    testRuntimeOnly(projects.swissknifeLoggerSlf4jAdapter)
 }

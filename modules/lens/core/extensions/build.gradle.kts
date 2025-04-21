@@ -2,9 +2,9 @@ dependencies {
     api(platform(libs.http4k.bom))
     api(libs.http4k.platform.k8s)
     api(libs.http4k.core)
-    api(projects.coreDomain)
+    api(projects.swissknifeCoreDomain)
 
-    implementation(projects.kotlinExtensions)
+    implementation(projects.swissknifeKotlinExtensions)
 
-    testImplementation(projects.testUtils)
+    testImplementation(projects.swissknifeTestUtils)
 }

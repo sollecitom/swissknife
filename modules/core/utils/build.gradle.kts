@@ -1,8 +1,8 @@
 dependencies {
-    api(projects.coreDomain)
-    api(projects.configurationUtils)
+    api(projects.swissknifeCoreDomain)
+    api(projects.swissknifeConfigurationUtils)
 
-    implementation(projects.loggerCore)
+    implementation(projects.swissknifeLoggerCore)
 
-    testImplementation(projects.testUtils)
+    testImplementation(projects.swissknifeTestUtils)
 }

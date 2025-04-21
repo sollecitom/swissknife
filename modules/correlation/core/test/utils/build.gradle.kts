@@ -1,8 +1,8 @@
 dependencies {
-    api(projects.correlationCoreDomain)
-    api(projects.coreUtils)
-    api(projects.testUtils)
+    api(projects.swissknifeCorrelationCoreDomain)
+    api(projects.swissknifeCoreUtils)
+    api(projects.swissknifeTestUtils)
 
-    implementation(projects.kotlinExtensions)
-    implementation(projects.coreTestUtils)
+    implementation(projects.swissknifeKotlinExtensions)
+    implementation(projects.swissknifeCoreTestUtils)
 }

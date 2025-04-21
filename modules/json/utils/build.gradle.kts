@@ -1,13 +1,13 @@
 dependencies {
     api(libs.org.json)
-    api(projects.kotlinExtensions)
-    api(projects.serializationDomain)
-    api(projects.complianceCheckerDomain)
+    api(projects.swissknifeKotlinExtensions)
+    api(projects.swissknifeSerializationDomain)
+    api(projects.swissknifeComplianceCheckerDomain)
 
     implementation(libs.json.schema.parser) {
         exclude(group = "commons-collections", module = "commons-collections")
     }
-    implementation(projects.resourceUtils)
+    implementation(projects.swissknifeResourceUtils)
 
-    testImplementation(projects.testUtils)
+    testImplementation(projects.swissknifeTestUtils)
 }

@@ -1,8 +1,8 @@
 dependencies {
-    api(projects.sqlPostgresContainer)
-    api(projects.testUtils)
-    api(projects.sqlMigratorDomain)
-    api(projects.sqlMigratorLiquibase)
+    api(projects.swissknifeSqlPostgresContainer)
+    api(projects.swissknifeTestUtils)
+    api(projects.swissknifeSqlMigratorDomain)
+    api(projects.swissknifeSqlMigratorLiquibase)
 
     runtimeOnly(libs.postgres)
 }

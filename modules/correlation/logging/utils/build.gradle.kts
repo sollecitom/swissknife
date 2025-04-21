@@ -1,6 +1,6 @@
 dependencies {
-    api(projects.correlationCoreDomain)
-    api(projects.loggerCore)
+    api(projects.swissknifeCorrelationCoreDomain)
+    api(projects.swissknifeLoggerCore)
 
-    implementation(projects.kotlinExtensions)
+    implementation(projects.swissknifeKotlinExtensions)
 }

@@ -1,5 +1,5 @@
 dependencies {
-    implementation(projects.kotlinExtensions)
+    implementation(projects.swissknifeKotlinExtensions)
 
-    testImplementation(projects.testUtils)
+    testImplementation(projects.swissknifeTestUtils)
 }

@@ -1,7 +1,7 @@
 dependencies {
-    api(projects.sqlPostgresUtils)
-    api(projects.testContainersUtils)
-    api(projects.coreDomain)
+    api(projects.swissknifeSqlPostgresUtils)
+    api(projects.swissknifeTestContainersUtils)
+    api(projects.swissknifeCoreDomain)
     api(libs.test.containers.postgres)
 
     runtimeOnly(libs.postgres)

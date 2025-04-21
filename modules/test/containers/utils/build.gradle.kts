@@ -1,4 +1,4 @@
 dependencies {
     api(libs.test.containers.junit.jupiter)
-    api(projects.testUtils)
+    api(projects.swissknifeTestUtils)
 }

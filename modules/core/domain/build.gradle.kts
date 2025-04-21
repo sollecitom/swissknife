@@ -1,9 +1,9 @@
 dependencies {
-    api(projects.kotlinExtensions)
+    api(projects.swissknifeKotlinExtensions)
     implementation(libs.ulid.creator)
     implementation(libs.ksuid.creator)
     implementation(libs.guava)
-    implementation(projects.loggerCore)
+    implementation(projects.swissknifeLoggerCore)
 
-    testImplementation(projects.testUtils)
+    testImplementation(projects.swissknifeTestUtils)
 }

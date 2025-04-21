@@ -1,9 +1,9 @@
 dependencies {
-    api(projects.sqlDomain)
-    api(projects.sqlMigratorDomain)
+    api(projects.swissknifeSqlDomain)
+    api(projects.swissknifeSqlMigratorDomain)
     api(libs.liquibase)
 
-    implementation(projects.loggerCore)
+    implementation(projects.swissknifeLoggerCore)
 
     runtimeOnly(libs.liquibase.slf4j)
     runtimeOnly(libs.snakeyaml)

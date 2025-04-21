@@ -1,6 +1,6 @@
 dependencies {
-    testImplementation(projects.openapiCheckingTestUtils)
-    testImplementation(projects.kotlinExtensions)
-    testImplementation(projects.resourceUtils)
-    testImplementation(projects.loggingStandardSlf4jConfiguration)
+    testImplementation(projects.swissknifeOpenapiCheckingTestUtils)
+    testImplementation(projects.swissknifeKotlinExtensions)
+    testImplementation(projects.swissknifeResourceUtils)
+    testImplementation(projects.swissknifeLoggingStandardSlf4jConfiguration)
 }

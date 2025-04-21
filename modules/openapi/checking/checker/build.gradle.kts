@@ -1,7 +1,7 @@
 dependencies {
-    api(projects.openapiParser)
-    api(projects.complianceCheckerDomain)
+    api(projects.swissknifeOpenapiParser)
+    api(projects.swissknifeComplianceCheckerDomain)
 
-    implementation(projects.kotlinExtensions)
-    implementation(projects.jsonUtils)
+    implementation(projects.swissknifeKotlinExtensions)
+    implementation(projects.swissknifeJsonUtils)
 }

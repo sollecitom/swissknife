@@ -1,9 +1,9 @@
 dependencies {
-    api(projects.avroSerializationUtils)
-    api(projects.coreDomain)
+    api(projects.swissknifeAvroSerializationUtils)
+    api(projects.swissknifeCoreDomain)
 
-    implementation(projects.resourceUtils)
+    implementation(projects.swissknifeResourceUtils)
     implementation(libs.classgraph)
 
-    testImplementation(projects.coreTestUtils)
+    testImplementation(projects.swissknifeCoreTestUtils)
 }

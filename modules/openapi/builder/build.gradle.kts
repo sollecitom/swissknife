@@ -1,5 +1,5 @@
 dependencies {
-    api(projects.openapiParser)
+    api(projects.swissknifeOpenapiParser)
 
-    implementation(projects.kotlinExtensions)
+    implementation(projects.swissknifeKotlinExtensions)
 }

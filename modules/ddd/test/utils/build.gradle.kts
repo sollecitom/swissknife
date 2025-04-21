@@ -1,7 +1,7 @@
 dependencies {
-    api(projects.dddDomain)
-    api(projects.coreUtils)
-    api(projects.coreTestUtils)
-    api(projects.correlationCoreTestUtils)
-    api(projects.testUtils)
+    api(projects.swissknifeDddDomain)
+    api(projects.swissknifeCoreUtils)
+    api(projects.swissknifeCoreTestUtils)
+    api(projects.swissknifeCorrelationCoreTestUtils)
+    api(projects.swissknifeTestUtils)
 }

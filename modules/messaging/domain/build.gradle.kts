@@ -1,10 +1,10 @@
 dependencies {
-    api(projects.dddDomain)
-    api(projects.readinessDomain)
+    api(projects.swissknifeDddDomain)
+    api(projects.swissknifeReadinessDomain)
 
-    implementation(projects.dddLoggingUtils)
+    implementation(projects.swissknifeDddLoggingUtils)
 
-    testImplementation(projects.dddTestUtils)
-    testImplementation(projects.messagingTestUtils)
-    testImplementation(projects.loggingStandardSlf4jConfiguration)
+    testImplementation(projects.swissknifeDddTestUtils)
+    testImplementation(projects.swissknifeMessagingTestUtils)
+    testImplementation(projects.swissknifeLoggingStandardSlf4jConfiguration)
 }

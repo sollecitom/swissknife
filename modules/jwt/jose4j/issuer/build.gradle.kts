@@ -1,5 +1,5 @@
 dependencies {
-    api(projects.jwtDomain)
-    api(projects.jwtJose4jUtils)
-    api(projects.coreUtils)
+    api(projects.swissknifeJwtDomain)
+    api(projects.swissknifeJwtJose4jUtils)
+    api(projects.swissknifeCoreUtils)
 }

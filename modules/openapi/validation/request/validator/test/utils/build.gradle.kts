@@ -1,6 +1,6 @@
 dependencies {
-    api(projects.openapiValidationRequestValidator)
-    api(projects.testUtils)
+    api(projects.swissknifeOpenapiValidationRequestValidator)
+    api(projects.swissknifeTestUtils)
 
-    implementation(projects.kotlinExtensions)
+    implementation(projects.swissknifeKotlinExtensions)
 }

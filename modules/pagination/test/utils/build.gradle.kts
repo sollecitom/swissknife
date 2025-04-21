@@ -1,6 +1,6 @@
 dependencies {
-    api(projects.paginationDomain)
-    api(projects.coreUtils)
-    api(projects.coreTestUtils)
-    api(projects.testUtils)
+    api(projects.swissknifePaginationDomain)
+    api(projects.swissknifeCoreUtils)
+    api(projects.swissknifeCoreTestUtils)
+    api(projects.swissknifeTestUtils)
 }

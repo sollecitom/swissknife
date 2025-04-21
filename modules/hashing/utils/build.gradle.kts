@@ -1,6 +1,6 @@
 dependencies {
     implementation(libs.zero.allocation.hashing)
-    implementation(projects.kotlinExtensions)
+    implementation(projects.swissknifeKotlinExtensions)
 
-    testImplementation(projects.testUtils)
+    testImplementation(projects.swissknifeTestUtils)
 }

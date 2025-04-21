@@ -1,4 +1,4 @@
 dependencies {
-    api(projects.webApiDomain)
-    api(projects.coreUtils)
+    api(projects.swissknifeWebApiDomain)
+    api(projects.swissknifeCoreUtils)
 }

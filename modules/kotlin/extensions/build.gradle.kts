@@ -7,5 +7,5 @@ dependencies {
 
     api(libs.kotlinx.datetime)
 
-    testImplementation(projects.testUtils)
+    testImplementation(projects.swissknifeTestUtils)
 }

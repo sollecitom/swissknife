@@ -1,7 +1,7 @@
 dependencies {
-    api(projects.sqlReactiveUtils)
+    api(projects.swissknifeSqlReactiveUtils)
     api(libs.r2dbc.postgres)
-    api(projects.readinessDomain)
+    api(projects.swissknifeReadinessDomain)
 
-    implementation(projects.loggerCore)
+    implementation(projects.swissknifeLoggerCore)
 }

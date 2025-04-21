@@ -1,5 +1,5 @@
 dependencies {
-    api(projects.sqlMigratorLiquibase)
+    api(projects.swissknifeSqlMigratorLiquibase)
 
-    implementation(projects.loggerCore)
+    implementation(projects.swissknifeLoggerCore)
 }

@@ -1,5 +1,5 @@
 dependencies {
-    api(projects.messagingDomain)
-    api(projects.coreTestUtils)
-    api(projects.dddTestUtils)
+    api(projects.swissknifeMessagingDomain)
+    api(projects.swissknifeCoreTestUtils)
+    api(projects.swissknifeDddTestUtils)
 }

@@ -1,8 +1,8 @@
 dependencies {
     api(libs.swagger.parser)
 
-    implementation(projects.kotlinExtensions)
+    implementation(projects.swissknifeKotlinExtensions)
 
-    testImplementation(projects.resourceUtils)
-    testImplementation(projects.testUtils)
+    testImplementation(projects.swissknifeResourceUtils)
+    testImplementation(projects.swissknifeTestUtils)
 }

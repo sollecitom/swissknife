@@ -1,6 +1,6 @@
 dependencies {
     api(platform(libs.http4k.bom))
-    api(projects.http4kServerUtils)
+    api(projects.swissknifeHttp4kServerUtils)
 
-    testImplementation(projects.testUtils)
+    testImplementation(projects.swissknifeTestUtils)
 }

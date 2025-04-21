@@ -1,8 +1,8 @@
 dependencies {
-    api(projects.jsonUtils)
-    api(projects.pulsarUtils)
+    api(projects.swissknifeJsonUtils)
+    api(projects.swissknifePulsarUtils)
 
-    implementation(projects.loggerCore)
+    implementation(projects.swissknifeLoggerCore)
 
-    testImplementation(projects.coreTestUtils)
+    testImplementation(projects.swissknifeCoreTestUtils)
 }

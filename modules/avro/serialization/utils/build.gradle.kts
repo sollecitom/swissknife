@@ -1,8 +1,8 @@
 dependencies {
     api(libs.apache.avro.core)
-    api(projects.serializationDomain)
+    api(projects.swissknifeSerializationDomain)
 
-    implementation(projects.resourceUtils)
+    implementation(projects.swissknifeResourceUtils)
 
-    testImplementation(projects.coreTestUtils)
+    testImplementation(projects.swissknifeCoreTestUtils)
 }

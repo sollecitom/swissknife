@@ -1,6 +1,6 @@
 dependencies {
-    api(projects.pulsarUtils)
+    api(projects.swissknifePulsarUtils)
     api(libs.test.containers.pulsar)
-    api(projects.coreTestUtils)
-    api(projects.testContainersUtils)
+    api(projects.swissknifeCoreTestUtils)
+    api(projects.swissknifeTestContainersUtils)
 }

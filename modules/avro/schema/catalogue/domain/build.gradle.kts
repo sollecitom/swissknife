@@ -1,9 +1,9 @@
 dependencies {
-    api(projects.avroSerializationUtils)
-    api(projects.coreDomain)
+    api(projects.swissknifeAvroSerializationUtils)
+    api(projects.swissknifeCoreDomain)
 
-    implementation(projects.resourceUtils)
-    implementation(projects.avroSchemaRepositoryDomain)
+    implementation(projects.swissknifeResourceUtils)
+    implementation(projects.swissknifeAvroSchemaRepositoryDomain)
 
-    testImplementation(projects.coreTestUtils)
+    testImplementation(projects.swissknifeCoreTestUtils)
 }
