@@ -1,0 +1,3 @@
+package sollecitom.libs.swissknife.cryptography.domain.asymmetric.signing
+
+interface SigningAlgorithm<KEY_GENERATION_ARGUMENTS> : sollecitom.libs.swissknife.cryptography.domain.asymmetric.algorithm.AsymmetricAlgorithm<KEY_GENERATION_ARGUMENTS, SigningPrivateKey, VerifyingPublicKey>

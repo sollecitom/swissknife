@@ -1,0 +1,131 @@
+openapi: 3.1.0
+info:
+  version: "1.0"
+  title: Template Person end point
+  description: Template service exposing rest service to add a person.
+
+paths:
+  /people:
+    post:
+      summary: Allows a Person Request to be added
+      operationId: addPersonEndpoint
+      parameters:
+        - $ref: '#/components/parameters/aRequestHeader'
+        - $ref: '#/components/parameters/accept'
+        - $ref: '#/components/parameters/contentLength'
+      requestBody:
+        description: "Person details"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas/json/AddPersonRequest.json'
+      responses:
+        202:
+          $ref: '#/components/responses/Accepted'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        422:
+          $ref: '#/components/responses/UnprocessableEntity'
+        500:
+          $ref: '#/components/responses/UnexpectedError'
+        502:
+          $ref: '#/components/responses/UnavailableServer'
+components:
+  parameters:
+    contentLength:
+      name: content-length
+      in: header
+      description: Length of the request body
+      required: true
+      style: simple
+      explode: false
+      schema:
+        minLength: 1
+        type: string
+    accept:
+      name: Accept
+      in: header
+      description: The media type accepted by the client.
+      required: false
+      schema:
+        type: string
+    aRequestHeader:
+      name: X-A-Request-Header
+      in: header
+      schema:
+        type: string
+        minLength: 1
+      required: true
+      description: an example request header.
+  headers:
+    X-A-Response-Header:
+      description: an example response header.
+      schema:
+        type: string
+        minLength: 1
+      required: true
+    contentType:
+      description: Content type
+      schema:
+        type: string
+        minLength: 1
+      required: true
+    contentLength:
+      schema:
+        type: string
+        minLength: 1
+      required: true
+      description: Content length
+  responses:
+    Accepted:
+      description: Add person successful response
+      content:
+        application/json:
+          schema:
+            $ref: './schemas/json/AddPersonResponse.json'
+      headers:
+        X-A-Response-Header:
+          $ref: '#/components/headers/X-A-Response-Header'
+        content-type:
+          $ref: '#/components/headers/contentType'
+        content-length:
+          $ref: '#/components/headers/contentLength'
+    BadRequest:
+      description: The request could not be understood e.g., headers, query parameters or request body are malformed.
+      content:
+        text/plain:
+          schema:
+            type: string
+      headers:
+        X-A-Response-Header:
+          $ref: '#/components/headers/X-A-Response-Header'
+        content-type:
+          $ref: '#/components/headers/contentType'
+        content-length:
+          $ref: '#/components/headers/contentLength'
+    UnprocessableEntity:
+      description: The request could not be processed because it violated some domain constraints.
+      content:
+        application/json:
+          schema:
+            $ref: './schemas/json/ErrorsList.json'
+      headers:
+        X-A-Response-Header:
+          $ref: '#/components/headers/X-A-Response-Header'
+        content-type:
+          $ref: '#/components/headers/contentType'
+        content-length:
+          $ref: '#/components/headers/contentLength'
+    UnavailableServer:
+      description: A dependent service is not responding
+      content:
+        text/plain:
+          schema:
+            type: string
+    UnexpectedError:
+      description: Something went wrong unexpectedly.
+      content:
+        text/plain:
+          schema:
+            type: string

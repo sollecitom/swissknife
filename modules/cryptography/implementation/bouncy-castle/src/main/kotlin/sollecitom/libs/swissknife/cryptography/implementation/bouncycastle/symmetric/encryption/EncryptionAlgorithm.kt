@@ -1,0 +1,7 @@
+package sollecitom.libs.swissknife.cryptography.implementation.bouncycastle.symmetric.encryption
+
+import sollecitom.libs.swissknife.cryptography.domain.symmetric.SymmetricKey
+import sollecitom.libs.swissknife.cryptography.domain.symmetric.encryption.EncryptionAlgorithm
+import sollecitom.libs.swissknife.cryptography.implementation.bouncycastle.symmetric.SymmetricAlgorithm
+
+interface EncryptionAlgorithm<KEY_GENERATION_ARGUMENTS> : EncryptionAlgorithm<KEY_GENERATION_ARGUMENTS>, SymmetricAlgorithm<KEY_GENERATION_ARGUMENTS, SymmetricKey>

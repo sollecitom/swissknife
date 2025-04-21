@@ -1,0 +1,8 @@
+package sollecitom.libs.swissknife.cryptography.implementation.bouncycastle.asymmetric.signing
+
+import sollecitom.libs.swissknife.cryptography.domain.asymmetric.signing.SigningAlgorithm
+import sollecitom.libs.swissknife.cryptography.domain.asymmetric.signing.SigningPrivateKey
+import sollecitom.libs.swissknife.cryptography.domain.asymmetric.signing.VerifyingPublicKey
+import sollecitom.libs.swissknife.cryptography.implementation.bouncycastle.asymmetric.AsymmetricAlgorithm
+
+interface SigningAlgorithm<KEY_GENERATION_ARGUMENTS> : SigningAlgorithm<KEY_GENERATION_ARGUMENTS>, AsymmetricAlgorithm<KEY_GENERATION_ARGUMENTS, SigningPrivateKey, VerifyingPublicKey>
