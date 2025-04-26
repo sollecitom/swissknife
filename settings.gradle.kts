@@ -16,7 +16,7 @@ fun subProject(rootFolder: String, vararg pathSegments: String, excludeRootFolde
     project(":$fullProjectName").projectDir = mkdir("$directory/$projectName")
 }
 
-fun includedProject(name: String) {
+fun includeProject(name: String) {
 
     apply("$name/settings.gradle.kts")
 }
