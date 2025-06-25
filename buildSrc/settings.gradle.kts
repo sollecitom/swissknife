@@ -1,7 +1,5 @@
 rootProject.name = "swissknife"
 
-includeBuild("../gradle-plugins")
-
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
@@ -9,5 +7,6 @@ dependencyResolutionManagement {
         }
     }
 }
+
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

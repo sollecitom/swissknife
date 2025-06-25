@@ -42,6 +42,7 @@ classgraph = "4.8.179"
 opentelemetry = "1.50.0"
 grafana-otel-lgtm = "1.21.0"
 # plugins
+sollecitom-gradle-plugins = "1.0.0-SNAPSHOT"
 palantir-git-plugin = "3.2.0"
 version-catalog-report-plugin = "0.51.0"
 version-catalog-update-plugin = "0.8.4"
@@ -118,6 +119,7 @@ classgraph = { module = "io.github.classgraph:classgraph", version.ref = "classg
 liquibase-slf4j = { module = "com.mattbertolini:liquibase-slf4j", version.ref = "liquibase-slf4j" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 jib-gradle-plugin = { module = "com.google.cloud.tools:jib-gradle-plugin", version.ref = "jib-plugin" }
+sollecitom-gradle-plugins = { module = "sollecitom.gradle-plugins:gradle-plugins", version.ref = "sollecitom-gradle-plugins" }
 
 [plugins]
 com-github-ben-manes-versions = { id = "com.github.ben-manes.versions", version.ref = "version-catalog-report-plugin" }

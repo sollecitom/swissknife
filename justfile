@@ -15,6 +15,9 @@ build:
 rebuild:
     ./gradlew build --refresh-dependencies --rerun-tasks
 
+publish:
+    ./gradlew publishToMavenLocal
+
 updateDependencies:
     ./gradlew versionCatalogUpdate
 

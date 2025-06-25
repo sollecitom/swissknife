@@ -15,12 +15,17 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 buildscript {
+    repositories {
+        mavenLocal()
+    }
+
     dependencies {
-        classpath("sollecitom.gradle-plugins", "gradle-plugins")
+        classpath(libs.sollecitom.gradle.plugins)
     }
 }
 
 repositories {
+    mavenLocal()
     RepositoryConfiguration.BuildScript.apply(this)
 }
 
