@@ -1,11 +1,11 @@
 dependencies {
-    api(projects.swissknifeCryptographyDomain)
+    api(projects.cryptographyDomain)
 
     implementation(libs.bcprov)
     implementation(libs.bcpkix)
     implementation(libs.bcutil)
-    implementation(projects.swissknifeHashingUtils)
-    implementation(projects.swissknifeKotlinExtensions)
+    implementation(projects.hashingUtils)
+    implementation(projects.kotlinExtensions)
 
-    testImplementation(projects.swissknifeCryptographyTestSpecification)
+    testImplementation(projects.cryptographyTestSpecification)
 }

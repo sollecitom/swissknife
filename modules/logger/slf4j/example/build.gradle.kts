@@ -1,6 +1,6 @@
 dependencies {
-    implementation(projects.swissknifeLoggerCore)
-    implementation(projects.swissknifeTestUtils)
+    implementation(projects.loggerCore)
+    implementation(projects.testUtils)
 
-    runtimeOnly(projects.swissknifeLoggerSlf4jAdapter)
+    runtimeOnly(projects.loggerSlf4jAdapter)
 }

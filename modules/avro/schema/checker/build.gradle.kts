@@ -1,6 +1,6 @@
 dependencies {
-    api(projects.swissknifeComplianceCheckerDomain)
+    api(projects.complianceCheckerDomain)
     api(libs.apache.avro.core)
 
-    testImplementation(projects.swissknifeTestUtils)
+    testImplementation(projects.testUtils)
 }

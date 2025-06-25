@@ -1,7 +1,7 @@
 dependencies {
-    api(projects.swissknifeCoreDomain)
+    api(projects.coreDomain)
 
-    implementation(projects.swissknifeKotlinExtensions)
+    implementation(projects.kotlinExtensions)
 
-    testImplementation(projects.swissknifeTestUtils)
+    testImplementation(projects.testUtils)
 }

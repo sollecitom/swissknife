@@ -1,4 +1,4 @@
 dependencies {
-    api(projects.swissknifeSqlPostgresUtils)
-    api(projects.swissknifePaginationDomain)
+    api(projects.sqlPostgresUtils)
+    api(projects.paginationDomain)
 }

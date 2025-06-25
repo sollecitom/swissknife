@@ -1,6 +1,6 @@
 dependencies {
-    api(projects.swissknifeCryptographyDomain)
-    api(projects.swissknifeTestUtils)
+    api(projects.cryptographyDomain)
+    api(projects.testUtils)
 
-    implementation(projects.swissknifeKotlinExtensions)
+    implementation(projects.kotlinExtensions)
 }

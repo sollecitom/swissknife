@@ -1,11 +1,11 @@
 dependencies {
-    api(projects.swissknifeSqlDomain)
+    api(projects.sqlDomain)
     api(libs.r2dbc.spi)
     api(libs.r2dbc.pool)
     api(libs.spring.data.r2dbc)
-    api(projects.swissknifeCoreDomain)
+    api(projects.coreDomain)
 
     implementation(libs.kotlinx.coroutines.reactor)
 
-    implementation(projects.swissknifeKotlinExtensions)
+    implementation(projects.kotlinExtensions)
 }

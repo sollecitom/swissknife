@@ -1,4 +1,4 @@
 dependencies {
-    api(projects.swissknifeComplianceCheckerDomain)
-    api(projects.swissknifeTestUtils)
+    api(projects.complianceCheckerDomain)
+    api(projects.testUtils)
 }

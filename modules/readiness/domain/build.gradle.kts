@@ -1,3 +1,3 @@
 dependencies {
-    api(projects.swissknifeCoreDomain)
+    api(projects.coreDomain)
 }

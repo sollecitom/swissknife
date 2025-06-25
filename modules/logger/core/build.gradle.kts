@@ -5,5 +5,5 @@ dependencies {
 
     implementation(libs.org.json)
 
-    testImplementation(projects.swissknifeTestUtils)
+    testImplementation(projects.testUtils)
 }

@@ -1,6 +1,6 @@
 dependencies {
-    api(projects.swissknifeMessagingDomain)
-    api(projects.swissknifeCoreTestUtils)
+    api(projects.messagingDomain)
+    api(projects.coreTestUtils)
 
-    implementation(projects.swissknifePulsarUtils)
+    implementation(projects.pulsarUtils)
 }

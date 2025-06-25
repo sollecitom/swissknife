@@ -1,5 +1,5 @@
 dependencies {
     api(platform(libs.opentelemetry.bom))
-    api(projects.swissknifeOpentelemetryCore)
+    api(projects.opentelemetryCore)
     api(libs.opentelemetry.exporter.otlp)
 }

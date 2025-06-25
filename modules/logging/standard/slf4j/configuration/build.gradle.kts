@@ -1,7 +1,7 @@
 dependencies {
-    api(projects.swissknifeLoggingStandardConfiguration)
-    runtimeOnly(projects.swissknifeLoggerSlf4jAdapter)
+    api(projects.loggingStandardConfiguration)
+    runtimeOnly(projects.loggerSlf4jAdapter)
 
-    testImplementation(projects.swissknifeTestUtils)
-    testImplementation(projects.swissknifeJsonTestUtils)
+    testImplementation(projects.testUtils)
+    testImplementation(projects.jsonTestUtils)
 }

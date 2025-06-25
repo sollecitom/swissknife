@@ -1,10 +1,10 @@
 dependencies {
-    api(projects.swissknifeOpenapiCheckingChecker)
-    api(projects.swissknifeOpenapiBuilder)
-    api(projects.swissknifeTestUtils)
-    api(projects.swissknifeComplianceCheckerTestUtils)
+    api(projects.openapiCheckingChecker)
+    api(projects.openapiBuilder)
+    api(projects.testUtils)
+    api(projects.complianceCheckerTestUtils)
 
-    implementation(projects.swissknifeKotlinExtensions)
+    implementation(projects.kotlinExtensions)
 
-    testImplementation(projects.swissknifeResourceUtils)
+    testImplementation(projects.resourceUtils)
 }

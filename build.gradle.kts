@@ -10,7 +10,6 @@ import com.palantir.gradle.gitversion.GitVersionPlugin
 import com.palantir.gradle.gitversion.VersionDetails
 import groovy.lang.Closure
 import sollecitom.plugins.Plugins
-import sollecitom.plugins.ProjectSettings
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -40,24 +39,22 @@ apply<GitVersionPlugin>()
 apply<DependencyUpdateConvention>()
 
 val parentProject = this
-val currentVersion: String by project
+val projectGroup: String by properties
+val currentVersion: String by properties
 val versionDetails: Closure<VersionDetails> by extra
 val gitVersion = versionDetails()
-val libsFolder: Path = rootProject.projectDir.path.let { Paths.get(it) }.resolve("libs")
-val servicesFolder: Path = rootProject.projectDir.path.let { Paths.get(it) }.resolve("services")
-val toolsFolder: Path = rootProject.projectDir.path.let { Paths.get(it) }.resolve("tools")
-val resourceFolder: Path = rootProject.projectDir.path.let { Paths.get(it) }.resolve("resources")
+val publicationsFolder: Path = rootProject.projectDir.path.let { Paths.get(it) }.resolve("modules")
 
-fun Project.isLibrary() = projectDir.path.let { Paths.get(it) }.startsWith(libsFolder)
+fun Project.shouldBePublished() = projectDir.path.let { Paths.get(it) }.startsWith(publicationsFolder)
 
 apply<AggregateTestMetricsConventions>()
 
 allprojects {
 
-    project.extra["gitVersion"] = gitVersion
-
-    group = ProjectSettings.groupId
+    group = projectGroup
     version = currentVersion
+
+    project.extra["gitVersion"] = gitVersion
 
     repositories { RepositoryConfiguration.Modules.apply(this, project) }
 
@@ -72,7 +69,7 @@ allprojects {
         isReproducibleFileOrder = true
     }
 
-    if (isLibrary()) {
+    if (shouldBePublished()) {
         apply<MavenPublishConvention>()
     }
 

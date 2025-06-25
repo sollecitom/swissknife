@@ -1,8 +1,8 @@
 dependencies {
-    testImplementation(projects.swissknifeOpenapiValidationRequestValidator)
-    testImplementation(projects.swissknifeOpenapiValidationRequestValidatorTestUtils)
-    testImplementation(projects.swissknifeOpenapiBuilder)
-    testImplementation(projects.swissknifeKotlinExtensions)
-    testImplementation(projects.swissknifeResourceUtils)
-    testImplementation(projects.swissknifeLoggingStandardSlf4jConfiguration)
+    testImplementation(projects.openapiValidationRequestValidator)
+    testImplementation(projects.openapiValidationRequestValidatorTestUtils)
+    testImplementation(projects.openapiBuilder)
+    testImplementation(projects.kotlinExtensions)
+    testImplementation(projects.resourceUtils)
+    testImplementation(projects.loggingStandardSlf4jConfiguration)
 }

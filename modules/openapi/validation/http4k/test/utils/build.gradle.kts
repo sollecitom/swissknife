@@ -1,7 +1,7 @@
 dependencies {
-    api(projects.swissknifeOpenapiValidationHttp4kValidator)
-    api(projects.swissknifeOpenapiValidationRequestValidatorTestUtils)
-    api(projects.swissknifeTestUtils)
+    api(projects.openapiValidationHttp4kValidator)
+    api(projects.openapiValidationRequestValidatorTestUtils)
+    api(projects.testUtils)
 
-    implementation(projects.swissknifeKotlinExtensions)
+    implementation(projects.kotlinExtensions)
 }

@@ -1,5 +1,5 @@
 dependencies {
-    api(projects.swissknifeNatsClient)
-    api(projects.swissknifeTestContainersUtils)
-    api(projects.swissknifeCoreTestUtils)
+    api(projects.natsClient)
+    api(projects.testContainersUtils)
+    api(projects.coreTestUtils)
 }

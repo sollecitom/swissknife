@@ -1,9 +1,9 @@
 dependencies {
-    api(projects.swissknifeProtectedValueDomain)
-    api(projects.swissknifeCryptographyDomain)
+    api(projects.protectedValueDomain)
+    api(projects.cryptographyDomain)
 
-    implementation(projects.swissknifeCryptographyImplementationBouncyCastle)
+    implementation(projects.cryptographyImplementationBouncyCastle)
 
-    testImplementation(projects.swissknifeCorrelationCoreTestUtils)
-    testImplementation(projects.swissknifeTestUtils)
+    testImplementation(projects.correlationCoreTestUtils)
+    testImplementation(projects.testUtils)
 }

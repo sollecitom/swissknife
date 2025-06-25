@@ -1,11 +1,11 @@
 dependencies {
-    api(projects.swissknifeWebServiceDomain)
-    api(projects.swissknifeWebApiUtils)
-    api(projects.swissknifeTestUtils)
+    api(projects.webServiceDomain)
+    api(projects.webApiUtils)
+    api(projects.testUtils)
     api(platform(libs.http4k.bom))
     api(libs.http4k.client.apache.async)
-    api(projects.swissknifeOpenapiValidationHttp4kTestUtils)
-    api(projects.swissknifeCoreTestUtils)
+    api(projects.openapiValidationHttp4kTestUtils)
+    api(projects.coreTestUtils)
 
-    implementation(projects.swissknifeKotlinExtensions)
+    implementation(projects.kotlinExtensions)
 }

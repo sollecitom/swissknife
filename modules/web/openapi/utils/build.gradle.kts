@@ -1,5 +1,5 @@
 dependencies {
-    api(projects.swissknifeWebApiUtils)
+    api(projects.webApiUtils)
 
-    implementation(projects.swissknifeOpenapiProvider)
+    implementation(projects.openapiProvider)
 }

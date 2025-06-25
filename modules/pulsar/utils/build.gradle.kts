@@ -2,13 +2,13 @@ dependencies {
     api(libs.pulsar.client.admin) {
         exclude(group = "com.google.protobuf", module = "protobuf-java")
     }
-    api(projects.swissknifeCoreDomain)
-    api(projects.swissknifeMessagingDomain)
-    api(projects.swissknifeReadinessDomain)
-    api(projects.swissknifeConfigurationUtils)
-    api(projects.swissknifeJsonUtils)
+    api(projects.coreDomain)
+    api(projects.messagingDomain)
+    api(projects.readinessDomain)
+    api(projects.configurationUtils)
+    api(projects.jsonUtils)
 
-    implementation(projects.swissknifeLoggerCore)
+    implementation(projects.loggerCore)
 
-    testImplementation(projects.swissknifeCoreTestUtils)
+    testImplementation(projects.coreTestUtils)
 }

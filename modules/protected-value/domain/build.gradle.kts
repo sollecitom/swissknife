@@ -1,9 +1,9 @@
 dependencies {
-    api(projects.swissknifeCoreDomain)
-    api(projects.swissknifeCorrelationCoreDomain)
+    api(projects.coreDomain)
+    api(projects.correlationCoreDomain)
 
-    implementation(projects.swissknifeLoggerCore)
+    implementation(projects.loggerCore)
 
-    testImplementation(projects.swissknifeCoreTestUtils)
-    testImplementation(projects.swissknifeCorrelationCoreTestUtils)
+    testImplementation(projects.coreTestUtils)
+    testImplementation(projects.correlationCoreTestUtils)
 }

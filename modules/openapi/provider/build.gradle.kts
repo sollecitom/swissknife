@@ -1,7 +1,7 @@
 dependencies {
-    api(projects.swissknifeOpenapiParser)
-    api(projects.swissknifeCoreDomain)
+    api(projects.openapiParser)
+    api(projects.coreDomain)
 
-    implementation(projects.swissknifeResourceUtils)
-    implementation(projects.swissknifeLoggerCore)
+    implementation(projects.resourceUtils)
+    implementation(projects.loggerCore)
 }

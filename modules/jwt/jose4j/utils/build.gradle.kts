@@ -1,5 +1,5 @@
 dependencies {
     api(libs.jose4j)
-    api(projects.swissknifeJwtDomain)
-    api(projects.swissknifeKotlinExtensions)
+    api(projects.jwtDomain)
+    api(projects.kotlinExtensions)
 }

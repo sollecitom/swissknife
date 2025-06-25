@@ -1,4 +1,4 @@
 dependencies {
-    api(projects.swissknifeMessagingDomain)
-    api(projects.swissknifeConfigurationUtils)
+    api(projects.messagingDomain)
+    api(projects.configurationUtils)
 }

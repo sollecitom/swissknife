@@ -1,13 +1,13 @@
 dependencies {
     api(platform(libs.http4k.bom))
-    api(projects.swissknifeHttp4kUtils)
+    api(projects.http4kUtils)
 
-    implementation(projects.swissknifeKotlinExtensions)
+    implementation(projects.kotlinExtensions)
 
     testImplementation(libs.http4k.server.jetty)
-    testImplementation(projects.swissknifeTestUtils)
+    testImplementation(projects.testUtils)
     testImplementation(libs.http4k.client.apache)
-    testImplementation(projects.swissknifeLoggerCore)
+    testImplementation(projects.loggerCore)
 
-    testRuntimeOnly(projects.swissknifeLoggerSlf4jAdapter)
+    testRuntimeOnly(projects.loggerSlf4jAdapter)
 }
