@@ -4,10 +4,10 @@ initSubmodule submodule:
     git submodule update --init --recursive {{submodule}}
 
 push:
-    git add . && git commit -m "WIP" && git push --recurse-submodules=on-demand origin main
+    git add . && git commit -m "WIP"
 
 pull:
-    git submodule update --recursive --remote
+    git pull
 
 build:
     ./gradlew build
@@ -26,6 +26,3 @@ updateGradle:
 
 updateAll:
     just updateDependencies && just updateGradle
-
-publishLibraries:
-    ./gradlew build publishToMavenLocal
