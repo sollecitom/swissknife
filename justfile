@@ -10,7 +10,7 @@ build:
     ./gradlew build
 
 rebuild:
-    ./gradlew build --refresh-dependencies --rerun-tasks
+    ./gradlew clean build --refresh-dependencies --rerun-tasks
 
 publish:
     ./gradlew publishToMavenLocal
