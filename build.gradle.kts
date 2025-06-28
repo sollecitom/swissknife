@@ -24,7 +24,6 @@ buildscript {
 }
 
 repositories {
-    mavenLocal()
     RepositoryConfiguration.BuildScript.apply(this)
 }
 
