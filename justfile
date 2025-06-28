@@ -1,8 +1,5 @@
 #!/usr/bin/env just --justfile
 
-initSubmodule submodule:
-    git submodule update --init --recursive {{submodule}}
-
 push:
     git add . && git commit -m "WIP"
 
