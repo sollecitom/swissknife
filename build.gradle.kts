@@ -36,6 +36,7 @@ plugins {
 
 apply<GitVersionPlugin>()
 apply<DependencyUpdateConvention>()
+apply<KotlinTaskConventions>()
 
 val parentProject = this
 val projectGroup: String by properties

@@ -1,7 +1,4 @@
 [versions]
-# buildSrc libraries
-semver4j = "3.1.0"
-# libraries
 kotlin = "2.2.0"
 kotlinx-coroutines = "1.10.2"
 slf4j = "2.0.17"
@@ -28,7 +25,6 @@ log4j = "2.25.0"
 zero-allocation-hashing = "0.27ea0"
 jnats = "2.21.4"
 jose4j = "0.9.6"
-jackson-datatype = "2.19.1"
 micrometer = "1.15.1"
 postgres = "42.7.7"
 r2dbc-spi = "1.0.0.RELEASE"
@@ -44,12 +40,9 @@ grafana-otel-lgtm = "1.21.3"
 # plugins
 sollecitom-gradle-plugins = "1.0.0-SNAPSHOT"
 palantir-git-plugin = "4.0.0"
-version-catalog-report-plugin = "0.52.0"
-version-catalog-update-plugin = "1.0.0"
-jib-plugin = "3.4.4"
 
 [libraries]
-semver4j = { module = "com.vdurmont:semver4j", version.ref = "semver4j" }
+sollecitom-gradle-plugins = { module = "sollecitom.gradle-plugins:gradle-plugins", version.ref = "sollecitom-gradle-plugins" }
 kotlinx-coroutines-bom = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-bom", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core" }
 kotlinx-coroutines-jdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8" }
@@ -65,9 +58,7 @@ http4k-core = { module = "org.http4k:http4k-core" }
 http4k-ops-micrometer = { module = "org.http4k:http4k-ops-micrometer" }
 http4k-platform-k8s = { module = "org.http4k:http4k-platform-k8s" }
 http4k-format-core = { module = "org.http4k:http4k-format-core" }
-http4k-format-jackson = { module = "org.http4k:http4k-format-jackson" }
 http4k-format-jackson-yaml = { module = "org.http4k:http4k-format-jackson-yaml" }
-jackson-datatype = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson-datatype" }
 http4k-server-jetty = { module = "org.http4k:http4k-server-jetty" }
 http4k-client-apache = { module = "org.http4k:http4k-client-apache" }
 http4k-client-apache-async = { module = "org.http4k:http4k-client-apache-async" }
@@ -96,8 +87,6 @@ pulsar-client-admin = { module = "org.apache.pulsar:pulsar-client-admin", versio
 apache-avro-core = { module = "org.apache.avro:avro", version.ref = "avro" }
 yet-another-user-agent-analyzer = { module = "nl.basjes.parse.useragent:yauaa", version.ref = "yauaa" }
 log4j-to-slf4j = { module = "org.apache.logging.log4j:log4j-to-slf4j", version.ref = "log4j" }
-com-github-ben-manes-versions = { module = "com.github.ben-manes.versions:com.github.ben-manes.versions.gradle.plugin", version.ref = "version-catalog-report-plugin" }
-nl-littlerobots-version-catalog-update = { module = "nl.littlerobots.version-catalog-update:nl.littlerobots.version-catalog-update.gradle.plugin", version.ref = "version-catalog-update-plugin" }
 zero-allocation-hashing = { module = "net.openhft:zero-allocation-hashing", version.ref = "zero-allocation-hashing" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 r2dbc-pool = { module = "io.r2dbc:r2dbc-pool", version.ref = "r2dbc-pool" }
@@ -115,12 +104,7 @@ jnats = { module = "io.nats:jnats", version.ref = "jnats" }
 jose4j = { module = "org.bitbucket.b_c:jose4j", version.ref = "jose4j" }
 classgraph = { module = "io.github.classgraph:classgraph", version.ref = "classgraph" }
 liquibase-slf4j = { module = "com.mattbertolini:liquibase-slf4j", version.ref = "liquibase-slf4j" }
-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-jib-gradle-plugin = { module = "com.google.cloud.tools:jib-gradle-plugin", version.ref = "jib-plugin" }
-sollecitom-gradle-plugins = { module = "sollecitom.gradle-plugins:gradle-plugins", version.ref = "sollecitom-gradle-plugins" }
 
 [plugins]
-com-github-ben-manes-versions = { id = "com.github.ben-manes.versions", version.ref = "version-catalog-report-plugin" }
-com-palantir-git-version = { id = "com.palantir.git-version", version.ref = "palantir-git-plugin" }
-nl-littlerobots-version-catalog-update = { id = "nl.littlerobots.version-catalog-update", version.ref = "version-catalog-update-plugin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+com-palantir-git-version = { id = "com.palantir.git-version", version.ref = "palantir-git-plugin" }
