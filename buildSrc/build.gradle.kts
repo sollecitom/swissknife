@@ -16,6 +16,5 @@ plugins {
 }
 
 repositories {
-    gradlePluginPortal()
     RepositoryConfiguration.BuildScript.apply(this)
 }
