@@ -1,6 +1,6 @@
 package sollecitom.libs.swissknife.jwt.jose4j.utils
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import org.jose4j.jwt.JwtClaims
 import org.jose4j.jwt.NumericDate
 

@@ -20,7 +20,7 @@ import sollecitom.libs.swissknife.correlation.core.test.utils.access.origin.crea
 import sollecitom.libs.swissknife.correlation.core.test.utils.access.unauthenticated
 import sollecitom.libs.swissknife.correlation.core.test.utils.toggles.create
 import sollecitom.libs.swissknife.correlation.core.test.utils.trace.create
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import java.util.*
 
 context(_: UniqueIdGenerator, time: TimeGenerator)

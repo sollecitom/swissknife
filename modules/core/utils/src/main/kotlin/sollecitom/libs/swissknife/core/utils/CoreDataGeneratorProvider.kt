@@ -7,7 +7,7 @@ import sollecitom.libs.swissknife.core.domain.identity.factory.invoke
 import sollecitom.libs.swissknife.kotlin.extensions.number.toByteArray
 import sollecitom.libs.swissknife.kotlin.extensions.time.toJavaClock
 import sollecitom.libs.swissknife.logger.core.loggable.Loggable
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import org.http4k.config.Environment
 import org.http4k.config.EnvironmentKey
 import java.security.SecureRandom

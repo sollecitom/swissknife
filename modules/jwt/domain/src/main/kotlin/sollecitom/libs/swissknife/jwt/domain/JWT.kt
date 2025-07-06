@@ -1,6 +1,6 @@
 package sollecitom.libs.swissknife.jwt.domain
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import org.json.JSONObject
 
 interface JWT {

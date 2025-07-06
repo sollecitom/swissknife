@@ -7,7 +7,7 @@ import sollecitom.libs.swissknife.core.utils.UniqueIdGenerator
 import sollecitom.libs.swissknife.correlation.core.domain.trace.ExternalInvocationTrace
 import sollecitom.libs.swissknife.correlation.core.domain.trace.InvocationTrace
 import sollecitom.libs.swissknife.correlation.core.domain.trace.Trace
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import sollecitom.libs.swissknife.core.domain.identity.factory.invoke
 import kotlin.time.Duration.Companion.seconds
 

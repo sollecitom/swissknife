@@ -1,7 +1,7 @@
 package sollecitom.libs.swissknife.core.test.utils.stubs
 
 import sollecitom.libs.swissknife.core.utils.TimeGenerator
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlin.time.Duration
 
 context(generator: TimeGenerator)

@@ -1,7 +1,7 @@
 package sollecitom.libs.swissknife.correlation.core.domain.access.authentication
 
 import sollecitom.libs.swissknife.core.domain.identity.Id
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 sealed interface Authentication {
 

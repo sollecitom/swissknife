@@ -1,7 +1,7 @@
 package sollecitom.libs.swissknife.sql.postgres.migrator.liquibase
 
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 import liquibase.Scope
 import liquibase.database.Database
 import liquibase.executor.Executor

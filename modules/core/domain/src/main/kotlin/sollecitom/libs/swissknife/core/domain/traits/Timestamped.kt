@@ -1,6 +1,6 @@
 package sollecitom.libs.swissknife.core.domain.traits
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 interface Timestamped {
 

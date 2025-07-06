@@ -5,7 +5,7 @@ import sollecitom.libs.swissknife.core.utils.TimeGenerator
 import sollecitom.libs.swissknife.core.utils.UniqueIdGenerator
 import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationContext
 import sollecitom.libs.swissknife.ddd.domain.Event
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 context(time: TimeGenerator, ids: UniqueIdGenerator)
 fun Event.Metadata.Companion.create(id: Id = ids.newId.external(), timestamp: Instant = time.now(), context: Event.Context = Event.Context.create()) = Event.Metadata(id, timestamp, context)

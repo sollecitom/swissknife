@@ -1,7 +1,7 @@
 package sollecitom.libs.swissknife.core.domain.identity
 
 import com.github.f4b6a3.ksuid.Ksuid
-import kotlinx.datetime.toKotlinInstant
+import kotlin.time.toKotlinInstant
 
 class KSUID internal constructor(private val delegate: Ksuid) : SortableTimestampedUniqueIdentifier<KSUID> {
 

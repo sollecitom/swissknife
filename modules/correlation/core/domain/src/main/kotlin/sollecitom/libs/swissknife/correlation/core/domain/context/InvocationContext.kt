@@ -1,6 +1,6 @@
 package sollecitom.libs.swissknife.correlation.core.domain.context
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import sollecitom.libs.swissknife.core.domain.identity.Id
 import sollecitom.libs.swissknife.core.domain.identity.factory.invoke
 import sollecitom.libs.swissknife.core.domain.text.Name

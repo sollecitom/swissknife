@@ -1,6 +1,0 @@
-[submodule "gradle-plugins"]
-	path = gradle-plugins
-	url = https://github.com/sollecitom/gradle-plugins
-[submodule "modulith-example"]
-	path = modulith-example
-	url = https://github.com/sollecitom/modulith-example

@@ -2,7 +2,7 @@ package sollecitom.libs.swissknife.jwt.jose4j.processor
 
 import sollecitom.libs.swissknife.jwt.domain.JWT
 import sollecitom.libs.swissknife.jwt.domain.StringOrURI
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import org.jose4j.jwt.JwtClaims
 import org.json.JSONObject
 

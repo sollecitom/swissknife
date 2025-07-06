@@ -1,6 +1,6 @@
 package sollecitom.libs.swissknife.json.utils
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import org.json.JSONArray
 import org.json.JSONObject
 import java.math.BigDecimal

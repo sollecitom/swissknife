@@ -16,7 +16,7 @@ import sollecitom.libs.swissknife.correlation.core.test.utils.access.session.fed
 import sollecitom.libs.swissknife.correlation.core.test.utils.access.session.simple
 import sollecitom.libs.swissknife.correlation.core.test.utils.customer.create
 import sollecitom.libs.swissknife.correlation.core.test.utils.tenancy.create
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import sollecitom.libs.swissknife.core.domain.identity.factory.invoke
 import kotlin.time.Duration.Companion.minutes
 

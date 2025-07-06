@@ -15,7 +15,7 @@ import sollecitom.libs.swissknife.messaging.domain.message.converter.asMessage
 import sollecitom.libs.swissknife.messaging.domain.topic.Topic
 import sollecitom.libs.swissknife.messaging.test.utils.topic.create
 import kotlinx.coroutines.*
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 

@@ -1,7 +1,7 @@
 package sollecitom.libs.swissknife.core.domain.identity
 
 import com.github.f4b6a3.ulid.Ulid
-import kotlinx.datetime.toKotlinInstant
+import kotlin.time.toKotlinInstant
 
 class ULID internal constructor(private val delegate: Ulid) : SortableTimestampedUniqueIdentifier<ULID> {
 

@@ -13,7 +13,7 @@ import sollecitom.libs.swissknife.correlation.core.domain.context.externalInvoca
 import sollecitom.libs.swissknife.correlation.core.domain.context.wasTriggeredByInvocationId
 import sollecitom.libs.swissknife.correlation.core.domain.trace.InvocationTrace
 import sollecitom.libs.swissknife.logger.core.loggable.Loggable
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import sollecitom.libs.swissknife.core.domain.identity.factory.invoke
 
 interface Event : Happening, Identifiable, Timestamped, Contextual<Event.Context> {

@@ -7,7 +7,7 @@ import sollecitom.libs.swissknife.core.domain.identity.factory.Factory
 import sollecitom.libs.swissknife.core.domain.identity.utils.invoke
 import sollecitom.libs.swissknife.kotlin.extensions.time.fixed
 import sollecitom.libs.swissknife.kotlin.extensions.time.truncatedToSeconds
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS

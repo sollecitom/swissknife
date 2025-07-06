@@ -4,7 +4,7 @@ import sollecitom.libs.swissknife.core.domain.identity.factory.ksuid.KsuidVarian
 import sollecitom.libs.swissknife.core.domain.identity.factory.string.StringFactoryAdapter
 import sollecitom.libs.swissknife.core.domain.identity.factory.ulid.UlidVariantSelectorAdapter
 import sollecitom.libs.swissknife.core.domain.identity.factory.uuid.UuidVariantSelectorAdapter
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlin.random.Random
 
 private class UniqueIdFactoryAdapter(random: Random = Random, clock: Clock = Clock.System) : UniqueIdFactory {

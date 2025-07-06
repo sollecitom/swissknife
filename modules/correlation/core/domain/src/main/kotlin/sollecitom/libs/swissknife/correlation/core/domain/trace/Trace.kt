@@ -1,6 +1,6 @@
 package sollecitom.libs.swissknife.correlation.core.domain.trace
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlin.time.Duration
 
 data class Trace(val invocation: InvocationTrace, val parent: InvocationTrace = invocation, val originating: InvocationTrace = parent, val external: ExternalInvocationTrace) {

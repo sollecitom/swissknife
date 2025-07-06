@@ -3,9 +3,9 @@ package sollecitom.libs.swissknife.core.domain.identity.factory.ksuid
 import sollecitom.libs.swissknife.core.domain.identity.KSUID
 import sollecitom.libs.swissknife.core.domain.identity.factory.SortableTimestampedUniqueIdentifierFactory
 import com.github.f4b6a3.ksuid.KsuidFactory
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlinx.datetime.toJavaInstant
+import kotlin.time.Clock
+import kotlin.time.Instant
+import kotlin.time.toJavaInstant
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
 

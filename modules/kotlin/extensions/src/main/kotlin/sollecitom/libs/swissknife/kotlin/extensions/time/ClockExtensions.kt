@@ -2,6 +2,9 @@ package sollecitom.libs.swissknife.kotlin.extensions.time
 
 import kotlinx.datetime.*
 import java.time.ZoneId
+import kotlin.time.Clock
+import kotlin.time.Instant
+import kotlin.time.toJavaInstant
 import java.time.Clock as JavaClock
 
 fun Clock.localDateTime(timeZone: TimeZone = TimeZone.currentSystemDefault()): LocalDateTime = now().toLocalDateTime(timeZone)

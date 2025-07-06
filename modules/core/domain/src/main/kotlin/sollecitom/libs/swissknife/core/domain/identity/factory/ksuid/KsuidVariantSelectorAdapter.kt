@@ -1,6 +1,6 @@
 package sollecitom.libs.swissknife.core.domain.identity.factory.ksuid
 
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlin.random.Random
 
 internal class KsuidVariantSelectorAdapter(random: Random, clock: Clock) : KsuidVariantSelector {

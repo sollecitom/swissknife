@@ -1,8 +1,8 @@
 package sollecitom.libs.swissknife.core.domain.identity.factory
 
 import sollecitom.libs.swissknife.core.domain.identity.SortableTimestampedUniqueIdentifier
-import kotlinx.datetime.Instant
-import kotlinx.datetime.toKotlinInstant
+import kotlin.time.Instant
+import kotlin.time.toKotlinInstant
 import java.time.Instant as JavaInstant
 
 interface SortableTimestampedUniqueIdentifierFactory<ID : SortableTimestampedUniqueIdentifier<ID>> {
