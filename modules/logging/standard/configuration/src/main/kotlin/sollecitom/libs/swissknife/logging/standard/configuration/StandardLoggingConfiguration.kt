@@ -1,11 +1,14 @@
 package sollecitom.libs.swissknife.logging.standard.configuration
 
 import org.http4k.config.Environment
-import org.http4k.config.MapEnvironment
+import org.http4k.lens.LensExtractor
 import sollecitom.libs.swissknife.logger.core.*
 import sollecitom.libs.swissknife.logger.core.appender.PrintStreamAppender
 import sollecitom.libs.swissknife.logger.core.defaults.DefaultFormatToString
 import sollecitom.libs.swissknife.logger.json.formatter.DefaultFormatToJson
+import java.io.Reader
+import java.util.*
+import java.util.Locale.ROOT
 
 object StandardLoggingConfiguration {
 
@@ -68,11 +71,36 @@ object StandardLoggingConfiguration {
         const val LOGGING_LEVEL_OVERRIDES_ENV_VARIABLE = "LOGGING_LEVELS"
         const val FORMAT_ENV_VARIABLE = "LOGGING_FORMAT"
     }
+
+    private fun defaultReadConfigurationValue(key: String): String? {
+        val environment = MapEnvironment.from(System.getProperties()) overrides MapEnvironment.from(System.getenv().toProperties())
+        return environment[key]
+    }
 }
 
-private fun defaultReadConfigurationValue(key: String): String? {
-    val environment = MapEnvironment.from(System.getProperties()) overrides MapEnvironment.from(System.getenv().toProperties())
-    return environment[key]
+private class MapEnvironment private constructor( // TODO replace with HTTP4K one once they fix the null companion object
+    private val contents: Map<String, String>,
+    override val separator: String = ","
+) : Environment {
+    override operator fun <T> get(key: LensExtractor<Environment, T>) = key(this)
+    override operator fun get(key: String): String? = contents[key.convertFromKey()]
+    override operator fun set(key: String, value: String) =
+        MapEnvironment(contents + (key.convertFromKey() to value), separator)
+
+    override fun minus(key: String): Environment = MapEnvironment(contents - key.convertFromKey(), separator)
+    override fun keys() = contents.keys
+
+    companion object {
+        fun from(properties: Properties, separator: String = ","): Environment = MapEnvironment(
+            properties.entries
+                .fold(emptyMap()) { acc, (k, v) -> acc + (k.toString().convertFromKey() to v.toString()) }, separator
+        )
+
+        fun from(reader: Reader, separator: String = ","): Environment =
+            from(Properties().apply { load(reader) }, separator)
+
+        private fun String.convertFromKey() = replace("_", "-").replace(".", "-").lowercase(ROOT)
+    }
 }
 
 private class CombinedLoggingCustomizer(override val minimumLoggingLevel: LoggingLevel, override val minimumLoggingLevelOverrides: Map<String, LoggingLevel>, override val format: FormatLogEntry<String>) : LoggingCustomizer {
