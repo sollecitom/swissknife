@@ -1,8 +1,8 @@
 [versions]
-kotlin = "2.2.20"
+kotlin = "2.2.21"
 kotlinx-coroutines = "1.10.2"
 slf4j = "2.0.17"
-http4k = "6.19.0.0"
+http4k = "6.20.0.3"
 junit-jupiter = "6.0.0"
 assertk = "0.28.1"
 kotlinx-datetime = "0.7.1"
@@ -38,7 +38,7 @@ opentelemetry = "1.55.0"
 grafana-otel-lgtm = "1.21.3"
 # plugins
 sollecitom-gradle-plugins = "1.0.0-SNAPSHOT"
-palantir-git-plugin = "4.0.0"
+palantir-git-plugin = "4.1.0"
 
 [libraries]
 sollecitom-gradle-plugins-base = { module = "sollecitom.gradle-plugins:base", version.ref = "sollecitom-gradle-plugins" }
