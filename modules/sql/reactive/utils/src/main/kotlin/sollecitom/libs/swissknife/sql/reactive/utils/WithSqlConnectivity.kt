@@ -55,7 +55,7 @@ fun Readable.debugPrintRowContent(): Readable {
     return this
 }
 
-suspend fun <T> ConnectionAccessor.withConnection(action: suspend Connection.() -> T): T = inConnection { mono { action(it) } }.awaitSingle()
+suspend fun <T : Any> ConnectionAccessor.withConnection(action: suspend Connection.() -> T): T = inConnection { mono { action(it) } }.awaitSingle()
 
 context(connected: WithSqlConnectivity)
 suspend fun withConnection(action: suspend Connection.() -> Unit) = connected.sqlClient.withConnection(action)

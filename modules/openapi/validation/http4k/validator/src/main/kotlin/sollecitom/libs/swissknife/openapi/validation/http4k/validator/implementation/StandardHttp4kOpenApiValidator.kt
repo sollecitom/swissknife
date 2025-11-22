@@ -2,6 +2,7 @@ package sollecitom.libs.swissknife.openapi.validation.http4k.validator.implement
 
 import com.atlassian.oai.validator.OpenApiInteractionValidator
 import com.atlassian.oai.validator.model.SimpleRequest
+import com.atlassian.oai.validator.model.SimpleRequest.*
 import com.atlassian.oai.validator.model.SimpleResponse
 import com.atlassian.oai.validator.report.ValidationReport
 import sollecitom.libs.swissknife.http4k.utils.contentType
@@ -50,8 +51,9 @@ internal class StandardHttp4kOpenApiValidator(openApi: OpenAPI, rejectUnknownReq
             Method.OPTIONS -> SimpleRequest.Builder::options
             Method.TRACE -> SimpleRequest.Builder::trace
             Method.PATCH -> SimpleRequest.Builder::patch
-            Method.PURGE -> { path -> SimpleRequest.Builder("purge", path) }
+            Method.PURGE -> { path -> Builder("purge", path) }
             Method.HEAD -> SimpleRequest.Builder::head
+            Method.QUERY -> { path -> Builder("query", path) }
         }.invoke(uri.path)
 
         with(builder) {
