@@ -36,6 +36,8 @@ liquibase-slf4j = "5.1.0"
 classgraph = "4.8.184"
 opentelemetry = "1.57.0"
 grafana-otel-lgtm = "1.21.4"
+commons-codec = "1.20.0"
+
 # plugins
 sollecitom-gradle-plugins = "1.0.0-SNAPSHOT"
 palantir-git-plugin = "4.2.0"
@@ -104,6 +106,7 @@ jnats = { module = "io.nats:jnats", version.ref = "jnats" }
 jose4j = { module = "org.bitbucket.b_c:jose4j", version.ref = "jose4j" }
 classgraph = { module = "io.github.classgraph:classgraph", version.ref = "classgraph" }
 liquibase-slf4j = { module = "com.mattbertolini:liquibase-slf4j", version.ref = "liquibase-slf4j" }
+commons-codec = { module = "commons-codec:commons-codec", version.ref = "commons-codec" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

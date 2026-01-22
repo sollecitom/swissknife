@@ -6,6 +6,8 @@ value class Hash128Result internal constructor(private val parts: LongArray) {
     val firstHalf: Long get() = parts[0]
     val secondHalf: Long get() = parts[1]
 
+    val value: String get() = "$firstHalf$secondHalf"
+
     operator fun component1(): Long = firstHalf
 
     operator fun component2(): Long = secondHalf
