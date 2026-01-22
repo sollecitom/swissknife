@@ -7,7 +7,7 @@ import assertk.assertions.isNotEqualTo
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
-import sollecitom.libs.swissknife.hashing.utils.HashVariableResult
+import sollecitom.libs.swissknife.hashing.utils.HashBinaryResult
 import sollecitom.libs.swissknife.kotlin.extensions.text.strings
 import kotlin.random.Random
 
@@ -67,12 +67,12 @@ private class Blake3HashingExampleTest {
         assertThat(hash.bytes.toHexString(format = HexFormat.Default)).isEqualTo(expectedHashHex)
     }
 
-    private fun Assert<HashVariableResult>.matches(expected: HashVariableResult) = given { actual ->
+    private fun Assert<HashBinaryResult>.matches(expected: HashBinaryResult) = given { actual ->
 
         assertThat(actual.bytes).isEqualTo(expected.bytes)
     }
 
-    private fun Assert<HashVariableResult>.doesNotMatch(expected: HashVariableResult) = given { actual ->
+    private fun Assert<HashBinaryResult>.doesNotMatch(expected: HashBinaryResult) = given { actual ->
 
         assertThat(actual.bytes).isNotEqualTo(expected.bytes)
     }
