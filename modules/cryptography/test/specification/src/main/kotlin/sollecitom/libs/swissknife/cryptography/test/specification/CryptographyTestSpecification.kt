@@ -105,7 +105,7 @@ interface CryptographyTestSpecification {
         val verifies = keyPair.public.verify(message, signature)
 
         assertThat(verifies).isTrue()
-        assertThat(signature.metadata::keyHash).isEqualTo(keyPair.private.hash)
+        assertThat(signature.metadata.keyHash.bytes).isEqualTo(keyPair.private.hash.bytes)
         assertThat(signature.metadata::algorithmName).isEqualTo(keyPair.private.algorithm)
 
         val notTheOriginalSigner = dilithium.keyPair(variant = DILITHIUM_5).public

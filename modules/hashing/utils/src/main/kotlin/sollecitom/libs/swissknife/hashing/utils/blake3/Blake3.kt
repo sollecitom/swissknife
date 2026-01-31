@@ -1,7 +1,8 @@
 package sollecitom.libs.swissknife.hashing.utils.blake3
 
+import sollecitom.libs.swissknife.hashing.utils.Hash
 import sollecitom.libs.swissknife.hashing.utils.HashFunction
-import sollecitom.libs.swissknife.hashing.utils.HashBinaryResult
+import sollecitom.libs.swissknife.hashing.utils.create
 import org.apache.commons.codec.digest.Blake3 as CommonsBlake3
 
 object Blake3 {
@@ -9,15 +10,15 @@ object Blake3 {
     const val MIN_HASH_LENGTH_BITES = 32
     const val KEY_LENGTH_BITES = 32
 
-    val hash256: HashFunction<HashBinaryResult> by lazy { hash256() }
+    val hash256: HashFunction<Hash> by lazy { hash256WithKey() }
 
-    fun hash256(key: ByteArray? = null): HashFunction<HashBinaryResult> = hashVariable(32, key)
+    fun hash256WithKey(key: ByteArray? = null): HashFunction<Hash> = hashVariable(MIN_HASH_LENGTH_BITES, key)
 
-    fun hashVariable(hashBytesLength: Int, key: ByteArray? = null): HashFunction<HashBinaryResult> = object : HashFunction<HashBinaryResult> {
+    fun hashVariable(hashBytesLength: Int, key: ByteArray? = null): HashFunction<Hash> = object : HashFunction<Hash> {
 
-        override fun invoke(bytes: ByteArray, offset: Int, length: Int): HashBinaryResult {
+        override fun invoke(bytes: ByteArray, offset: Int, length: Int): Hash {
             val hashBytes = blake3(bytes, hashBytesLength, offset, hashBytesLength, key)
-            return HashBinaryResult.create(hashBytes)
+            return Hash.create(hashBytes)
         }
     }
 

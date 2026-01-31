@@ -7,12 +7,12 @@ import assertk.assertions.isNotEqualTo
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
-import sollecitom.libs.swissknife.hashing.utils.HashBinaryResult
+import sollecitom.libs.swissknife.hashing.utils.Hash
 import sollecitom.libs.swissknife.kotlin.extensions.text.strings
 import kotlin.random.Random
 
 @TestInstance(PER_CLASS)
-private class Blake3HashingExampleTest {
+private class Blake3HashingExampleTests {
 
     private val WELL_KNOWN_DIGEST = "Hello World"
     private val WELL_KNOWN_KEY_HEX = "88eeb57b3cde41e9518830e813f27c87579ba1a615a81a9a806912fe34cfdb4f"
@@ -67,12 +67,12 @@ private class Blake3HashingExampleTest {
         assertThat(hash.bytes.toHexString(format = HexFormat.Default)).isEqualTo(expectedHashHex)
     }
 
-    private fun Assert<HashBinaryResult>.matches(expected: HashBinaryResult) = given { actual ->
+    private fun Assert<Hash>.matches(expected: Hash) = given { actual ->
 
         assertThat(actual.bytes).isEqualTo(expected.bytes)
     }
 
-    private fun Assert<HashBinaryResult>.doesNotMatch(expected: HashBinaryResult) = given { actual ->
+    private fun Assert<Hash>.doesNotMatch(expected: Hash) = given { actual ->
 
         assertThat(actual.bytes).isNotEqualTo(expected.bytes)
     }

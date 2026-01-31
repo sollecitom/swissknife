@@ -1,6 +1,6 @@
 package sollecitom.libs.swissknife.hashing.utils
 
-interface HashFunction<RESULT : Any> {
+interface HashFunction<out RESULT : Any> {
 
     operator fun invoke(bytes: ByteArray, offset: Int = 0, length: Int = bytes.size): RESULT
 }

@@ -1,5 +1,7 @@
 package sollecitom.libs.swissknife.cryptography.domain.asymmetric.signing
 
+import sollecitom.libs.swissknife.hashing.utils.Hash
+
 data class Signature(val bytes: ByteArray, val metadata: Metadata) {
 
     override fun equals(other: Any?): Boolean {
@@ -20,5 +22,5 @@ data class Signature(val bytes: ByteArray, val metadata: Metadata) {
         return result
     }
 
-    data class Metadata(val keyHash: Long, val algorithmName: String)
+    data class Metadata(val keyHash: Hash, val algorithmName: String)
 }
