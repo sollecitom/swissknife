@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.3.0"
+kotlin = "2.3.10"
 kotlinx-coroutines = "1.10.2"
 slf4j = "2.0.17"
 http4k = "6.27.0.0"
@@ -34,7 +34,7 @@ liquibase = "5.0.1"
 snakeyaml = "2.5"
 liquibase-slf4j = "5.1.0"
 classgraph = "4.8.184"
-opentelemetry = "1.58.0"
+opentelemetry = "1.59.0"
 grafana-otel-lgtm = "1.21.4"
 commons-codec = "1.21.0"
 # plugins
