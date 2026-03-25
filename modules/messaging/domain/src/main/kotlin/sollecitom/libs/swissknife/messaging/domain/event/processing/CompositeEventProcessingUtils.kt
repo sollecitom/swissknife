@@ -5,4 +5,4 @@ import sollecitom.libs.swissknife.ddd.domain.Event
 import sollecitom.libs.swissknife.messaging.domain.message.ReceivedMessage
 
 context(_: InvocationContext<*>)
-inline fun <EVENT : Event.Composite<DATA>, DATA : Event.Data> ReceivedMessage<EVENT>.processAsCompositeEvent(action: context(message: ReceivedMessage<*>) (data: DATA, event: EVENT) -> Unit): EventProcessingResult = runCatching { action(this, value.data, value) }.map { EventProcessingResult.Success }.getOrElse(Throwable::asProcessingFailure)
+inline fun <EVENT : Event.Composite<DATA>, DATA : Event.Data> ReceivedMessage<EVENT>.processAsCompositeEvent(action: context(ReceivedMessage<*>) (data: DATA, event: EVENT) -> Unit): EventProcessingResult = runCatching { action(this, value.data, value) }.map { EventProcessingResult.Success }.getOrElse(Throwable::asProcessingFailure)

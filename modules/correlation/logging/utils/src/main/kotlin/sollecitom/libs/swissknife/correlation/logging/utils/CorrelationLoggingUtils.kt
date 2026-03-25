@@ -6,4 +6,4 @@ import sollecitom.libs.swissknife.logger.core.withCoroutineLoggingContext
 
 fun InvocationContext<*>.toLoggingContext(convert: (InvocationContext<*>) -> String): Map<String, String> = mapOf("invocation" to convert(this@toLoggingContext))
 
-suspend inline fun <ACCESS : Access, T> withLoggingContext(invocationContext: InvocationContext<ACCESS>, noinline convert: (InvocationContext<*>) -> String, crossinline action: suspend context(context: InvocationContext<*>) () -> T): T = withCoroutineLoggingContext(invocationContext.toLoggingContext(convert)) { action(invocationContext) }
+suspend inline fun <ACCESS : Access, T> withLoggingContext(invocationContext: InvocationContext<ACCESS>, noinline convert: (InvocationContext<*>) -> String, crossinline action: suspend context(InvocationContext<*>) () -> T): T = withCoroutineLoggingContext(invocationContext.toLoggingContext(convert)) { action(invocationContext) }
