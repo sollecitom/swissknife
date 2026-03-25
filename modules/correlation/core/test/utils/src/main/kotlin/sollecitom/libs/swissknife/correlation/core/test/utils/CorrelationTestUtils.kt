@@ -17,7 +17,7 @@ fun testWithInvocationContext(
     context: CoroutineContext = EmptyCoroutineContext,
     timeout: Duration = 10.seconds,
     invocationContext: InvocationContext<*> = InvocationContext.create(),
-    testBody: suspend context(_: InvocationContext<*>) CoroutineScope.(InvocationContext<*>) -> Unit
+    testBody: suspend context(context: InvocationContext<*>) CoroutineScope.(InvocationContext<*>) -> Unit
 ) {
     runBlocking(context) { withTimeout(timeout) { testBody.invoke(invocationContext, this, invocationContext) } }
 }
