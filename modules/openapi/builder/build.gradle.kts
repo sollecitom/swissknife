@@ -7,4 +7,6 @@ dependencies {
     api(projects.openapiParser)
 
     implementation(projects.kotlinExtensions)
+
+    testImplementation(projects.testUtils)
 }

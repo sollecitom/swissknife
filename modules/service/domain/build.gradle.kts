@@ -6,4 +6,6 @@ plugins {
 dependencies {
     api(projects.webApiDomain)
     api(projects.coreUtils)
+
+    testImplementation(projects.testUtils)
 }

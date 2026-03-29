@@ -5,4 +5,6 @@ plugins {
 
 dependencies {
     api(projects.coreDomain)
+
+    testImplementation(projects.testUtils)
 }

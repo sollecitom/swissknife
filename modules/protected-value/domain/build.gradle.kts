@@ -9,6 +9,7 @@ dependencies {
 
     implementation(projects.loggerCore)
 
+    testImplementation(projects.testUtils)
     testImplementation(projects.coreTestUtils)
     testImplementation(projects.correlationCoreTestUtils)
 }
