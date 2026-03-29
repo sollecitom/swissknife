@@ -7,6 +7,8 @@ sealed interface FileContent {
 
     val length: Int
     val format: Format
+
+    /** Opens the content for reading. The caller is responsible for closing the returned [InputStream]. */
     fun open(): InputStream
 
     data class Inline(val bytes: ByteArray, override val format: Format) : FileContent {

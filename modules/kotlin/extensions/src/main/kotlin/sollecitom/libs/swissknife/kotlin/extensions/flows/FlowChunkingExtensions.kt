@@ -3,7 +3,6 @@ package sollecitom.libs.swissknife.kotlin.extensions.flows
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
 
 fun <T> Flow<T>.chunk(maxChunkSize: Int): Flow<List<T>> = chunkUntil(aggregateUntil = { _, rawChunk -> rawChunk.size >= maxChunkSize })
 
@@ -34,7 +33,7 @@ private fun <T> Flow<T>.chunkUntilPrivate(maxChunkingPeriod: Duration?, aggregat
 
         var ticker: Job? = null
         if (maxChunkingPeriod != null) {
-            val periods = generateSequence(1) { it + 1 }.asFlow().onEach { delay(1.seconds) }
+            val periods = generateSequence(1) { it + 1 }.asFlow().onEach { delay(maxChunkingPeriod) }
             ticker = async(start = CoroutineStart.LAZY) { periods.onEach { flush() }.collect() }
         }
 
