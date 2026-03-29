@@ -1,3 +1,8 @@
+plugins {
+    id("sollecitom.kotlin-library-conventions")
+    id("sollecitom.maven-publish-conventions")
+}
+
 dependencies {
     api(libs.pulsar.client.admin) {
         exclude(group = "com.google.protobuf", module = "protobuf-java")
