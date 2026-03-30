@@ -10,7 +10,7 @@ import java.time.Duration
 /** Scans Docker images for vulnerabilities using Trivy running as a container via Testcontainers. */
 object TrivyImageScanner {
 
-    private const val TRIVY_IMAGE = "aquasec/trivy:latest"
+    private const val TRIVY_IMAGE = "aquasec/trivy:0.69.3"
 
     /**
      * Scans the given Docker [imageName] for vulnerabilities at or above the specified [severities].
