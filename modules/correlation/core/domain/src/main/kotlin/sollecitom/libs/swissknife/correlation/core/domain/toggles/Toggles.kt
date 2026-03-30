@@ -4,6 +4,7 @@ import sollecitom.libs.swissknife.core.domain.identity.Id
 import sollecitom.libs.swissknife.correlation.core.domain.access.Access
 import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationContext
 
+/** A set of active feature toggle values, lookupable by toggle ID. */
 data class Toggles(val values: Set<ToggleValue<*>> = emptySet()) {
 
     private val byId = values.associateBy(ToggleValue<*>::id)

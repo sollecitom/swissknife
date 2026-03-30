@@ -2,6 +2,7 @@ package sollecitom.libs.swissknife.cryptography.domain.key
 
 import sollecitom.libs.swissknife.hashing.utils.Hash
 
+/** Base interface for all cryptographic keys, providing encoded form, algorithm, format, and a deterministic hash. */
 interface CryptographicKey {
 
     val encoded: ByteArray

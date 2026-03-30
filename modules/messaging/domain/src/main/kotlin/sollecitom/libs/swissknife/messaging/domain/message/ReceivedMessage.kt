@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlin.time.Instant
 
+/** A message received from a messaging system, with an ID, publish timestamp, and acknowledgment support. */
 interface ReceivedMessage<out VALUE> : Message<VALUE>, Comparable<ReceivedMessage<*>> {
 
     val id: Message.Id

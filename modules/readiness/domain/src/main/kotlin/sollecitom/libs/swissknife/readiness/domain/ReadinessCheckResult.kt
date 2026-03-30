@@ -1,5 +1,6 @@
 package sollecitom.libs.swissknife.readiness.domain
 
+/** The result of a readiness check: either [Passed] or [Failed] with a reason. */
 sealed interface ReadinessCheckResult {
 
     val passed: Boolean

@@ -1,5 +1,6 @@
 package sollecitom.libs.swissknife.compliance.checker.domain
 
+/** A single compliance rule that evaluates a target and returns [Result.Compliant] or [Result.NonCompliant] with violations. */
 fun interface ComplianceRule<in TARGET : Any> {
 
     operator fun invoke(target: TARGET): Result<TARGET>

@@ -15,6 +15,7 @@ import sollecitom.libs.swissknife.messaging.domain.message.properties.MessagePro
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
+/** High-level messaging facade that combines consuming (OUT) and producing (IN) events on a topic. */
 interface Messages<out OUT : Event, in IN : Event> : Startable, Stoppable {
 
     val values: Flow<ReceivedMessage<OUT>>

@@ -6,6 +6,7 @@ import sollecitom.libs.swissknife.core.domain.text.Name
 import sollecitom.libs.swissknife.messaging.domain.message.Message
 import sollecitom.libs.swissknife.messaging.domain.topic.Topic
 
+/** Produces messages to a single topic. */
 interface MessageProducer<in VALUE> : Startable, Stoppable, AutoCloseable {
 
     val name: Name

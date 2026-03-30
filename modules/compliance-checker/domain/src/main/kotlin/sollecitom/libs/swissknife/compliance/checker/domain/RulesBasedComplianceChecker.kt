@@ -15,4 +15,5 @@ internal class RulesBasedComplianceChecker<in TARGET : Any>(private val rules: S
     }
 }
 
+/** Creates a [ComplianceChecker] that evaluates all given [rules] and aggregates violations. */
 fun <TARGET : Any> ComplianceChecker.Companion.withRules(rules: Set<ComplianceRule<TARGET>>): ComplianceChecker<TARGET> = RulesBasedComplianceChecker(rules)

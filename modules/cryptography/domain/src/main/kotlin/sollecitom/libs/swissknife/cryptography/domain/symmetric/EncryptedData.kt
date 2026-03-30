@@ -1,5 +1,6 @@
 package sollecitom.libs.swissknife.cryptography.domain.symmetric
 
+/** Encrypted content bundled with the encryption metadata needed for decryption. */
 data class EncryptedData<METADATA : EncryptionMode.Metadata>(val content: ByteArray, val metadata: METADATA) {
 
     override fun equals(other: Any?): Boolean {

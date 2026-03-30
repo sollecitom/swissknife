@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 
+/** Consumes messages from one or more topics. Call [receive] to get the next message. */
 interface MessageConsumer<out VALUE> : Startable, Stoppable, AutoCloseable {
 
     val name: Name
@@ -19,6 +20,7 @@ interface MessageConsumer<out VALUE> : Startable, Stoppable, AutoCloseable {
     suspend fun receive(): ReceivedMessage<VALUE>
 }
 
+/** Exposes this consumer as an infinite [Flow] of received messages. */
 val <VALUE> MessageConsumer<VALUE>.messages: Flow<ReceivedMessage<VALUE>>
     get() = flow {
         while (currentCoroutineContext().isActive) {

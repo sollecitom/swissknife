@@ -3,6 +3,7 @@ package sollecitom.libs.swissknife.protected_value.domain
 import sollecitom.libs.swissknife.core.domain.identity.Id
 import sollecitom.libs.swissknife.core.domain.text.Name
 
+/** Factory for creating protected (encrypted) values. Use [Typed] for type-specific factories, [Accessible] to also support decryption. */
 interface ProtectedValueFactory<in ACCESS_CONTEXT : Any, out METADATA> {
 
     suspend fun <VALUE : Any> protectValue(value: VALUE, valueName: Name, owner: Id, serialize: (VALUE) -> ByteArray, iv: ByteArray? = null): ProtectedValue<VALUE, METADATA>

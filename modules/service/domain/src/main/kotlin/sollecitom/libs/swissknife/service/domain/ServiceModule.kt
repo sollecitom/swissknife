@@ -5,6 +5,7 @@ import sollecitom.libs.swissknife.core.domain.lifecycle.Stoppable
 import sollecitom.libs.swissknife.core.domain.text.Name
 import sollecitom.libs.swissknife.web.api.domain.endpoint.Endpoint
 
+/** A named, startable/stoppable module within a service. */
 interface ServiceModule : Startable, Stoppable {
 
     val name: Name

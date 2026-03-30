@@ -2,6 +2,7 @@ package sollecitom.libs.swissknife.cryptography.domain.symmetric
 
 import sollecitom.libs.swissknife.cryptography.domain.key.CryptographicKey
 
+/** Defines encryption modes (e.g. CTR) with their operations and metadata. */
 object EncryptionMode {
 
     object CTR {

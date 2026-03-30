@@ -4,6 +4,7 @@ import sollecitom.libs.swissknife.logger.core.JvmLoggerFactory
 import sollecitom.libs.swissknife.logger.core.Logger
 import sollecitom.libs.swissknife.logger.core.LoggerFactory
 
+/** Base class that provides a [logger] named after the implementing class. Extend this to add logging to any type. */
 open class Loggable(private val loggerFactory: LoggerFactory = JvmLoggerFactory) : LoggableType {
 
     override val logger: Logger = logger()

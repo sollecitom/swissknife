@@ -1,5 +1,6 @@
 package sollecitom.libs.swissknife.logger.core
 
+/** A named logger with lazy message evaluation and level-based filtering. */
 interface Logger {
 
     val name: String

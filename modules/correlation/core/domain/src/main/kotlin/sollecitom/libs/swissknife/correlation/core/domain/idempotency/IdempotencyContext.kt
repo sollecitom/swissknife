@@ -2,6 +2,7 @@ package sollecitom.libs.swissknife.correlation.core.domain.idempotency
 
 import sollecitom.libs.swissknife.core.domain.text.Name
 
+/** Context for idempotent operations, combining a namespace (scope) and a key (unique per operation). */
 data class IdempotencyContext(val namespace: Name?, val key: Name) {
 
     fun id(separator: String = DEFAULT_IDEMPOTENCY_ID_SEGMENTS_SEPARATOR): Name = namespace?.let { "${it.value}${separator}${key.value}".let(::Name) } ?: key

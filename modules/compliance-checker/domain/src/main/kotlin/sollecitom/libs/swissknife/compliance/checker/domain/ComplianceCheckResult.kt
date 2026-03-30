@@ -1,5 +1,6 @@
 package sollecitom.libs.swissknife.compliance.checker.domain
 
+/** The aggregate result of a compliance check: either [Compliant] or [NonCompliant] with detailed problems. */
 sealed class ComplianceCheckResult<in TARGET : Any> {
 
     class Compliant<in TARGET : Any> : ComplianceCheckResult<TARGET>() {

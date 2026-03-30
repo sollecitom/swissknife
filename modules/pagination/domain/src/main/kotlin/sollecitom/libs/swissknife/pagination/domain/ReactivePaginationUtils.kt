@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 
+/** Converts a paginated query into a [Flow] that automatically fetches subsequent pages using continuation tokens. */
 fun <ITEM> Pagination.asFlow(batchSize: Int, query: suspend (Pagination.Arguments) -> Page<ITEM>): Flow<ITEM> = flow {
 
     val firstPage = query(Pagination.Arguments(limit = batchSize))

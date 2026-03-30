@@ -2,6 +2,7 @@ package sollecitom.libs.swissknife.logger.core
 
 import java.time.Instant
 
+/** Factory for creating [Logger] instances. Supports runtime reconfiguration via [configure]. */
 interface LoggerFactory {
 
     val loggingFunction: Log

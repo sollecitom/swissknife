@@ -2,6 +2,7 @@ package sollecitom.libs.swissknife.cryptography.domain.asymmetric.signing
 
 import java.nio.charset.Charset
 
+/** A public key capable of verifying digital signatures. */
 interface VerifyingPublicKey : sollecitom.libs.swissknife.cryptography.domain.asymmetric.PublicKey {
 
     fun verify(input: ByteArray, signatureBytes: ByteArray, signatureAlgorithm: String): Boolean

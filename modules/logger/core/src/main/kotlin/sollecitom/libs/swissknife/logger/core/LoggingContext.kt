@@ -2,6 +2,7 @@ package sollecitom.libs.swissknife.logger.core
 
 import sollecitom.libs.swissknife.logger.core.implementation.ImmutableLoggingContext
 
+/** A collection of key-value pairs attached to log entries (e.g. MDC-like context). */
 interface LoggingContext : Collection<Pair<String, String>> {
 
     val keys: Set<String>

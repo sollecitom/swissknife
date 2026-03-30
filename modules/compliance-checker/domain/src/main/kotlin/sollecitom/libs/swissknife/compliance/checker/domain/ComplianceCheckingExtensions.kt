@@ -1,5 +1,6 @@
 package sollecitom.libs.swissknife.compliance.checker.domain
 
+/** Convenience to check this object against one or more compliance rules. */
 fun <TARGET : Any> TARGET.checkAgainstRules(vararg rules: ComplianceRule<TARGET>): ComplianceCheckResult<TARGET> = checkAgainstRules(rules.toSet())
 
 fun <TARGET : Any> TARGET.checkAgainstRules(rules: Set<ComplianceRule<TARGET>>): ComplianceCheckResult<TARGET> {

@@ -2,6 +2,7 @@ package sollecitom.libs.swissknife.correlation.core.domain.access.actor
 
 import sollecitom.libs.swissknife.correlation.core.domain.access.authentication.Authentication
 
+/** An actor impersonating another account. The impersonated account is used as the effective identity. */
 data class ImpersonatingActor(val impersonator: Actor.Account, val impersonated: Actor.Account, override val authentication: Authentication) : Actor {
 
     override val account: Actor.Account

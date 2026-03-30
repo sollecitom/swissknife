@@ -3,6 +3,7 @@ package sollecitom.libs.swissknife.protected_value.domain
 import sollecitom.libs.swissknife.core.domain.identity.Id
 import sollecitom.libs.swissknife.core.domain.text.Name
 
+/** Adapts a generic [ProtectedValueFactory] to a type-specific one by providing a serialization function. */
 class TypedProtectedValueFactory<VALUE : Any, out METADATA, in ACCESS_CONTEXT : Any>(private val factory: ProtectedValueFactory<ACCESS_CONTEXT, METADATA>, private val serialize: (VALUE) -> ByteArray) : ProtectedValueFactory.Typed<VALUE, METADATA, ACCESS_CONTEXT> {
 
     override suspend fun protectValue(value: VALUE, valueName: Name, owner: Id) = factory.protectValue(value, valueName, owner, serialize)

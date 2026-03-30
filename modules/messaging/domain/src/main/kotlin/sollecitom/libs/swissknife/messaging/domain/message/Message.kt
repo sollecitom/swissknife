@@ -2,6 +2,7 @@ package sollecitom.libs.swissknife.messaging.domain.message
 
 import sollecitom.libs.swissknife.messaging.domain.topic.Topic
 
+/** A message with a key, value, properties, and parent/originating message context for lineage tracking. */
 interface Message<out VALUE> {
 
     val key: String

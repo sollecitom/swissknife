@@ -3,6 +3,7 @@ package sollecitom.libs.swissknife.correlation.core.domain.trace
 import kotlin.time.Instant
 import kotlin.time.Duration
 
+/** Distributed trace linking current, parent, and originating invocations with an external trace ID. Supports [fork] for child invocations. */
 data class Trace(val invocation: InvocationTrace, val parent: InvocationTrace = invocation, val originating: InvocationTrace = parent, val external: ExternalInvocationTrace) {
 
     init {

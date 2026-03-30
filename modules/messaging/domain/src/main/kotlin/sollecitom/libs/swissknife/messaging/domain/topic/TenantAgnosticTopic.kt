@@ -3,6 +3,7 @@ package sollecitom.libs.swissknife.messaging.domain.topic
 import sollecitom.libs.swissknife.core.domain.text.Name
 import java.util.regex.Pattern
 
+/** A topic template without a tenant. Use [withTenant] to bind it to a specific tenant. */
 data class TenantAgnosticTopic(val name: Name, val namespaceName: Name, val persistent: Boolean) {
 
     val protocol: Name get() = if (persistent) Topic.Persistent.protocol else Topic.NonPersistent.protocol

@@ -5,6 +5,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import com.github.erosb.jsonsKema.ValidationFailure as SkemaValidationFailure
 
+/** A parsed JSON Schema that supports validation and property introspection. */
 data class JsonSchema(internal val value: Schema, private val source: JSONObject? = null) {
 
     val description: String get() = source?.toString() ?: value.toString()

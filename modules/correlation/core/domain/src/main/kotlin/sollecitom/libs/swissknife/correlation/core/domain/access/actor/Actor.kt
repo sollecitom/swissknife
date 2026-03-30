@@ -6,6 +6,7 @@ import sollecitom.libs.swissknife.correlation.core.domain.access.customer.Custom
 import sollecitom.libs.swissknife.correlation.core.domain.tenancy.Tenant
 import java.util.*
 
+/** The authenticated party performing an action. Can be a [DirectActor], [ImpersonatingActor], or [ActorOnBehalf]. */
 sealed interface Actor {
 
     val account: Account

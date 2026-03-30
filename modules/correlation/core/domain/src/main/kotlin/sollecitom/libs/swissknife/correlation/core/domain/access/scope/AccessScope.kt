@@ -1,5 +1,6 @@
 package sollecitom.libs.swissknife.correlation.core.domain.access.scope
 
+/** An ordered stack of [AccessContainer]s defining the scope of an access. No duplicates allowed. */
 class AccessScope(private val containerStack: List<AccessContainer> = emptyList()) {
 
     val containers get() = containerStack

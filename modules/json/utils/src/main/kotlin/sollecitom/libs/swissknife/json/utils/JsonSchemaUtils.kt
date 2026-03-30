@@ -14,6 +14,7 @@ import java.net.URI
 private val initialBaseURI = URI("mem://input")
 private val schemaClient: SchemaClient by lazy { CachedSchemaClient(CustomSchemaClient(initialBaseURI.toString())) }
 
+/** Loads and parses a JSON Schema from a classpath resource at the given [location]. */
 fun jsonSchemaAt(location: String): JsonSchema = openAsStream(location).use {
 
     val locationBytes = it.readAllBytes()
@@ -23,6 +24,7 @@ fun jsonSchemaAt(location: String): JsonSchema = openAsStream(location).use {
     JsonSchema(schema, jsonSchema)
 }
 
+/** Interprets this JSONObject as a JSON Schema definition. */
 fun JSONObject.asSchema(): JsonSchema {
 
     val parsedJsonSchema = JsonParser(toString()).parse()

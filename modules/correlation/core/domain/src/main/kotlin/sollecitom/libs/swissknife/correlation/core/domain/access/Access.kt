@@ -11,6 +11,7 @@ import sollecitom.libs.swissknife.correlation.core.domain.access.scope.AccessSco
 import sollecitom.libs.swissknife.correlation.core.domain.tenancy.Tenant
 import java.util.*
 
+/** Represents the caller's access level: either [Authenticated] (with an actor) or [Unauthenticated]. */
 sealed interface Access {
 
     val origin: Origin

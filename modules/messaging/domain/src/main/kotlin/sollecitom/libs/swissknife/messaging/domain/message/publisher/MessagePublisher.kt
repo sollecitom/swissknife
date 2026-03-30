@@ -7,6 +7,7 @@ import sollecitom.libs.swissknife.messaging.domain.message.Message
 import sollecitom.libs.swissknife.messaging.domain.message.ReceivedMessage
 import sollecitom.libs.swissknife.messaging.domain.message.originatingMessageIdOrFallback
 
+/** Publishes domain values as messages, requiring an [InvocationContext] for tracing. */
 interface MessagePublisher<in VALUE> : Startable, Stoppable {
 
     context(_: InvocationContext<*>)

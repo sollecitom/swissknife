@@ -19,6 +19,7 @@ import sollecitom.libs.swissknife.correlation.core.domain.trace.InvocationTrace
 import sollecitom.libs.swissknife.correlation.core.domain.trace.Trace
 import java.util.*
 
+/** The full context for a service invocation: access info, distributed tracing, feature toggles, and optional locale/tenant/customer overrides. */
 data class InvocationContext<out ACCESS : Access>(val access: ACCESS, val trace: Trace, val toggles: Toggles, val specifiedLocale: Locale?, val specifiedTargetCustomer: Customer?, val specifiedTargetTenant: Tenant?) {
 
     val idempotency: IdempotencyContext = IdempotencyContext(access.idempotencyNamespace, trace.idempotencyKey)

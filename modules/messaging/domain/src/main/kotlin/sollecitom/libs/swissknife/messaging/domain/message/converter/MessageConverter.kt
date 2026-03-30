@@ -4,6 +4,7 @@ import sollecitom.libs.swissknife.messaging.domain.message.Message
 import sollecitom.libs.swissknife.messaging.domain.message.ReceivedMessage
 import sollecitom.libs.swissknife.messaging.domain.message.producer.MessageProducer
 
+/** Converts domain values into outbound messages, optionally linking to parent/originating messages. */
 interface MessageConverter<VALUE> {
 
     fun toOutboundMessage(value: VALUE, parentMessageId: Message.Id? = null, originatingMessageId: Message.Id? = null): Message<VALUE>
