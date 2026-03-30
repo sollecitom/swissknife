@@ -73,6 +73,8 @@ object TrivyImageScanner {
         val vulnerabilities = mutableListOf<Vulnerability>()
         for (i in 0 until results.length()) {
             val result = results.optJSONObject(i) ?: continue
+            val target = result.optString("Target", "unknown")
+            val targetClass = result.optString("Class", "unknown")
             val vulns = result.optJSONArray("Vulnerabilities") ?: continue
             for (j in 0 until vulns.length()) {
                 val vuln = vulns.optJSONObject(j) ?: continue
@@ -83,7 +85,9 @@ object TrivyImageScanner {
                         installedVersion = vuln.getString("InstalledVersion"),
                         fixedVersion = vuln.optString("FixedVersion", null),
                         severity = runCatching { Severity.valueOf(vuln.getString("Severity")) }.getOrDefault(Severity.UNKNOWN),
-                        title = vuln.optString("Title", "No description")
+                        title = vuln.optString("Title", "No description"),
+                        target = target,
+                        targetClass = targetClass
                     )
                 )
             }
