@@ -10,7 +10,8 @@ import java.time.Duration
 /** Scans Docker images for vulnerabilities using Trivy running as a container via Testcontainers. */
 object TrivyImageScanner {
 
-    private const val TRIVY_IMAGE = "aquasec/trivy:0.69.3"
+    private const val DEFAULT_TRIVY_IMAGE = "aquasec/trivy"
+    private const val DEFAULT_TRIVY_VERSION = "0.69.3"
 
     /**
      * Scans the given Docker [imageName] for vulnerabilities at or above the specified [severities].
@@ -19,12 +20,14 @@ object TrivyImageScanner {
      * @param imageName the Docker image to scan (must be available locally)
      * @param severities which severity levels to report (default: CRITICAL, HIGH)
      * @param trivyIgnoreContent optional .trivyignore content (one CVE ID per line) for suppressing known issues
+     * @param trivyVersion Trivy image version to use (default: [DEFAULT_TRIVY_VERSION])
      * @return list of vulnerabilities found
      */
     fun scan(
         imageName: String,
         severities: Set<Severity> = setOf(Severity.CRITICAL, Severity.HIGH),
-        trivyIgnoreContent: String? = null
+        trivyIgnoreContent: String? = null,
+        trivyVersion: String = System.getProperty("securityScan.trivyVersion") ?: DEFAULT_TRIVY_VERSION
     ): List<Vulnerability> {
 
         val severityArg = severities.joinToString(",") { it.name }
@@ -41,7 +44,8 @@ object TrivyImageScanner {
 
         val outputConsumer = ToStringConsumer()
 
-        val container = GenericContainer(TRIVY_IMAGE).apply {
+        val trivyImage = "$DEFAULT_TRIVY_IMAGE:$trivyVersion"
+        val container = GenericContainer(trivyImage).apply {
             withCommand(*command.toTypedArray())
             withFileSystemBind("/var/run/docker.sock", "/var/run/docker.sock", BindMode.READ_ONLY)
             withStartupCheckStrategy(OneShotStartupCheckStrategy().withTimeout(Duration.ofMinutes(5)))
