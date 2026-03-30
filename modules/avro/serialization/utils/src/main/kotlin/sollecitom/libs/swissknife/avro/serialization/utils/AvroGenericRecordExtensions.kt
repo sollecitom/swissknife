@@ -12,43 +12,43 @@ import java.util.*
 fun GenericRecord.getOrNull(key: String): Any? = get(key)
 
 fun GenericRecord.getStringOrNull(key: String): String? = get(key)?.asString()
-fun GenericRecord.getString(key: String) = getStringOrNull(key) ?: error("Required Avro field '$key' is missing or null")
+fun GenericRecord.getString(key: String) = getStringOrNull(key) ?: missingField(key)
 
 fun GenericRecord.getIntOrNull(key: String): Int? = get(key)?.let { it as Int }
-fun GenericRecord.getInt(key: String) = getIntOrNull(key) ?: error("Required Avro field '$key' is missing or not an Int")
+fun GenericRecord.getInt(key: String) = getIntOrNull(key) ?: missingField(key)
 
 fun GenericRecord.getBigIntegerOrNull(key: String): BigInteger? = get(key)?.let { it as BigInteger }
-fun GenericRecord.getBigInteger(key: String) = getBigIntegerOrNull(key) ?: error("Required Avro field '$key' is missing or not a BigInteger")
+fun GenericRecord.getBigInteger(key: String) = getBigIntegerOrNull(key) ?: missingField(key)
 
 fun GenericRecord.getBooleanOrNull(key: String): Boolean? = get(key)?.let { it as Boolean }
-fun GenericRecord.getBoolean(key: String) = getBooleanOrNull(key) ?: error("Required Avro field '$key' is missing or not a Boolean")
+fun GenericRecord.getBoolean(key: String) = getBooleanOrNull(key) ?: missingField(key)
 
 fun GenericRecord.getBigDecimalOrNull(key: String): BigDecimal? = get(key)?.let { it as BigDecimal }
-fun GenericRecord.getBigDecimal(key: String) = getBigDecimalOrNull(key) ?: error("Required Avro field '$key' is missing or not a BigDecimal")
+fun GenericRecord.getBigDecimal(key: String) = getBigDecimalOrNull(key) ?: missingField(key)
 
 fun GenericRecord.getLongOrNull(key: String): Long? = get(key)?.let { it as Long }
-fun GenericRecord.getLong(key: String) = getLongOrNull(key) ?: error("Required Avro field '$key' is missing or not a Long")
+fun GenericRecord.getLong(key: String) = getLongOrNull(key) ?: missingField(key)
 
 fun GenericRecord.getStringListOrNull(key: String): List<String>? = get(key)?.let { it as List<Any> }?.map { it.asString() }
-fun GenericRecord.getStringList(key: String) = getStringListOrNull(key) ?: error("Required Avro field '$key' is missing or not a String list")
+fun GenericRecord.getStringList(key: String) = getStringListOrNull(key) ?: missingField(key)
 
 fun GenericRecord.getDoubleOrNull(key: String): Double? = get(key)?.let { it as Double }
-fun GenericRecord.getDouble(key: String) = getDoubleOrNull(key) ?: error("Required Avro field '$key' is missing or not a Double")
+fun GenericRecord.getDouble(key: String) = getDoubleOrNull(key) ?: missingField(key)
 
 fun GenericRecord.getInstantOrNull(key: String): Instant? = getStringOrNull(key)?.let(Instant::parse)
-fun GenericRecord.getInstant(key: String) = getInstantOrNull(key) ?: error("Required Avro field '$key' is missing or not an Instant")
+fun GenericRecord.getInstant(key: String) = getInstantOrNull(key) ?: missingField(key)
 
 fun GenericRecord.getEnumOrNull(key: String): String? = get(key)?.let { (get(key) as GenericData.EnumSymbol).toString() }
-fun GenericRecord.getEnum(key: String) = getEnumOrNull(key) ?: error("Required Avro field '$key' is missing or not an enum")
+fun GenericRecord.getEnum(key: String) = getEnumOrNull(key) ?: missingField(key)
 
 fun GenericRecord.getRecordOrNull(key: String): GenericRecord? = get(key)?.let { get(key) as GenericRecord }
-fun GenericRecord.getRecord(key: String) = getRecordOrNull(key) ?: error("Required Avro field '$key' is missing or not a record")
+fun GenericRecord.getRecord(key: String) = getRecordOrNull(key) ?: missingField(key)
 
 fun GenericRecord.getRecordListOrNull(key: String): List<GenericRecord>? = get(key)?.let { it as List<GenericRecord> }
-fun GenericRecord.getRecordList(key: String) = getRecordListOrNull(key) ?: error("Required Avro field '$key' is missing or not a record list")
+fun GenericRecord.getRecordList(key: String) = getRecordListOrNull(key) ?: missingField(key)
 
 fun GenericRecord.getHexStringAsByteArrayOrNull(key: String): ByteArray? = getStringOrNull(key)?.let(HexFormat.of()::parseHex)
-fun GenericRecord.getHexStringAsByteArray(key: String): ByteArray = getHexStringAsByteArrayOrNull(key) ?: error("Required Avro field '$key' is missing or not a hex string")
+fun GenericRecord.getHexStringAsByteArray(key: String): ByteArray = getHexStringAsByteArrayOrNull(key) ?: missingField(key)
 
 fun <T> GenericRecord.getRecordFromUnion(deserialize: (type: String, record: GenericRecord) -> T): T {
 
@@ -69,7 +69,9 @@ fun <T> GenericRecord.getRecordFromUnionWithEnumType(deserialize: (type: String,
 fun <T : Any> GenericRecord.deserializeWith(deserializer: AvroDeserializer<T>): T = deserializer.deserialize(this)
 
 fun <T : Any> GenericRecord.getValueOrNull(key: String, deserializer: AvroDeserializer<T>): T? = getRecordOrNull(key)?.deserializeWith(deserializer)
-fun <T : Any> GenericRecord.getValue(key: String, deserializer: AvroDeserializer<T>): T = getValueOrNull(key, deserializer) ?: error("Required Avro field '$key' is missing or null")
+fun <T : Any> GenericRecord.getValue(key: String, deserializer: AvroDeserializer<T>): T = getValueOrNull(key, deserializer) ?: missingField(key)
 
 fun <T : Any> GenericRecord.getValuesOrNull(key: String, deserializer: AvroDeserializer<T>): List<T>? = getRecordListOrNull(key)?.map(deserializer::deserialize)
-fun <T : Any> GenericRecord.getValues(key: String, deserializer: AvroDeserializer<T>): List<T> = getValuesOrNull(key, deserializer) ?: error("Required Avro field '$key' is missing or null")
+fun <T : Any> GenericRecord.getValues(key: String, deserializer: AvroDeserializer<T>): List<T> = getValuesOrNull(key, deserializer) ?: missingField(key)
+
+private fun missingField(key: String): Nothing = error("Required Avro field '$key' is missing or null")
