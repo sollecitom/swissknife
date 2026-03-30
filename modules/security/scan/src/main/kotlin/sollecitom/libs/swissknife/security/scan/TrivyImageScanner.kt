@@ -59,25 +59,23 @@ object TrivyImageScanner {
 
     private fun parseVulnerabilities(output: String): List<Vulnerability> {
 
-        // Trivy outputs JSON to stdout but log messages go to stderr (captured together by Testcontainers)
-        // Extract the JSON portion — find the first [ or { that starts the JSON output
-        val jsonStart = output.indexOfFirst { it == '[' || it == '{' }
-        if (jsonStart == -1) return emptyList()
-        val jsonText = output.substring(jsonStart).trim()
+        // Testcontainers captures stdout and stderr together. Trivy outputs JSON to stdout
+        // and log/progress messages to stderr. We need to extract just the JSON object.
+        // Trivy's JSON format wraps results in {"Results": [...]}, so find the last top-level JSON object.
+        val jsonText = extractJson(output) ?: return emptyList()
 
         val results = try {
-            if (jsonText.startsWith("[")) org.json.JSONArray(jsonText)
-            else org.json.JSONObject(jsonText).optJSONArray("Results") ?: return emptyList()
+            org.json.JSONObject(jsonText).optJSONArray("Results") ?: return emptyList()
         } catch (_: Exception) {
             return emptyList()
         }
 
         val vulnerabilities = mutableListOf<Vulnerability>()
         for (i in 0 until results.length()) {
-            val result = results.getJSONObject(i)
+            val result = results.optJSONObject(i) ?: continue
             val vulns = result.optJSONArray("Vulnerabilities") ?: continue
             for (j in 0 until vulns.length()) {
-                val vuln = vulns.getJSONObject(j)
+                val vuln = vulns.optJSONObject(j) ?: continue
                 vulnerabilities.add(
                     Vulnerability(
                         id = vuln.getString("VulnerabilityID"),
@@ -91,5 +89,24 @@ object TrivyImageScanner {
             }
         }
         return vulnerabilities
+    }
+
+    private fun extractJson(output: String): String? {
+        // Find the JSON object by looking for balanced braces starting from the first {
+        // that successfully parses as a JSONObject with a "Results" key
+        var index = 0
+        while (index < output.length) {
+            val braceStart = output.indexOf('{', index)
+            if (braceStart == -1) return null
+            val candidate = output.substring(braceStart)
+            try {
+                val json = org.json.JSONObject(candidate)
+                if (json.has("Results")) return candidate
+            } catch (_: Exception) {
+                // Not valid JSON starting here, try next {
+            }
+            index = braceStart + 1
+        }
+        return null
     }
 }
