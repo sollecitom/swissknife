@@ -6,8 +6,10 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.time.Instant
 
+/** Creates a deep copy of this [GenericRecord], optionally applying modifications via the builder DSL. */
 fun GenericRecord.copy(schema: Schema = getSchema(), customise: AvroRecordBuilder.() -> Unit): GenericRecord = buildGenericRecord(this, schema, customise)
 
+/** Fluent builder for constructing Avro [GenericRecord]s with type-safe setters. */
 interface AvroRecordBuilder {
 
     val schema: Schema
@@ -33,8 +35,11 @@ interface AvroRecordBuilder {
     fun setLongs(fieldName: String, value: List<Long>?): AvroRecordBuilder
     fun setBooleans(fieldName: String, value: List<Boolean>?): AvroRecordBuilder
     fun setEnum(fieldName: String, value: Any?): AvroRecordBuilder
+    /** Sets an envelope-style union field with a string type discriminator and a nested record. */
     fun setRecordInUnion(unionType: String, record: GenericRecord?): AvroRecordBuilder
+    /** Sets an envelope-style union field with an enum type discriminator and a nested record. */
     fun setRecordInUnionWithEnumType(unionType: String, record: GenericRecord?): AvroRecordBuilder
+    /** Sets an envelope-style union field, building the nested record via the DSL. */
     fun setRecordInUnion(unionType: String, customizeRecord: AvroRecordBuilder.() -> Unit): AvroRecordBuilder
     fun setInstants(fieldName: String, value: List<Instant>?): AvroRecordBuilder
 
@@ -43,10 +48,14 @@ interface AvroRecordBuilder {
     companion object
 }
 
+/** Creates an empty [AvroRecordBuilder] for the given [schema]. */
 operator fun AvroRecordBuilder.Companion.invoke(schema: Schema): AvroRecordBuilder = AvroRecordBuilderImpl(schema)
+/** Creates an [AvroRecordBuilder] pre-populated with values from [recordToCopy]. */
 operator fun AvroRecordBuilder.Companion.invoke(recordToCopy: GenericRecord, schema: Schema = recordToCopy.schema): AvroRecordBuilder = AvroRecordBuilderImpl(schema, recordToCopy)
 
+/** Builds a [GenericRecord] for the given [schema] using the builder DSL. */
 inline fun buildGenericRecord(schema: Schema, customise: AvroRecordBuilder.() -> Unit): GenericRecord = AvroRecordBuilder(schema).also(customise).build()
+/** Builds a [GenericRecord] by copying [recordToCopy] and applying modifications. */
 inline fun buildGenericRecord(recordToCopy: GenericRecord, schema: Schema = recordToCopy.schema, customise: AvroRecordBuilder.() -> Unit): GenericRecord = AvroRecordBuilder(recordToCopy, schema).also(customise).build()
 
 

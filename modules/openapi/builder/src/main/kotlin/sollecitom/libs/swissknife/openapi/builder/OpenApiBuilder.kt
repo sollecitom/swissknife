@@ -12,8 +12,10 @@ import io.swagger.v3.oas.models.parameters.RequestBody
 import io.swagger.v3.oas.models.responses.ApiResponse
 import io.swagger.v3.oas.models.responses.ApiResponses
 
+/** Builds an [OpenAPI] specification using a Kotlin DSL. */
 fun buildOpenApi(version: SpecVersion = SpecVersion.V31, customize: OpenApiBuilder.() -> Unit): OpenAPI = OpenApiBuilder(version).apply(customize).build()
 
+/** DSL builder for constructing OpenAPI specification objects programmatically. */
 class OpenApiBuilder(version: SpecVersion) {
 
     private val api = OpenAPI(version)
@@ -43,6 +45,7 @@ class OpenApiBuilder(version: SpecVersion) {
     }
 }
 
+/** DSL extensions for defining HTTP method operations on a [PathItem]. */
 fun PathItem.get(builder: Operation.() -> Unit = {}) = operation(method = PathItem.HttpMethod.GET, builder)
 fun PathItem.put(builder: Operation.() -> Unit = {}) = operation(method = PathItem.HttpMethod.PUT, builder)
 fun PathItem.post(builder: Operation.() -> Unit = {}) = operation(method = PathItem.HttpMethod.POST, builder)
@@ -79,6 +82,7 @@ fun ApiResponse.content(customize: Content.() -> Unit) {
     content = Content().apply(customize)
 }
 
+/** Builder for collecting OpenAPI operation parameters. */
 class ParametersBuilder {
 
     private val parameters = mutableListOf<Parameter>()
@@ -96,6 +100,7 @@ fun Content.mediaTypes(customize: MediaTypesBuilder.() -> Unit = {}) {
     MediaTypesBuilder().apply(customize).build().forEach { (name, mediaType) -> addMediaType(name, mediaType) }
 }
 
+/** Builder for collecting OpenAPI response definitions by HTTP status code. */
 class ResponsesBuilder {
 
     private val responses = ApiResponses()
@@ -108,6 +113,7 @@ class ResponsesBuilder {
     internal fun build(): ApiResponses = responses
 }
 
+/** Builder for collecting OpenAPI media type definitions within a content block. */
 class MediaTypesBuilder {
 
     private val mediaTypes = mutableListOf<Pair<String, MediaType>>()

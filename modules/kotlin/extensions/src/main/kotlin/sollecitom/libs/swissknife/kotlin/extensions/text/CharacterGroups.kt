@@ -1,5 +1,6 @@
 package sollecitom.libs.swissknife.kotlin.extensions.text
 
+/** Pre-defined character sets for random string generation and validation. */
 object CharacterGroups {
 
     val digits by lazy { '0'..'9' }

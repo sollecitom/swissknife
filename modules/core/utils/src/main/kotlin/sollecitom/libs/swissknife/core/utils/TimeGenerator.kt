@@ -6,6 +6,7 @@ import sollecitom.libs.swissknife.core.domain.time.monthAndYear
 import kotlin.time.Clock
 import java.time.Clock as JavaClock
 
+/** Provides access to both Kotlin and Java clock instances. */
 interface TimeGenerator {
 
     val clock: Clock

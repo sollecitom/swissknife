@@ -19,4 +19,5 @@ fun Double.roundToFloor(): Int = floor(this).roundToInt()
 
 private const val defaultDoubleTolerance = 0.00001
 
+/** Checks equality within a [tolerance] to handle floating-point imprecision. */
 fun Double.isEqualToWithTolerance(other: Double, tolerance: Double = defaultDoubleTolerance): Boolean = abs(this - other) <= tolerance

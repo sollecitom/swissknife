@@ -5,10 +5,13 @@ import kotlin.time.Instant
 import kotlin.time.toKotlinInstant
 import java.time.Instant as JavaInstant
 
+/** Factory for generating sortable, timestamped unique identifiers. */
 interface SortableTimestampedUniqueIdentifierFactory<ID : SortableTimestampedUniqueIdentifier<ID>> {
 
+    /** Generates a new identifier using the current time. */
     operator fun invoke(): ID
 
+    /** Generates a new identifier with the specified timestamp. */
     operator fun invoke(timestamp: Instant): ID
 }
 

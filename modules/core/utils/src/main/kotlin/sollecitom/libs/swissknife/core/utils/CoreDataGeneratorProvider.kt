@@ -43,4 +43,5 @@ internal class CoreDataGeneratorProvider(private val environment: Environment, i
     }
 }
 
+/** Creates a [CoreDataGenerator] initialized from the given environment, clock, and optional random seed. */
 fun CoreDataGenerator.Companion.provider(environment: Environment = StandardEnvironment(), clock: Clock? = null, randomSeed: ByteArray? = null): CoreDataGenerator = CoreDataGeneratorProvider(environment = environment, initialisedClock = clock, randomSeed = randomSeed)

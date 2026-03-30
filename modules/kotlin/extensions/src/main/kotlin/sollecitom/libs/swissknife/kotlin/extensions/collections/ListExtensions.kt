@@ -1,5 +1,6 @@
 package sollecitom.libs.swissknife.kotlin.extensions.collections
 
+/** Returns an infinite sequence that cycles through this list's elements. */
 fun <ELEMENT> List<ELEMENT>.circularSequence(): Sequence<ELEMENT> {
 
     var index = 0

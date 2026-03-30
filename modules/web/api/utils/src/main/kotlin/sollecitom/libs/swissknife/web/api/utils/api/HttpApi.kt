@@ -13,6 +13,7 @@ import sollecitom.libs.swissknife.http4k.server.utils.SuspendingHttpHandler
 import sollecitom.libs.swissknife.http4k.server.utils.asBlockingHandler
 import sollecitom.libs.swissknife.web.api.domain.endpoint.Endpoint
 
+/** An HTTP server backed by Jetty with virtual threads, composing endpoints with request/response filters. */
 class HttpApi(private val app: HttpHandler, private val requestedPort: RequestedPort) : Startable, Stoppable, HttpHandler {
 
     constructor(endpoints: Set<Endpoint>, requestedPort: RequestedPort, requestFilter: Filter = Filter.NoOp, responseFilter: Filter = Filter.NoOp) : this(app(endpoints, requestFilter, responseFilter), requestedPort)

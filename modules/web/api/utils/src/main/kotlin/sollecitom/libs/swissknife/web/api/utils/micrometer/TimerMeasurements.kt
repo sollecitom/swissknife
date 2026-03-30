@@ -8,4 +8,5 @@ import kotlin.time.Duration
 // TODO move this package into its own micrometer-utils module, as you'll have to use this for event processors as well
 data class TimerMeasurements(val count: Long, val totalTime: Duration, val maxTime: Duration)
 
+/** Finds all [Timer] meters with the given [name] in this registry. */
 fun MeterRegistry.timersWithName(name: String) = meters.filterIsInstance<Timer>().filter { it.id.type == Meter.Type.TIMER && it.id.name == name }

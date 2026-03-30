@@ -7,6 +7,7 @@ import sollecitom.libs.swissknife.web.api.utils.micrometer.timersWithName
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
 
+/** Extracts the http4k server request latency timer measurements (count, total time, max time). Assumes base time unit is seconds. */
 val MeterRegistry.httpServerRequestLatencyMeasurements: TimerMeasurements
     get() {
 

@@ -24,4 +24,5 @@ fun Response.contentType(contentType: ContentType) = replaceHeader(HttpHeaders.C
 fun Response.contentLength(length: Int) = contentLength(length.toLong())
 fun Response.contentLength(length: Long) = replaceHeader(HttpHeaders.ContentLength, length.toString())
 
+/** A response filter that automatically adds the Content-Length header based on the body length. */
 val ResponseFilters.AddContentLength get() = Modify({ response -> response.body.length?.takeUnless { it == 0L }?.let { length -> response.replaceHeader(HttpHeaders.ContentLength, length.toString()) } ?: response })

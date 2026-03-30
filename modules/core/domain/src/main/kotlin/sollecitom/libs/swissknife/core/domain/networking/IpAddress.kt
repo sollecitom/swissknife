@@ -5,6 +5,7 @@ import java.net.Inet4Address
 import java.net.Inet6Address
 import java.net.InetAddress
 
+/** An IP address, either [V4] or [V6]. Use [IpAddress.create] to parse from a string. */
 sealed interface IpAddress {
 
     val value: InetAddress

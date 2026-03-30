@@ -3,6 +3,7 @@ package sollecitom.libs.swissknife.core.domain.identity
 import com.github.f4b6a3.ulid.Ulid
 import kotlin.time.toKotlinInstant
 
+/** A Universally Unique Lexicographically Sortable Identifier. Create via [ULID.invoke] or a [UniqueIdFactory]. */
 class ULID internal constructor(private val delegate: Ulid) : SortableTimestampedUniqueIdentifier<ULID> {
 
     override val stringValue by lazy(delegate::toString)

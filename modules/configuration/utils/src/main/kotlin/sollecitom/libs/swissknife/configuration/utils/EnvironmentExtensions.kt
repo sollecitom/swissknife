@@ -13,16 +13,19 @@ import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
 
+/** Creates an [Environment] from lens-value pairs, using each lens's meta name as the key. */
 fun Environment.Companion.from(vararg entries: Pair<BiDiLens<Environment, *>, String>) = from(*entries.map { it.first.meta.name to it.second }.toTypedArray())
 
 fun Environment.Companion.from(entries: Map<BiDiLens<Environment, *>, String>) = from(*entries.toPairsArray())
 
+/** Loads an [Environment] from a YAML file on the classpath. */
 fun Environment.Companion.fromYamlResource(resourceName: String): Environment {
 
     val stream = ResourceLoader.openAsStream(resourceName)
     return Environment.fromYaml(stream)
 }
 
+/** Parses a YAML input stream into a flat [Environment], flattening nested keys with dot notation. */
 fun Environment.Companion.fromYaml(input: InputStream): Environment {
 
     val map = JacksonYaml.asA<Map<String, Any>>(InputStreamReader(input).use { it.readText() })
@@ -46,8 +49,11 @@ fun Environment.Companion.fromYaml(input: InputStream): Environment {
 
 fun Environment.instanceInfo(): InstanceInfo = InstanceInfo(EnvironmentKey.instanceNodeName(this), EnvironmentKey.instanceGroupName(this))
 
+/** Loads and merges multiple YAML files into a single [Environment], with earlier files taking precedence. */
 fun Environment.Companion.fromFiles(files: List<File>): Environment = files.map { Environment.fromYaml(it) }.foldRight(EMPTY) { item, accumulator -> item overrides accumulator }
 
+/** Returns a human-readable representation of all environment keys and values. */
 fun Environment.formatted(): String = "Environment: {\n\t${keys().joinToString(separator = "\n\t", postfix = "\n}") { key -> "$key: ${get(key)}" }}"
 
+/** Extracts all configuration properties whose keys start with [root], stripping the prefix. */
 fun Environment.configurationPropertiesUnderRoot(root: String): Map<String, Any?> = keys().filter { key -> key.startsWith(root) }.map { it.removePrefix(root) }.associateWith(::get)

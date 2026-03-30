@@ -6,6 +6,7 @@ import org.http4k.lens.Meta
 import org.http4k.lens.ParamMeta
 import org.http4k.lens.Path
 
+/** Creates a composite path lens that extracts a value of type [T] from multiple path segments. */
 inline fun <reified T> Path.composite(name: String, noinline lensGet: (Request) -> T): Lens<Request, T> {
 
     val meta = Meta(true, "path", ParamMeta.ObjectParam, name, null, emptyMap())

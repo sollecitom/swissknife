@@ -5,15 +5,19 @@ import sollecitom.libs.swissknife.hashing.utils.HashFunction
 import sollecitom.libs.swissknife.hashing.utils.create
 import org.apache.commons.codec.digest.Blake3 as CommonsBlake3
 
+/** BLAKE3 hash function implementations with configurable output length and optional keying. */
 object Blake3 {
 
     const val MIN_HASH_LENGTH_BITES = 32
     const val KEY_LENGTH_BITES = 32
 
+    /** A standard 256-bit (32-byte) BLAKE3 hash function. */
     val hash256: HashFunction<Hash> by lazy { hash256WithKey() }
 
+    /** Creates a 256-bit BLAKE3 hash function, optionally keyed. Key must be exactly [KEY_LENGTH_BITES] bytes. */
     fun hash256WithKey(key: ByteArray? = null): HashFunction<Hash> = hashVariable(MIN_HASH_LENGTH_BITES, key)
 
+    /** Creates a BLAKE3 hash function with a custom output length (minimum [MIN_HASH_LENGTH_BITES] bytes). */
     fun hashVariable(hashBytesLength: Int, key: ByteArray? = null): HashFunction<Hash> = object : HashFunction<Hash> {
 
         override fun invoke(bytes: ByteArray, offset: Int, length: Int): Hash {

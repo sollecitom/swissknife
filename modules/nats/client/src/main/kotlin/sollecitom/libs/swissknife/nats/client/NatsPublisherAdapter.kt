@@ -18,4 +18,5 @@ private class NatsPublisherAdapter(options: Options) : NatsPublisher {
     }
 }
 
+/** Creates a [NatsPublisher] that connects using the given [options]. The connection is established lazily on first publish. */
 fun NatsPublisher.Companion.create(options: Options): NatsPublisher = NatsPublisherAdapter(options)

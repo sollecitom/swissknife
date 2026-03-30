@@ -13,6 +13,7 @@ import org.http4k.config.Environment
 import org.http4k.config.EnvironmentKey
 import org.http4k.lens.BiDiLens
 
+/** A driving adapter that exposes health/readiness checks and Prometheus metrics on a dedicated HTTP port. */
 class HealthHttpDrivingAdapter(configuration: Configuration, meterRegistry: PrometheusMeterRegistry, checks: Set<ReadinessCheck> = emptySet(), renderer: ReadinessCheckResultRenderer) : DrivingAdapter.WithPortBinding {
 
     constructor(environment: Environment, meterRegistry: PrometheusMeterRegistry, checks: Set<ReadinessCheck> = emptySet(), renderer: ReadinessCheckResultRenderer = DefaultReadinessCheckResultRenderer) : this(Configuration.from(environment), meterRegistry, checks, renderer)

@@ -16,4 +16,5 @@ private class UniqueIdFactoryAdapter(random: Random = Random, clock: Clock = Clo
     override val external by lazy { StringFactoryAdapter(random) { ulid.monotonic().stringValue } }
 }
 
+/** Creates a [UniqueIdFactory] with the given random source and clock. */
 operator fun UniqueIdFactory.Companion.invoke(random: Random = Random, clock: Clock = Clock.System): UniqueIdFactory = UniqueIdFactoryAdapter(random, clock)

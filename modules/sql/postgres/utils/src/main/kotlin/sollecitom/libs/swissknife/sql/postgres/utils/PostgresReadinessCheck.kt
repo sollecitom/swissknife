@@ -11,6 +11,7 @@ import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.r2dbc.core.awaitOne
 import org.springframework.transaction.ReactiveTransactionManager
 
+/** A readiness check that verifies connectivity to a PostgreSQL database by executing `SELECT 1`. */
 class PostgresReadinessCheck(override val sqlClient: DatabaseClient, override val transactionManager: ReactiveTransactionManager = sqlClient.newTransactionManager(), private val adapterName: Name = defaultAdapterName) : ReadinessAware, WithSqlConnectivity.Transactional {
 
     override val readinessCheckName get() = adapterName

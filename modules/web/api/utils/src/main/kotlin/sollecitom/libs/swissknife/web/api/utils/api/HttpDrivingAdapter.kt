@@ -8,6 +8,7 @@ import org.http4k.config.EnvironmentKey
 import org.http4k.core.HttpHandler
 import org.http4k.lens.BiDiLens
 
+/** A driving adapter that exposes a hexagonal port over HTTP. */
 interface HttpDrivingAdapter : DrivingAdapter.WithPortBinding, HttpHandler {
 
     data class Configuration(val requestedPort: RequestedPort) {

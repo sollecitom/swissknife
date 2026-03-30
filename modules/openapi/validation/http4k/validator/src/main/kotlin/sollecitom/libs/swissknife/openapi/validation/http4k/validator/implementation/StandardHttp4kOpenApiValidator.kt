@@ -18,6 +18,10 @@ import io.swagger.v3.oas.models.OpenAPI
 import org.http4k.core.*
 import com.atlassian.oai.validator.model.Request as OpenApiRequest
 
+/**
+ * Creates an [Http4kOpenApiValidator] for the given [openApi] spec.
+ * Optionally rejects unknown request parameters and response headers not declared in the spec.
+ */
 operator fun Http4kOpenApiValidator.Companion.invoke(openApi: OpenAPI, rejectUnknownRequestParameters: Boolean = true, rejectUnknownResponseHeaders: Boolean = true, jsonSchemasDirectoryName: String = ResponseJsonBodyValidator.defaultJsonSchemasDirectory): Http4kOpenApiValidator = StandardHttp4kOpenApiValidator(openApi, rejectUnknownRequestParameters, rejectUnknownResponseHeaders, jsonSchemasDirectoryName)
 
 internal class StandardHttp4kOpenApiValidator(openApi: OpenAPI, rejectUnknownRequestParameters: Boolean = true, rejectUnknownResponseHeaders: Boolean = true, jsonSchemasDirectoryName: String = ResponseJsonBodyValidator.defaultJsonSchemasDirectory) : Http4kOpenApiValidator {

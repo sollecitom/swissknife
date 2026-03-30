@@ -3,6 +3,7 @@ package sollecitom.libs.swissknife.avro.schema.checker
 import sollecitom.libs.swissknife.compliance.checker.domain.ComplianceRule
 import org.apache.avro.Schema
 
+/** Compliance rule that ensures all Avro field names contain only characters from the given [alphabet]. */
 data class WhitelistedAlphabetFieldNameRule(val alphabet: Set<Char>) : ComplianceRule<Schema> {
 
     override fun invoke(target: Schema): ComplianceRule.Result<Schema> {

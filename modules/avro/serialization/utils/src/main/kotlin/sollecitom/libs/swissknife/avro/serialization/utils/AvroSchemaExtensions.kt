@@ -3,6 +3,7 @@ package sollecitom.libs.swissknife.avro.serialization.utils
 import org.apache.avro.AvroRuntimeException
 import org.apache.avro.Schema
 
+/** All schemas transitively referenced by this schema's fields (e.g., nested record types). */
 val Schema.referencedSchemas: Set<Schema>
     get() = fields().mapNotNull { field ->
         when {

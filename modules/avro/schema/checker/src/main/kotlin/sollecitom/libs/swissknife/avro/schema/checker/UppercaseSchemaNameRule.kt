@@ -3,6 +3,7 @@ package sollecitom.libs.swissknife.avro.schema.checker
 import sollecitom.libs.swissknife.compliance.checker.domain.ComplianceRule
 import org.apache.avro.Schema
 
+/** Compliance rule that ensures the Avro schema name starts with an uppercase character. */
 data object UppercaseSchemaNameRule : ComplianceRule<Schema> {
 
     override fun invoke(target: Schema): ComplianceRule.Result<Schema> {

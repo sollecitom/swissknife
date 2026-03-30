@@ -3,6 +3,7 @@ package sollecitom.libs.swissknife.kotlin.extensions.text
 import sollecitom.libs.swissknife.kotlin.extensions.text.CharacterGroups.digitsAndLetters
 import kotlin.random.Random
 
+/** Generates a random string of [wordLength] characters from the given [alphabet]. */
 fun Random.string(wordLength: Int, alphabet: Iterable<Char> = digitsAndLetters): String = strings(wordLength..wordLength, alphabet).iterator().next()
 
 fun Random.string(wordLengths: IntRange, alphabet: Iterable<Char> = digitsAndLetters): String = strings(wordLengths, alphabet).iterator().next()

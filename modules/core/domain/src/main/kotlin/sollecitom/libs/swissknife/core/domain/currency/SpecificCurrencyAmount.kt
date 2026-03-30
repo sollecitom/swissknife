@@ -2,6 +2,7 @@ package sollecitom.libs.swissknife.core.domain.currency
 
 import java.math.BigInteger
 
+/** A type-safe [CurrencyAmount] bound to a specific currency, enabling safe addition and subtraction of same-currency amounts. */
 interface SpecificCurrencyAmount<SELF : SpecificCurrencyAmount<SELF>> : CurrencyAmount {
 
     override val currency: Currency<SELF>

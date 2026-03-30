@@ -14,4 +14,5 @@ internal class BinaryHash internal constructor(override val bytes: ByteArray): H
 
 }
 
+/** Creates a [Hash] from raw bytes. */
 fun Hash.Companion.create(bytes: ByteArray): Hash = BinaryHash(bytes)

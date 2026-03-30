@@ -8,4 +8,5 @@ import java.util.concurrent.Executors
 private val virtualThreadExecutor = Executors.newVirtualThreadPerTaskExecutor()
 private val virtualThreadDispatcher = virtualThreadExecutor.asCoroutineDispatcher()
 
+/** A coroutine dispatcher backed by JVM virtual threads (Project Loom). */
 val Dispatchers.VirtualThreads: CoroutineDispatcher get() = virtualThreadDispatcher

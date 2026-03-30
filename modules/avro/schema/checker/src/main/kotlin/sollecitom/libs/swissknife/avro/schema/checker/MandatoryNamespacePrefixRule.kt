@@ -3,6 +3,7 @@ package sollecitom.libs.swissknife.avro.schema.checker
 import sollecitom.libs.swissknife.compliance.checker.domain.ComplianceRule
 import org.apache.avro.Schema
 
+/** Compliance rule that ensures the Avro schema namespace starts with the given [prefix]. */
 data class MandatoryNamespacePrefixRule(private val prefix: String) : ComplianceRule<Schema> {
 
     override fun invoke(target: Schema): ComplianceRule.Result<Schema> {

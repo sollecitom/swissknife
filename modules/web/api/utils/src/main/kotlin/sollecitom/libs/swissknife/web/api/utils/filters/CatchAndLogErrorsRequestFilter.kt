@@ -23,4 +23,5 @@ private object CatchAndLogErrorsRequestFilter : Loggable() {
     }
 }
 
+/** A filter that catches exceptions during request processing, logs them, and returns a 500 response. */
 val ServerFilters.catchAndLogErrors: Filter get() = CatchAndLogErrorsRequestFilter()

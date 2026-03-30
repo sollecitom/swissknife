@@ -1,5 +1,6 @@
 package sollecitom.libs.swissknife.kotlin.extensions.throwables
 
+/** Lazily traverses the causal chain, handling circular references. */
 val Throwable.causes: Sequence<Throwable>
     get() = sequence {
         val seenCauses = mutableSetOf<Throwable>()

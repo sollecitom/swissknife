@@ -2,6 +2,7 @@ package sollecitom.libs.swissknife.core.domain.email
 
 import sollecitom.libs.swissknife.kotlin.extensions.text.withoutWhitespace
 
+/** A validated email address. Enforces basic format rules (non-blank, contains '@' and domain separator). */
 @JvmInline
 value class EmailAddress(val value: String) : Comparable<EmailAddress> {
 

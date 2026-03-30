@@ -2,6 +2,7 @@ package sollecitom.libs.swissknife.web.api.domain.endpoint
 
 import org.http4k.core.Method
 
+/** A POST endpoint following the event pattern at `/events/{eventName}/v{version}`. */
 interface EventEndpoint : VersionedEndpoint {
 
     val eventName: String

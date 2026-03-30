@@ -3,6 +3,7 @@ package sollecitom.libs.swissknife.core.domain.currency
 import java.math.BigDecimal
 import java.math.BigInteger
 
+/** A monetary amount in the smallest unit of a currency (e.g. cents). Supports arithmetic operations. */
 interface CurrencyAmount {
 
     val units: BigInteger

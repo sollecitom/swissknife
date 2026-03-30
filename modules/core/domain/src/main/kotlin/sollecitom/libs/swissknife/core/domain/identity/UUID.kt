@@ -2,6 +2,7 @@ package sollecitom.libs.swissknife.core.domain.identity
 
 import java.util.UUID as JavaUUID
 
+/** Wrapper around [java.util.UUID] that implements the [Id] contract. */
 class UUID internal constructor(private val delegate: JavaUUID) : Id {
 
     override val stringValue by lazy(delegate::toString)

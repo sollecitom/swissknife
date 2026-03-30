@@ -35,4 +35,5 @@ private class NatsConsumerAdapter(options: Options, private val subjects: Set<St
     }
 }
 
+/** Creates a [NatsConsumer] that subscribes to the given [subjects] using the given [options]. */
 fun NatsConsumer.Companion.create(options: Options, subjects: Set<String>): NatsConsumer = NatsConsumerAdapter(options, subjects)

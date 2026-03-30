@@ -9,6 +9,8 @@ import java.math.BigInteger
 import java.time.Instant
 import java.util.*
 
+/** Type-safe extensions for extracting fields from Avro [GenericRecord]s. Each pair provides a nullable and a non-nullable variant that throws on missing fields. */
+
 fun GenericRecord.getOrNull(key: String): Any? = get(key)
 
 fun GenericRecord.getStringOrNull(key: String): String? = get(key)?.asString()
@@ -50,6 +52,7 @@ fun GenericRecord.getRecordList(key: String) = getRecordListOrNull(key) ?: missi
 fun GenericRecord.getHexStringAsByteArrayOrNull(key: String): ByteArray? = getStringOrNull(key)?.let(HexFormat.of()::parseHex)
 fun GenericRecord.getHexStringAsByteArray(key: String): ByteArray = getHexStringAsByteArrayOrNull(key) ?: missingField(key)
 
+/** Extracts and deserializes a record from an envelope-style union (string type discriminator + nested record). */
 fun <T> GenericRecord.getRecordFromUnion(deserialize: (type: String, record: GenericRecord) -> T): T {
 
     val envelopeType = getString(EnvelopeFields.ENVELOPE_TYPE)
@@ -58,6 +61,7 @@ fun <T> GenericRecord.getRecordFromUnion(deserialize: (type: String, record: Gen
     return deserialize(envelopeType, envelope)
 }
 
+/** Like [getRecordFromUnion] but reads the type discriminator as an Avro enum instead of a string. */
 fun <T> GenericRecord.getRecordFromUnionWithEnumType(deserialize: (type: String, record: GenericRecord) -> T): T {
 
     val envelopeType = getEnum(EnvelopeFields.ENVELOPE_TYPE)
@@ -66,6 +70,7 @@ fun <T> GenericRecord.getRecordFromUnionWithEnumType(deserialize: (type: String,
     return deserialize(envelopeType, envelope)
 }
 
+/** Deserializes this [GenericRecord] using the given [deserializer]. */
 fun <T : Any> GenericRecord.deserializeWith(deserializer: AvroDeserializer<T>): T = deserializer.deserialize(this)
 
 fun <T : Any> GenericRecord.getValueOrNull(key: String, deserializer: AvroDeserializer<T>): T? = getRecordOrNull(key)?.deserializeWith(deserializer)

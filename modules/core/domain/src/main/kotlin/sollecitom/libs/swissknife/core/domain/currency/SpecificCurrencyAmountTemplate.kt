@@ -3,6 +3,7 @@ package sollecitom.libs.swissknife.core.domain.currency
 import java.math.BigDecimal
 import java.math.BigInteger
 
+/** Template for implementing [SpecificCurrencyAmount] subtypes. Subclass and pass a constructor reference as [construct]. */
 abstract class SpecificCurrencyAmountTemplate<SELF : SpecificCurrencyAmountTemplate<SELF>>(final override val units: BigInteger, final override val currency: Currency<SELF>, private val construct: (BigInteger) -> SELF) : SpecificCurrencyAmount<SELF> {
 
     init {

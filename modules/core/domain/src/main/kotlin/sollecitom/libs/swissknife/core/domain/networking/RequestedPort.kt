@@ -1,5 +1,6 @@
 package sollecitom.libs.swissknife.core.domain.networking
 
+/** A port request: either a specific ephemeral port or [RANDOM_AVAILABLE] (0) to let the OS choose. */
 @JvmInline
 value class RequestedPort(val value: Int) : Comparable<Int> {
 

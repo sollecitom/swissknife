@@ -4,11 +4,13 @@ import sollecitom.libs.swissknife.core.domain.text.Name
 import sollecitom.libs.swissknife.core.domain.versioning.IntVersion
 import sollecitom.libs.swissknife.core.domain.versioning.Versioned
 
+/** Base type for versioned domain occurrences (events, commands, queries). Each has a [Type] with a name and version. */
 sealed interface Happening : Versioned<IntVersion> {
 
     val type: Type
     override val version: IntVersion get() = type.version
 
+    /** A versioned type identifier for a [Happening], serialized as "name--vN". */
     data class Type(val name: Name, override val version: IntVersion) : Versioned<IntVersion> {
 
         val stringValue = "${name.value}--v${version.value}"

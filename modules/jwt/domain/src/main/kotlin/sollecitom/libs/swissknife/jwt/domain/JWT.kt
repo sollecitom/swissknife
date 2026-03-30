@@ -3,6 +3,7 @@ package sollecitom.libs.swissknife.jwt.domain
 import kotlin.time.Instant
 import org.json.JSONObject
 
+/** A parsed JWT token with access to its standard claims. */
 interface JWT {
 
     val id: String
@@ -22,4 +23,5 @@ interface JWT {
 
 }
 
+/** Checks whether this JWT is still valid at the given [time] (i.e., not expired). Returns true if there is no expiration time. */
 fun JWT.isValidAtTime(time: Instant): Boolean = expirationTime.let { it == null || it >= time }

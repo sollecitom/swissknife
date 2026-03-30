@@ -13,6 +13,7 @@ import org.apache.pulsar.common.schema.SchemaInfo
 import org.apache.pulsar.common.schema.SchemaType
 import org.apache.pulsar.client.api.Schema as PulsarSchema
 
+/** Creates a Pulsar topic with the given number of partitions. Use 0 for a non-partitioned topic. */
 fun PulsarAdmin.createTopic(fullyQualifiedTopic: String, numberOfPartitions: Int = 1) {
 
     require(numberOfPartitions >= 0) { "Number of partitions cannot be less than 0" }
@@ -34,6 +35,7 @@ fun PulsarAdmin.createTenant(tenant: String) = tenants().createTenant(tenant, Te
 
 fun PulsarAdmin.createNamespace(tenant: String, namespace: String) = namespaces().createNamespace("$tenant/$namespace")
 
+/** Configures a Pulsar namespace with topic creation, schema update, and compatibility policies. */
 fun PulsarAdmin.configureNamespace(tenant: String, namespace: String, allowTopicCreation: Boolean = false, isAllowAutoUpdateSchema: Boolean = false, schemaValidationEnforced: Boolean = true, schemaCompatibilityStrategy: SchemaCompatibilityStrategy = SchemaCompatibilityStrategy.FULL_TRANSITIVE) {
 
     val tenantNamespace = "$tenant/$namespace"
@@ -44,6 +46,7 @@ fun PulsarAdmin.configureNamespace(tenant: String, namespace: String, allowTopic
     namespaces().setSchemaCompatibilityStrategy(tenantNamespace, schemaCompatibilityStrategy)
 }
 
+/** Creates a tenant, namespace, and configures namespace policies in a single call. */
 fun PulsarAdmin.createTenantAndNamespace(tenantId: String, namespace: String, allowTopicCreation: Boolean = false, isAllowAutoUpdateSchema: Boolean = false, schemaValidationEnforced: Boolean = true, schemaCompatibilityStrategy: SchemaCompatibilityStrategy = SchemaCompatibilityStrategy.FULL_TRANSITIVE) {
 
     createTenant(tenantId)
@@ -51,6 +54,7 @@ fun PulsarAdmin.createTenantAndNamespace(tenantId: String, namespace: String, al
     configureNamespace(tenantId, namespace, allowTopicCreation, isAllowAutoUpdateSchema, schemaValidationEnforced, schemaCompatibilityStrategy)
 }
 
+/** Idempotently ensures a tenant and namespace exist, configuring the namespace if newly created. */
 fun PulsarAdmin.ensureTenantAndNamespaceExist(tenant: String, namespace: String, allowTopicCreation: Boolean = false, isAllowAutoUpdateSchema: Boolean = false, schemaValidationEnforced: Boolean = true, schemaCompatibilityStrategy: SchemaCompatibilityStrategy = SchemaCompatibilityStrategy.FULL_TRANSITIVE) {
 
     ensureTenantExists(tenant)
@@ -60,6 +64,7 @@ fun PulsarAdmin.ensureTenantAndNamespaceExist(tenant: String, namespace: String,
     }
 }
 
+/** Idempotently ensures a tenant exists. Returns true if a new tenant was created. */
 fun PulsarAdmin.ensureTenantExists(tenantId: String): Boolean = try {
     createTenant(tenantId)
     true
@@ -67,6 +72,7 @@ fun PulsarAdmin.ensureTenantExists(tenantId: String): Boolean = try {
     false
 }
 
+/** Idempotently ensures a namespace exists. Returns true if a new namespace was created. */
 fun PulsarAdmin.ensureNamespaceExists(tenantId: String, namespace: String): Boolean = try {
     createNamespace(tenantId, namespace)
     true
@@ -74,6 +80,7 @@ fun PulsarAdmin.ensureNamespaceExists(tenantId: String, namespace: String): Bool
     false
 }
 
+/** Idempotently ensures a topic exists. Returns true if a new topic was created. */
 fun PulsarAdmin.ensureTopicExists(fullyQualifiedTopic: String, partitionsCount: Int = 1): Boolean = try {
     createTopic(fullyQualifiedTopic, partitionsCount)
     true
@@ -81,10 +88,13 @@ fun PulsarAdmin.ensureTopicExists(fullyQualifiedTopic: String, partitionsCount: 
     false
 }
 
+/** Registers an Avro schema on a topic. Throws [PulsarIncompatibleSchemaChangeException] on compatibility violations. */
 fun PulsarAdmin.registerSchema(fullyQualifiedTopic: String, schema: Schema) = register(fullyQualifiedTopic, schema)
 
+/** Registers a Pulsar schema on a topic. Throws [PulsarIncompatibleSchemaChangeException] on compatibility violations. */
 fun PulsarAdmin.registerSchema(fullyQualifiedTopic: String, schema: PulsarSchema<*>) = register(fullyQualifiedTopic, schema)
 
+/** Ensures a topic exists and registers an Avro schema on it. */
 fun PulsarAdmin.ensureSchemaOnTopic(schema: Schema, fullyQualifiedTopic: String, partitionsCount: Int = 1) {
 
     ensureTopicExists(fullyQualifiedTopic, partitionsCount)

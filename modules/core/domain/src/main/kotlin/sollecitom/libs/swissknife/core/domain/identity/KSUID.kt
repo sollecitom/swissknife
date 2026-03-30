@@ -3,6 +3,7 @@ package sollecitom.libs.swissknife.core.domain.identity
 import com.github.f4b6a3.ksuid.Ksuid
 import kotlin.time.toKotlinInstant
 
+/** A K-Sortable Unique Identifier. Create via [KSUID.invoke] or a [UniqueIdFactory]. */
 class KSUID internal constructor(private val delegate: Ksuid) : SortableTimestampedUniqueIdentifier<KSUID> {
 
     override val stringValue by lazy(delegate::toString)

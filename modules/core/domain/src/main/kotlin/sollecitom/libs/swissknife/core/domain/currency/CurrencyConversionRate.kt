@@ -2,6 +2,7 @@ package sollecitom.libs.swissknife.core.domain.currency
 
 import java.math.BigDecimal
 
+/** An exchange rate between two currencies. Must be positive. */
 @JvmInline
 value class CurrencyConversionRate(val value: BigDecimal) : Comparable<CurrencyConversionRate> {
 

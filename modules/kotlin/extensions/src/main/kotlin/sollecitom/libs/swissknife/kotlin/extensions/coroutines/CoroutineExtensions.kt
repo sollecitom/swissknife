@@ -5,6 +5,7 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.Duration
 
+/** Launches a coroutine that runs [action] periodically with an optional initial [delay] and subsequent [period]. */
 inline fun CoroutineScope.schedulePeriodic(context: CoroutineContext = EmptyCoroutineContext, start: CoroutineStart = CoroutineStart.DEFAULT, delay: Duration = Duration.ZERO, period: Duration, crossinline action: suspend () -> Unit): Job {
 
     return launch(context = context, start = start) {

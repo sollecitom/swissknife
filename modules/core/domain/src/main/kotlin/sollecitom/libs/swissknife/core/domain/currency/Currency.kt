@@ -4,6 +4,7 @@ import sollecitom.libs.swissknife.core.domain.quantity.Count
 import sollecitom.libs.swissknife.core.domain.text.Name
 import java.util.*
 
+/** Represents a currency with its codes, fractional digits, and display information. Parameterized by its specific amount type. */
 interface Currency<AMOUNT : SpecificCurrencyAmount<AMOUNT>> {
 
     val textualCode: Name

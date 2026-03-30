@@ -16,6 +16,7 @@ import sollecitom.libs.swissknife.logger.core.loggable.Loggable
 import kotlin.time.Instant
 import sollecitom.libs.swissknife.core.domain.identity.factory.invoke
 
+/** A domain event: an identifiable, timestamped happening with tracing context. Supports parent/originating event lineage. */
 interface Event : Happening, Identifiable, Timestamped, Contextual<Event.Context> {
 
     val reference: Reference get() = Reference(id, type, timestamp)

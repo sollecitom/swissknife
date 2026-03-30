@@ -6,6 +6,7 @@ import org.http4k.core.Response
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+/** Suspending extension to invoke an [AsyncHttpHandler], bridging the callback-based API to coroutines. */
 suspend operator fun AsyncHttpHandler.invoke(request: Request): Response = suspendCoroutine { continuation ->
 
     invoke(request) { response ->

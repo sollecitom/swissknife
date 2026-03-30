@@ -1,5 +1,6 @@
 package sollecitom.libs.swissknife.http4k.utils
 
+/** Standard HTTP header constants for use with the typed [HttpHeader] API. */
 object HttpHeaders {
 
     val ContentType: HttpHeader get() = ContentTypeHeader

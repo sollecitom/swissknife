@@ -9,6 +9,7 @@ import kotlinx.coroutines.withTimeout
 import java.util.concurrent.CompletionStage
 import kotlin.time.Duration
 
+/** Awaits the first deferred result matching the [predicate], cancels the rest. Returns null if the collection is empty. */
 suspend fun <V> Collection<Deferred<V>>.awaitAny(predicate: (V) -> Boolean = { true }): V? = if (isEmpty()) null else
     select {
         forEach { deferred ->

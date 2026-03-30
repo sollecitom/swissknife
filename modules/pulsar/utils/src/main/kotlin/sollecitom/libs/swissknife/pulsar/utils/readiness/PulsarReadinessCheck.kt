@@ -9,6 +9,7 @@ import kotlinx.coroutines.future.await
 import org.apache.pulsar.client.api.PulsarClient
 import org.apache.pulsar.client.api.PulsarClientException
 
+/** A readiness check that verifies connectivity to Pulsar by querying partitions for a non-existent topic. */
 class PulsarReadinessCheck(private val pulsar: PulsarClient, private val adapterName: Name = defaultAdapterName) : ReadinessAware {
 
     override val readinessCheckName get() = adapterName

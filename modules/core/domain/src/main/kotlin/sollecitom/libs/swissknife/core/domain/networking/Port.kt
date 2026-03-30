@@ -1,5 +1,6 @@
 package sollecitom.libs.swissknife.core.domain.networking
 
+/** A validated network port number (1-65535). */
 @JvmInline
 value class Port(val value: Int) : Comparable<Port> {
 

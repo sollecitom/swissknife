@@ -1,5 +1,6 @@
 package sollecitom.libs.swissknife.web.api.domain.error
 
+/** Standard API error codes with unique identifiers and human-readable messages. */
 sealed class ErrorCode(val value: String, val message: String) {
 
     data object AuthenticatedAccessRequired : ErrorCode(value = "01J15B4WXA9GZG7S7TG96DA6EC", message = "The invocation requires an authenticated access")

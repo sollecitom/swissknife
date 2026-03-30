@@ -3,6 +3,7 @@ package sollecitom.libs.swissknife.core.domain.file
 import java.io.InputStream
 import java.net.URI
 
+/** Represents file content, either [Inline] (byte array) or [Remote] (URI-referenced). */
 sealed interface FileContent {
 
     val length: Int
@@ -11,6 +12,7 @@ sealed interface FileContent {
     /** Opens the content for reading. The caller is responsible for closing the returned [InputStream]. */
     fun open(): InputStream
 
+    /** File content held in memory as a byte array. */
     data class Inline(val bytes: ByteArray, override val format: Format) : FileContent {
 
         override val length get() = bytes.size
@@ -40,6 +42,7 @@ sealed interface FileContent {
         companion object
     }
 
+    /** File content referenced by a remote URI. Opened on demand via [contentURI]. */
     data class Remote(override val length: Int, val contentURI: URI, override val format: Format) : FileContent {
 
         override fun open(): InputStream = contentURI.toURL().openStream()

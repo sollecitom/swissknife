@@ -6,6 +6,7 @@ import org.http4k.core.Response
 import org.json.JSONArray
 import org.json.JSONObject
 
+/** Sets a JSON object as the request body, automatically setting Content-Type and Content-Length headers. */
 fun Request.body(json: JSONObject) = body(json.toString()).contentType(ContentType.APPLICATION_JSON).replaceHeader(HttpHeaders.ContentLength, json.toString().toByteArray().size.toString())
 fun Request.body(json: JSONArray) = body(json.toString()).contentType(ContentType.APPLICATION_JSON).replaceHeader(HttpHeaders.ContentLength, json.toString().toByteArray().size.toString())
 

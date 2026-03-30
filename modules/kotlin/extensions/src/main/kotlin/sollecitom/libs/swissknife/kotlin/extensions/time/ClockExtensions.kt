@@ -19,8 +19,10 @@ val Clock.localDate: LocalDate get() = localDate()
 
 val Clock.localTime: LocalTime get() = localTime()
 
+/** Creates a clock that always returns the given [instant]. Useful for testing. */
 fun Clock.Companion.fixed(instant: Instant): Clock = FixedInstantClock(instant)
 
+/** Adapts this Kotlin [Clock] to a [java.time.Clock]. */
 fun Clock.toJavaClock(): JavaClock = JavaClockAdapter(clock = this)
 
 private class FixedInstantClock(val instant: Instant) : Clock {

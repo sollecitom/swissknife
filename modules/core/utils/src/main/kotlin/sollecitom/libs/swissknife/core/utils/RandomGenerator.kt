@@ -7,6 +7,7 @@ import kotlin.random.Random
 import kotlin.random.asKotlinRandom
 import kotlin.random.nextInt
 
+/** Provides access to both a general-purpose and a cryptographically secure random source. */
 interface RandomGenerator {
 
     val random: Random
@@ -28,4 +29,5 @@ private class SecureRandomGeneratorAdapter(override val secureRandom: SecureRand
     override val random = secureRandom.asKotlinRandom()
 }
 
+/** Wraps this [SecureRandom] as a [RandomGenerator]. */
 fun SecureRandom.asRandomGenerator(): RandomGenerator = SecureRandomGeneratorAdapter(secureRandom = this)

@@ -2,6 +2,7 @@ package sollecitom.libs.swissknife.core.domain.version
 
 import sollecitom.libs.swissknife.core.domain.text.Name
 
+/** A software version, either [Simple] (arbitrary string) or [Semantic] (major.minor.patch). */
 sealed interface Version : Comparable<Version> {
 
     val value: Name
@@ -41,6 +42,7 @@ sealed interface Version : Comparable<Version> {
     companion object
 }
 
+/** Attempts to parse as [Version.Semantic], falling back to [Version.Simple]. */
 fun Version.Companion.parse(rawValue: Name): Version = try {
     Version.Semantic.parse(rawValue.value)
 } catch (error: Exception) {
