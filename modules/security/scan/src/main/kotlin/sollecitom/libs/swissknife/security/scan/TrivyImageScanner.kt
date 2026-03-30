@@ -1,21 +1,25 @@
 package sollecitom.libs.swissknife.security.scan
 
-import org.json.JSONObject
-import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.BindMode
+import org.testcontainers.containers.GenericContainer
+import org.testcontainers.containers.output.ToStringConsumer
+import org.testcontainers.containers.startupcheck.OneShotStartupCheckStrategy
 import org.testcontainers.images.builder.Transferable
 import java.time.Duration
 
 /** Scans Docker images for vulnerabilities using Trivy running as a container via Testcontainers. */
 object TrivyImageScanner {
 
-    private const val TRIVY_IMAGE = "aquasec/trivy:latest"
+    private const val TRIVY_IMAGE = "aquasecurity/trivy:latest"
 
     /**
      * Scans the given Docker [imageName] for vulnerabilities at or above the specified [severities].
-     * Optionally reads a [trivyIgnoreContent] string (one CVE ID per line) to suppress known issues.
+     * Trivy runs as a Docker container (auto-pulled by Testcontainers) with access to the Docker socket.
      *
-     * @return list of vulnerabilities found, filtered by severity and exclusions
+     * @param imageName the Docker image to scan (must be available locally)
+     * @param severities which severity levels to report (default: CRITICAL, HIGH)
+     * @param trivyIgnoreContent optional .trivyignore content (one CVE ID per line) for suppressing known issues
+     * @return list of vulnerabilities found
      */
     fun scan(
         imageName: String,
@@ -24,81 +28,49 @@ object TrivyImageScanner {
     ): List<Vulnerability> {
 
         val severityArg = severities.joinToString(",") { it.name }
-        val command = mutableListOf(
-            "trivy", "image",
-            "--format", "json",
-            "--severity", severityArg,
-            "--no-progress",
-            "--skip-db-update=false"
-        )
-        if (trivyIgnoreContent != null) {
-            command.addAll(listOf("--ignorefile", "/tmp/.trivyignore"))
-        }
-        command.add(imageName)
-
-        val container = GenericContainer(TRIVY_IMAGE)
-            .withCommand(*command.toTypedArray())
-            .withFileSystemBind("/var/run/docker.sock", "/var/run/docker.sock", BindMode.READ_ONLY)
-            .withStartupTimeout(Duration.ofMinutes(5))
-            .withCreateContainerCmdModifier { cmd ->
-                cmd.withEntrypoint("/bin/sh", "-c")
+        val command = buildList {
+            add("image")
+            add("--format"); add("json")
+            add("--severity"); add(severityArg)
+            add("--no-progress")
+            if (trivyIgnoreContent != null) {
+                add("--ignorefile"); add("/tmp/.trivyignore")
             }
-
-        // We need to run trivy as a one-shot command and capture output
-        // Using docker run directly since GenericContainer is for long-running services
-        return runTrivyScan(imageName, severityArg, trivyIgnoreContent)
-    }
-
-    private fun runTrivyScan(imageName: String, severities: String, trivyIgnoreContent: String?): List<Vulnerability> {
-
-        val ignoreArgs = if (trivyIgnoreContent != null) {
-            val tempFile = kotlin.io.path.createTempFile(prefix = "trivyignore").toFile()
-            tempFile.writeText(trivyIgnoreContent)
-            tempFile.deleteOnExit()
-            listOf("--ignorefile", tempFile.absolutePath)
-        } else emptyList()
-
-        val command = mutableListOf(
-            "docker", "run", "--rm",
-            "-v", "/var/run/docker.sock:/var/run/docker.sock"
-        )
-        if (ignoreArgs.isNotEmpty()) {
-            command.addAll(listOf("-v", "${ignoreArgs[1]}:/tmp/.trivyignore:ro"))
+            add(imageName)
         }
-        command.addAll(listOf(
-            TRIVY_IMAGE,
-            "image",
-            "--format", "json",
-            "--severity", severities,
-            "--no-progress",
-        ))
-        if (ignoreArgs.isNotEmpty()) {
-            command.addAll(listOf("--ignorefile", "/tmp/.trivyignore"))
-        }
-        command.add(imageName)
 
-        val process = ProcessBuilder(command)
-            .redirectErrorStream(false)
-            .start()
+        val outputConsumer = ToStringConsumer()
 
-        val output = process.inputStream.bufferedReader().readText()
-        val errors = process.errorStream.bufferedReader().readText()
-        val exitCode = process.waitFor()
-
-        if (output.isBlank()) {
-            if (errors.isNotBlank()) {
-                throw IllegalStateException("Trivy scan failed (exit code $exitCode): $errors")
+        val container = GenericContainer(TRIVY_IMAGE).apply {
+            withCommand(*command.toTypedArray())
+            withFileSystemBind("/var/run/docker.sock", "/var/run/docker.sock", BindMode.READ_ONLY)
+            withStartupCheckStrategy(OneShotStartupCheckStrategy().withTimeout(Duration.ofMinutes(5)))
+            withLogConsumer(outputConsumer)
+            if (trivyIgnoreContent != null) {
+                withCopyToContainer(Transferable.of(trivyIgnoreContent.toByteArray()), "/tmp/.trivyignore")
             }
-            return emptyList()
         }
 
+        container.start()
+
+        val output = outputConsumer.toUtf8String()
         return parseVulnerabilities(output)
     }
 
-    private fun parseVulnerabilities(jsonOutput: String): List<Vulnerability> {
+    private fun parseVulnerabilities(output: String): List<Vulnerability> {
 
-        val json = org.json.JSONObject("{\"wrapper\": $jsonOutput}")
-        val results = json.optJSONArray("wrapper") ?: return emptyList()
+        // Trivy outputs JSON to stdout but log messages go to stderr (captured together by Testcontainers)
+        // Extract the JSON portion — find the first [ or { that starts the JSON output
+        val jsonStart = output.indexOfFirst { it == '[' || it == '{' }
+        if (jsonStart == -1) return emptyList()
+        val jsonText = output.substring(jsonStart).trim()
+
+        val results = try {
+            if (jsonText.startsWith("[")) org.json.JSONArray(jsonText)
+            else org.json.JSONObject(jsonText).optJSONArray("Results") ?: return emptyList()
+        } catch (_: Exception) {
+            return emptyList()
+        }
 
         val vulnerabilities = mutableListOf<Vulnerability>()
         for (i in 0 until results.length()) {
