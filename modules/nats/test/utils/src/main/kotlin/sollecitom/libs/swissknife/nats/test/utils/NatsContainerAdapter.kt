@@ -23,7 +23,7 @@ class NatsContainer private constructor(imageName: DockerImageName) : GenericCon
 
     companion object {
         private const val IMAGE_NAME = "nats"
-        private const val DEFAULT_IMAGE_VERSION = "alpine3.21"
+        private const val DEFAULT_IMAGE_VERSION = "alpine3.22"
 
         const val CLIENT_PORT = 4222
         const val MANAGEMENT_PORT = 8222

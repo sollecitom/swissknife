@@ -28,7 +28,7 @@ class PostgresDockerContainer(imageName: DockerImageName = DockerImageName.parse
 
     companion object {
         const val defaultImageName = "postgres"
-        const val defaultImageVersion = "17"
+        const val defaultImageVersion = "14"
     }
 }
 
