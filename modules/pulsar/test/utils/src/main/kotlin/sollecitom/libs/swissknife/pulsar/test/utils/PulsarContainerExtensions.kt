@@ -20,7 +20,11 @@ private fun pulsarDockerImageName(version: String) = DockerImageName.parse("apac
 
 fun newPulsarContainer(version: String = DEFAULT_PULSAR_DOCKER_IMAGE_VERSION, startupAttempts: Int = 10, startupTimeout: Duration = 2.minutes, waitStrategy: WaitStrategy = PulsarWaitStrategies.availableAdminClusterHttpEndpoint): PulsarContainer {
 
-    return PulsarContainer(pulsarDockerImageName(version)).withStartupAttempts(startupAttempts).withStartupTimeout(startupTimeout.toJavaDuration()).apply { setWaitStrategy(waitStrategy) }
+    return PulsarContainer(pulsarDockerImageName(version))
+        .withStartupAttempts(startupAttempts)
+        .withStartupTimeout(startupTimeout.toJavaDuration())
+        .withEnv("PULSAR_PREFIX_advertisedAddress", "localhost")
+        .apply { setWaitStrategy(waitStrategy) }
 }
 
 fun PulsarContainer.withBrokerEnv(propertyName: String, propertyValue: String) = withEnv("PULSAR_PREFIX_$propertyName", propertyValue)
