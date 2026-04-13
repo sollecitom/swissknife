@@ -11,7 +11,7 @@ object Keycloak {
     private const val defaultImageName = "keycloak/keycloak"
     const val defaultAdminUsername = "admin"
     const val defaultAdminPassword = "admin"
-    const val defaultImageVersion = "26.5.7"
+    const val defaultImageVersion = "26.6.0"
     const val defaultInitialRamPercentage = 50
     const val defaultMaxRamPercentage = 75
 
