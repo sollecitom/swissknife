@@ -38,7 +38,7 @@ opentelemetry = "1.61.0"
 grafana-otel-lgtm = "1.21.4"
 commons-codec = "1.21.0"
 # plugins
-sollecitom-gradle-plugins = "1.0.0-SNAPSHOT"
+sollecitom-gradle-plugins = "1.0.2"
 palantir-git-plugin = "5.0.0"
 
 [libraries]
@@ -110,3 +110,7 @@ commons-codec = { module = "commons-codec:commons-codec", version.ref = "commons
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 com-palantir-git-version = { id = "com.palantir.git-version", version.ref = "palantir-git-plugin" }
+sollecitom-aggregate-test-metrics-conventions = { id = "sollecitom.aggregate-test-metrics-conventions", version.ref = "sollecitom-gradle-plugins" }
+sollecitom-dependency-update-conventions = { id = "sollecitom.dependency-update-conventions", version.ref = "sollecitom-gradle-plugins" }
+sollecitom-kotlin-library-conventions = { id = "sollecitom.kotlin-library-conventions", version.ref = "sollecitom-gradle-plugins" }
+sollecitom-maven-publish-conventions = { id = "sollecitom.maven-publish-conventions", version.ref = "sollecitom-gradle-plugins" }
