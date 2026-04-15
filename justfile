@@ -9,7 +9,10 @@ pull:
     git pull
 
 build:
-    ./scripts/publish-if-changed.sh
+    ./gradlew updateInternalCatalogVersions && ./scripts/publish-if-changed.sh
+
+update-internal-dependencies:
+    ./gradlew updateInternalCatalogVersions
 
 rebuild:
     ./gradlew clean build --refresh-dependencies --rerun-tasks
@@ -27,4 +30,4 @@ update-dependencies:
     ./scripts/update-container-versions.sh
 
 update-all:
-    just update-dependencies && just update-gradle && just update-container-versions
+    just update-internal-dependencies && just update-dependencies && just update-gradle && just update-container-versions
