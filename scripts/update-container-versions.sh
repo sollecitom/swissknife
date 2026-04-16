@@ -4,6 +4,14 @@ props="container-versions.properties"
 
 echo "Checking for container image version updates..."
 
+append_workspace_event() {
+    local message="$1"
+    local events_file="${WORKSPACE_UPDATE_EVENTS_FILE:-}"
+    if [ -n "$events_file" ]; then
+        printf '%s\n' "$message" >> "$events_file"
+    fi
+}
+
 fetch_latest_tag() {
     local image="$1"
     local filter="${2:-}"
@@ -26,7 +34,9 @@ fetch_latest_org_tag() {
 update_version() {
     local key="$1" current="$2" latest="$3"
     if [ -n "$latest" ] && [ "$current" != "$latest" ]; then
-        echo "  $key: $current → $latest"
+        local message="$key: $current → $latest"
+        echo "  $message"
+        append_workspace_event "$message"
         sed -i '' "s/^$key=.*/$key=$latest/" "$props"
     else
         echo "  $key: $current (up to date)"
