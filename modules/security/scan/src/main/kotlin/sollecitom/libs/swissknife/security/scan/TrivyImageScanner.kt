@@ -11,7 +11,7 @@ import java.time.Duration
 object TrivyImageScanner {
 
     private const val DEFAULT_TRIVY_IMAGE = "aquasec/trivy"
-    private const val DEFAULT_TRIVY_VERSION = "0.69.3"
+    private const val DEFAULT_TRIVY_VERSION = "0.70.0"
 
     /**
      * Scans the given Docker [imageName] for vulnerabilities at or above the specified [severities].
