@@ -1,16 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 props="container-versions.properties"
+workspace_root="$(cd "$(dirname "$0")/../.." && pwd)"
 
 echo "Checking for container image version updates..."
-
-append_workspace_event() {
-    local message="$1"
-    local events_file="${WORKSPACE_UPDATE_EVENTS_FILE:-}"
-    if [ -n "$events_file" ]; then
-        printf '%s\n' "$message" >> "$events_file"
-    fi
-}
 
 fetch_latest_tag() {
     local image="$1"
@@ -36,7 +29,7 @@ update_version() {
     if [ -n "$latest" ] && [ "$current" != "$latest" ]; then
         local message="$key: $current → $latest"
         echo "  $message"
-        append_workspace_event "$message"
+        bash "$workspace_root/scripts/append-workspace-event.sh" "$message"
         sed -i '' "s/^$key=.*/$key=$latest/" "$props"
     else
         echo "  $key: $current (up to date)"
