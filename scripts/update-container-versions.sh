@@ -24,16 +24,49 @@ fetch_latest_org_tag() {
         | grep -o '"name":"[^"]*"' | sed 's/"name":"//;s/"//' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -1
 }
 
+append_workspace_event_if_configured() {
+    local message="$1"
+    bash "$workspace_root/scripts/append-workspace-event.sh" "$message"
+}
+
 update_version() {
     local key="$1" current="$2" latest="$3"
     if [ -n "$latest" ] && [ "$current" != "$latest" ]; then
         local message="$key: $current → $latest"
         echo "  $message"
-        bash "$workspace_root/scripts/append-workspace-event.sh" "$message"
+        append_workspace_event_if_configured "$message"
         sed -i '' "s/^$key=.*/$key=$latest/" "$props"
     else
         echo "  $key: $current (up to date)"
     fi
+}
+
+update_major_version_without_downgrade() {
+    local key="$1" current="$2" latest="$3"
+
+    if ! [[ "$current" =~ ^[0-9]+$ ]]; then
+        update_version "$key" "$current" "$latest"
+        return
+    fi
+
+    if ! [[ "$latest" =~ ^[0-9]+$ ]]; then
+        echo "  $key: $current (no numeric major tag found)"
+        return
+    fi
+
+    if [ "$latest" -gt "$current" ]; then
+        update_version "$key" "$current" "$latest"
+        return
+    fi
+
+    if [ "$latest" -lt "$current" ]; then
+        local message="$key: kept $current (latest recently updated tag was older major $latest)"
+        echo "  $message"
+        append_workspace_event_if_configured "$message"
+        return
+    fi
+
+    echo "  $key: $current (up to date)"
 }
 
 source "$props"
@@ -47,7 +80,7 @@ latest_nats=$(fetch_latest_tag "nats" "^alpine")
 update_version "trivy" "$trivy" "$latest_trivy"
 update_version "pulsar" "$pulsar" "$latest_pulsar"
 update_version "keycloak" "$keycloak" "$latest_keycloak"
-update_version "postgres" "$postgres" "$latest_postgres"
+update_major_version_without_downgrade "postgres" "$postgres" "$latest_postgres"
 update_version "nats" "$nats" "$latest_nats"
 
 sed -i '' "s/DEFAULT_TRIVY_VERSION = \"[^\"]*\"/DEFAULT_TRIVY_VERSION = \"$(grep '^trivy=' "$props" | cut -d= -f2)\"/" \
