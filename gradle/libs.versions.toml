@@ -2,7 +2,7 @@
 kotlin = "2.3.21"
 kotlinx-coroutines = "1.10.2"
 slf4j = "2.0.17"
-http4k = "6.43.0.0"
+http4k = "6.44.0.0"
 junit-jupiter = "6.0.3"
 assertk = "0.28.1"
 kotlinx-datetime = "0.7.1"
