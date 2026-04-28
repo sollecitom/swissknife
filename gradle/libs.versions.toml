@@ -15,7 +15,7 @@ bouncy-castle = "1.84"
 keycloak = "26.0.9"
 test-containers = "1.21.4"
 test-containers-keycloak = "4.2.1"
-swagger-parser = "2.1.40"
+swagger-parser = "2.1.41"
 atlassian-swagger-request-validator = "2.46.1"
 pulsar = "4.2.0"
 avro = "1.12.1"
@@ -38,7 +38,7 @@ opentelemetry = "1.61.0"
 grafana-otel-lgtm = "1.21.4"
 commons-codec = "1.22.0"
 # plugins
-sollecitom-gradle-plugins = "1.0.7"
+sollecitom-gradle-plugins = "1.0.8"
 palantir-git-plugin = "5.0.0"
 
 [libraries]
