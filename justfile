@@ -14,6 +14,9 @@ build:
 license-audit:
     bash ../scripts/run-license-audit.sh swissknife
 
+license-audit-compact:
+    bash ../scripts/run-license-audit.sh swissknife --compact
+
 generate-sbom:
     bash ../scripts/run-generate-sbom.sh swissknife
 
