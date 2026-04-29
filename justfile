@@ -9,7 +9,7 @@ pull:
     git pull
 
 build:
-    ./gradlew updateInternalCatalogVersions && ./gradlew build
+    bash ../scripts/update-internal-catalog-versions.sh . && ./gradlew build
 
 license-audit:
     bash ../scripts/run-license-audit.sh swissknife
@@ -24,7 +24,7 @@ cleanup:
     bash ../scripts/cleanup-maven-local.sh --repo-root . --keep 5 --max-age-days 30
 
 update-internal-dependencies:
-    ./gradlew updateInternalCatalogVersions
+    bash ../scripts/update-internal-catalog-versions.sh .
 
 rebuild:
     ./gradlew clean build --refresh-dependencies --rerun-tasks
