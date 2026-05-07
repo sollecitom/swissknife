@@ -5,8 +5,8 @@ import org.apache.pulsar.client.admin.PulsarAdminBuilder
 import org.apache.pulsar.client.api.ClientBuilder
 import org.apache.pulsar.client.api.PulsarClient
 import org.testcontainers.containers.Network
-import org.testcontainers.containers.PulsarContainer
 import org.testcontainers.containers.wait.strategy.WaitStrategy
+import org.testcontainers.pulsar.PulsarContainer
 import org.testcontainers.utility.DockerImageName
 import java.net.URI
 import kotlin.time.Duration

@@ -13,7 +13,7 @@ erosb-json-schema = "0.30.0"
 guava = "33.6.0-jre"
 bouncy-castle = "1.84"
 keycloak = "26.0.9"
-test-containers = "1.21.4"
+test-containers = "2.0.5"
 test-containers-keycloak = "4.2.1"
 swagger-parser = "2.1.41"
 atlassian-swagger-request-validator = "2.46.1"
@@ -77,9 +77,9 @@ junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", vers
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-jupiter" }
 assertk = { module = "com.willowtreeapps.assertk:assertk", version.ref = "assertk" }
-test-containers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "test-containers" }
-test-containers-pulsar = { module = "org.testcontainers:pulsar", version.ref = "test-containers" }
-test-containers-postgres = { module = "org.testcontainers:postgresql", version.ref = "test-containers" }
+test-containers-junit-jupiter = { module = "org.testcontainers:testcontainers-junit-jupiter", version.ref = "test-containers" }
+test-containers-pulsar = { module = "org.testcontainers:testcontainers-pulsar", version.ref = "test-containers" }
+test-containers-postgres = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "test-containers" }
 keycloak-authz-client = { module = "org.keycloak:keycloak-authz-client", version.ref = "keycloak" }
 test-containers-kycloak = { module = "com.github.dasniko:testcontainers-keycloak", version.ref = "test-containers-keycloak" }
 swagger-parser = { module = "io.swagger.parser.v3:swagger-parser-v3", version.ref = "swagger-parser" }
