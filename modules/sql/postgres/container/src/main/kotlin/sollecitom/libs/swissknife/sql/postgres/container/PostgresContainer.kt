@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION") // testcontainers 2.x's `org.testcontainers.postgresql.PostgreSQLContainer` dropped the SELF type parameter, so the only way to subclass with fluent self-typed return values is to keep using the deprecated `org.testcontainers.containers.PostgreSQLContainer<SELF>`.
+
 package sollecitom.libs.swissknife.sql.postgres.container
 
 import sollecitom.libs.swissknife.core.domain.security.Password
