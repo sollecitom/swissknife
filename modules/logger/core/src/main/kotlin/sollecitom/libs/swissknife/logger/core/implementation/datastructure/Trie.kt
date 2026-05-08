@@ -71,7 +71,8 @@ private class TrieNodeTree : Trie.Mutable {
                 return prefixes.maxByOrNull(String::length) ?: ""
             }
         }
-        return ""
+        if (node.isEnd) prefixes += currentPrefix.toString()
+        return prefixes.maxByOrNull(String::length) ?: ""
     }
 
     override fun searchLongestPrefix(word: String): String {
