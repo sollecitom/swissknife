@@ -35,7 +35,6 @@ snakeyaml = "2.6"
 liquibase-slf4j = "5.1.0"
 classgraph = "4.8.184"
 opentelemetry = "1.61.0"
-grafana-otel-lgtm = "1.21.4"
 commons-codec = "1.22.0"
 # plugins
 sollecitom-gradle-plugins = "1.0.16"
@@ -100,7 +99,7 @@ opentelemetry-bom = { module = "io.opentelemetry:opentelemetry-bom", version.ref
 opentelemetry-sdk-core = { module = "io.opentelemetry:opentelemetry-sdk", version.ref = "opentelemetry" }
 opentelemetry-sdk-logs = { module = "io.opentelemetry:opentelemetry-sdk-logs", version.ref = "opentelemetry" }
 opentelemetry-exporter-otlp = { module = "io.opentelemetry:opentelemetry-exporter-otlp", version.ref = "opentelemetry" }
-testcontainers-grafana-otel-lgtm = { module = "org.testcontainers:grafana", version.ref = "grafana-otel-lgtm" }
+testcontainers-grafana-otel-lgtm = { module = "org.testcontainers:testcontainers-grafana", version.ref = "test-containers" }
 jnats = { module = "io.nats:jnats", version.ref = "jnats" }
 jose4j = { module = "org.bitbucket.b_c:jose4j", version.ref = "jose4j" }
 classgraph = { module = "io.github.classgraph:classgraph", version.ref = "classgraph" }

@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION") // testcontainers 2.x's `org.testcontainers.postgresql.PostgreSQLContainer` dropped the SELF type parameter, so the only way to subclass with fluent self-typed return values is to keep using the deprecated `org.testcontainers.containers.PostgreSQLContainer<SELF>`.
-
 package sollecitom.libs.swissknife.sql.postgres.container
 
 import sollecitom.libs.swissknife.core.domain.security.Password
@@ -7,8 +5,8 @@ import sollecitom.libs.swissknife.core.domain.text.Name
 import sollecitom.libs.swissknife.sql.domain.SqlConnectionOptions
 import sollecitom.libs.swissknife.sql.postgres.container.PostgresDockerContainer.Companion.defaultImageVersion
 import org.testcontainers.containers.Network
-import org.testcontainers.containers.PostgreSQLContainer
-import org.testcontainers.containers.PostgreSQLContainer.POSTGRESQL_PORT
+import org.testcontainers.postgresql.PostgreSQLContainer
+import org.testcontainers.postgresql.PostgreSQLContainer.POSTGRESQL_PORT
 import org.testcontainers.utility.DockerImageName
 import java.net.URI
 
@@ -20,7 +18,40 @@ fun newPostgresContainer(databaseName: String = "db", username: String = "user",
     return PostgresDockerContainer(imageVersion = postgresVersion).withDatabaseName(databaseName).withUsername(username).withPassword(password).also { container -> network?.let { container.withNetwork(network).withNetworkAliases(POSTGRES_NETWORK_ALIAS) } }
 }
 
-class PostgresDockerContainer(imageName: DockerImageName = DockerImageName.parse(defaultImageName), imageVersion: String = defaultImageVersion) : PostgreSQLContainer<PostgresDockerContainer>(imageName.withTag(imageVersion)) {
+/**
+ * Wraps testcontainers' [PostgreSQLContainer] via composition rather than inheritance. testcontainers 2.x
+ * dropped the `<SELF>` type parameter, so subclassing would lose the fluent self-typed return values; composing
+ * lets us keep our own fluent API while staying on the supported (non-deprecated) class.
+ */
+class PostgresDockerContainer(imageName: DockerImageName = DockerImageName.parse(defaultImageName), imageVersion: String = defaultImageVersion) : AutoCloseable {
+
+    private val container: PostgreSQLContainer = PostgreSQLContainer(imageName.withTag(imageVersion))
+
+    fun withDatabaseName(name: String): PostgresDockerContainer = also { container.withDatabaseName(name) }
+
+    fun withUsername(value: String): PostgresDockerContainer = also { container.withUsername(value) }
+
+    fun withPassword(value: String): PostgresDockerContainer = also { container.withPassword(value) }
+
+    fun withNetwork(network: Network): PostgresDockerContainer = also { container.withNetwork(network) }
+
+    fun withNetworkAliases(vararg aliases: String): PostgresDockerContainer = also { container.withNetworkAliases(*aliases) }
+
+    fun start() = container.start()
+
+    fun stop() = container.stop()
+
+    override fun close() = stop()
+
+    val host: String get() = container.host
+
+    val databaseName: String get() = container.databaseName
+
+    val username: String get() = container.username
+
+    val password: String get() = container.password
+
+    fun getMappedPort(port: Int): Int = container.getMappedPort(port)
 
     fun connectionOptions(username: Name = this.username.let(::Name), password: Password = this.password.let(::Password)): SqlConnectionOptions {
 
