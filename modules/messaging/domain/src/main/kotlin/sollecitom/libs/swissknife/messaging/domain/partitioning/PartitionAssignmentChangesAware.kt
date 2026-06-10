@@ -1,8 +1,8 @@
 package sollecitom.libs.swissknife.messaging.domain.partitioning
 
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 
 interface PartitionAssignmentChangesAware {
 
-    val partitionAssignmentChanges: Flow<PartitionAssignmentChange>
+    val partitionAssignmentChanges: SharedFlow<PartitionAssignmentChange>
 }
