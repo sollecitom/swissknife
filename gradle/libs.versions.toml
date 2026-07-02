@@ -20,7 +20,7 @@ atlassian-swagger-request-validator = "3.0.0"
 pulsar = "4.2.2"
 avro = "1.12.1"
 yauaa = "8.1.1"
-log4j = "2.26.0"
+log4j = "2.26.1"
 zero-allocation-hashing = "2026.0"
 jnats = "2.25.3"
 jose4j = "0.9.6"
@@ -37,7 +37,7 @@ classgraph = "4.8.184"
 opentelemetry = "1.63.0"
 commons-codec = "1.22.0"
 # plugins
-sollecitom-gradle-plugins = "1.0.18"
+sollecitom-gradle-plugins = "1.0.19"
 palantir-git-plugin = "5.0.0"
 
 [libraries]
