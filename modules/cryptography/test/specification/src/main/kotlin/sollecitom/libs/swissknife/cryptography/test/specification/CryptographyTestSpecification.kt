@@ -4,12 +4,12 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
-import sollecitom.libs.swissknife.cryptography.domain.asymmetric.kem.kyber.Kyber
-import sollecitom.libs.swissknife.cryptography.domain.asymmetric.kem.kyber.Kyber.Variant.*
-import sollecitom.libs.swissknife.cryptography.domain.asymmetric.kem.kyber.invoke
-import sollecitom.libs.swissknife.cryptography.domain.asymmetric.signing.dilithium.Dilithium
-import sollecitom.libs.swissknife.cryptography.domain.asymmetric.signing.dilithium.Dilithium.Variant.DILITHIUM_5
-import sollecitom.libs.swissknife.cryptography.domain.asymmetric.signing.dilithium.invoke
+import sollecitom.libs.swissknife.cryptography.domain.asymmetric.kem.mlkem.MLKEM
+import sollecitom.libs.swissknife.cryptography.domain.asymmetric.kem.mlkem.MLKEM.Variant.*
+import sollecitom.libs.swissknife.cryptography.domain.asymmetric.kem.mlkem.invoke
+import sollecitom.libs.swissknife.cryptography.domain.asymmetric.signing.mldsa.MLDSA
+import sollecitom.libs.swissknife.cryptography.domain.asymmetric.signing.mldsa.MLDSA.Variant.ML_DSA_87
+import sollecitom.libs.swissknife.cryptography.domain.asymmetric.signing.mldsa.invoke
 import sollecitom.libs.swissknife.cryptography.domain.asymmetric.signing.verify
 import sollecitom.libs.swissknife.cryptography.domain.factory.CryptographicOperations
 import sollecitom.libs.swissknife.cryptography.domain.symmetric.decrypt
@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test
 interface CryptographyTestSpecification {
 
     @Test
-    fun `using Kyber-1024-AES to generate and exchange a symmetric key securely`() {
+    fun `using ML-KEM-1024 to generate and exchange an AES symmetric key securely`() {
 
         // Bob
         // has a public key
-        val bobKeyPair = kyber.keyPair(variant = KYBER_1024) // sends his public key to Alice
+        val bobKeyPair = mlKem.keyPair(variant = ML_KEM_1024) // sends his public key to Alice
 
         // Alice
-        val decodedBobPublicKey = kyber.publicKey.from(bytes = bobKeyPair.public.encoded) // receives Bob's public key
+        val decodedBobPublicKey = mlKem.publicKey.from(bytes = bobKeyPair.public.encoded) // receives Bob's public key
         val (aliceSymmetricKey, encapsulation) = decodedBobPublicKey.generateEncapsulatedAESKey() // generated encryption key with encapsulation
         // sends the encapsulation to Bob
 
@@ -54,51 +54,51 @@ interface CryptographyTestSpecification {
     }
 
     @Test
-    fun `sending Kyber keys over the wire - 1024`() {
+    fun `sending ML-KEM keys over the wire - 1024`() {
 
-        val keyPair = kyber.keyPair(arguments = Kyber.KeyPairArguments(variant = KYBER_1024))
+        val keyPair = mlKem.keyPair(arguments = MLKEM.KeyPairArguments(variant = ML_KEM_1024))
 
-        val decodedPublicKey = kyber.publicKey.from(bytes = keyPair.public.encoded)
-        val decodedPrivateKey = kyber.privateKey.from(bytes = keyPair.private.encoded)
+        val decodedPublicKey = mlKem.publicKey.from(bytes = keyPair.public.encoded)
+        val decodedPrivateKey = mlKem.privateKey.from(bytes = keyPair.private.encoded)
 
-        assertThat(keyPair.private::algorithm).isEqualTo(KYBER_1024.algorithmName)
-        assertThat(keyPair.public::algorithm).isEqualTo(KYBER_1024.algorithmName)
+        assertThat(keyPair.private::algorithm).isEqualTo(ML_KEM_1024.algorithmName)
+        assertThat(keyPair.public::algorithm).isEqualTo(ML_KEM_1024.algorithmName)
         assertThat(decodedPrivateKey).isEqualTo(keyPair.private)
         assertThat(decodedPublicKey).isEqualTo(keyPair.public)
     }
 
     @Test
-    fun `sending Kyber keys over the wire - 768`() {
+    fun `sending ML-KEM keys over the wire - 768`() {
 
-        val keyPair = kyber.keyPair(arguments = Kyber.KeyPairArguments(variant = KYBER_768))
+        val keyPair = mlKem.keyPair(arguments = MLKEM.KeyPairArguments(variant = ML_KEM_768))
 
-        val decodedPublicKey = kyber.publicKey.from(bytes = keyPair.public.encoded)
-        val decodedPrivateKey = kyber.privateKey.from(bytes = keyPair.private.encoded)
+        val decodedPublicKey = mlKem.publicKey.from(bytes = keyPair.public.encoded)
+        val decodedPrivateKey = mlKem.privateKey.from(bytes = keyPair.private.encoded)
 
-        assertThat(keyPair.private::algorithm).isEqualTo(KYBER_768.algorithmName)
-        assertThat(keyPair.public::algorithm).isEqualTo(KYBER_768.algorithmName)
+        assertThat(keyPair.private::algorithm).isEqualTo(ML_KEM_768.algorithmName)
+        assertThat(keyPair.public::algorithm).isEqualTo(ML_KEM_768.algorithmName)
         assertThat(decodedPrivateKey).isEqualTo(keyPair.private)
         assertThat(decodedPublicKey).isEqualTo(keyPair.public)
     }
 
     @Test
-    fun `sending Kyber keys over the wire - 512`() {
+    fun `sending ML-KEM keys over the wire - 512`() {
 
-        val keyPair = kyber.keyPair(arguments = Kyber.KeyPairArguments(variant = KYBER_512))
+        val keyPair = mlKem.keyPair(arguments = MLKEM.KeyPairArguments(variant = ML_KEM_512))
 
-        val decodedPublicKey = kyber.publicKey.from(bytes = keyPair.public.encoded)
-        val decodedPrivateKey = kyber.privateKey.from(bytes = keyPair.private.encoded)
+        val decodedPublicKey = mlKem.publicKey.from(bytes = keyPair.public.encoded)
+        val decodedPrivateKey = mlKem.privateKey.from(bytes = keyPair.private.encoded)
 
-        assertThat(keyPair.private::algorithm).isEqualTo(KYBER_512.algorithmName)
-        assertThat(keyPair.public::algorithm).isEqualTo(KYBER_512.algorithmName)
+        assertThat(keyPair.private::algorithm).isEqualTo(ML_KEM_512.algorithmName)
+        assertThat(keyPair.public::algorithm).isEqualTo(ML_KEM_512.algorithmName)
         assertThat(decodedPrivateKey).isEqualTo(keyPair.private)
         assertThat(decodedPublicKey).isEqualTo(keyPair.public)
     }
 
     @Test
-    fun `using Dilithium-5-AES to sign and verify`() {
+    fun `using ML-DSA-87 to sign and verify`() {
 
-        val keyPair = dilithium.keyPair(variant = DILITHIUM_5)
+        val keyPair = mlDsa.keyPair(variant = ML_DSA_87)
         val message = "something to attest".toByteArray()
 
         val signature = keyPair.private.sign(message)
@@ -108,21 +108,21 @@ interface CryptographyTestSpecification {
         assertThat(signature.metadata.keyHash.bytes).isEqualTo(keyPair.private.hash.bytes)
         assertThat(signature.metadata::algorithmName).isEqualTo(keyPair.private.algorithm)
 
-        val notTheOriginalSigner = dilithium.keyPair(variant = DILITHIUM_5).public
+        val notTheOriginalSigner = mlDsa.keyPair(variant = ML_DSA_87).public
 
         assertThat(notTheOriginalSigner.verify(message, signature)).isFalse()
     }
 
     @Test
-    fun `sending Dilithium keys over the wire`() {
+    fun `sending ML-DSA keys over the wire`() {
 
-        val keyPair = dilithium.keyPair(arguments = Dilithium.KeyPairArguments(variant = DILITHIUM_5))
+        val keyPair = mlDsa.keyPair(arguments = MLDSA.KeyPairArguments(variant = ML_DSA_87))
 
-        val decodedPublicKey = dilithium.publicKey.from(bytes = keyPair.public.encoded)
-        val decodedPrivateKey = dilithium.privateKey.from(bytes = keyPair.private.encoded)
+        val decodedPublicKey = mlDsa.publicKey.from(bytes = keyPair.public.encoded)
+        val decodedPrivateKey = mlDsa.privateKey.from(bytes = keyPair.private.encoded)
 
-        assertThat(keyPair.private::algorithm).isEqualTo(DILITHIUM_5.value)
-        assertThat(keyPair.public::algorithm).isEqualTo(DILITHIUM_5.value)
+        assertThat(keyPair.private::algorithm).isEqualTo(ML_DSA_87.value)
+        assertThat(keyPair.public::algorithm).isEqualTo(ML_DSA_87.value)
         assertThat(decodedPrivateKey).isEqualTo(keyPair.private)
         assertThat(decodedPublicKey).isEqualTo(keyPair.public)
     }
@@ -141,7 +141,7 @@ interface CryptographyTestSpecification {
     }
 
     val cryptography: CryptographicOperations
-    val kyber get() = cryptography.asymmetric.crystals.kyber
-    val dilithium get() = cryptography.asymmetric.crystals.dilithium
+    val mlKem get() = cryptography.asymmetric.nist.mlKem
+    val mlDsa get() = cryptography.asymmetric.nist.mlDsa
     val aes get() = cryptography.symmetric.aes
 }

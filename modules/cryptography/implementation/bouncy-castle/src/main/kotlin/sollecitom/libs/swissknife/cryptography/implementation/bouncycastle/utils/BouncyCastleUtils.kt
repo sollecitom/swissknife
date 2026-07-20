@@ -1,6 +1,5 @@
 package sollecitom.libs.swissknife.cryptography.implementation.bouncycastle.utils
 
-import sollecitom.libs.swissknife.cryptography.implementation.bouncycastle.BCPQC_PROVIDER
 import sollecitom.libs.swissknife.cryptography.implementation.bouncycastle.BC_PROVIDER
 import org.bouncycastle.jcajce.SecretKeyWithEncapsulation
 import org.bouncycastle.jcajce.spec.KEMExtractSpec
@@ -44,13 +43,13 @@ object BouncyCastleUtils {
 
     fun generateAESEncryptionKey(publicKey: PublicKey, algorithm: String, random: SecureRandom): SecretKeyWithEncapsulation {
 
-        val keyGen = KeyGenerator.getInstance(algorithm, BCPQC_PROVIDER)
+        val keyGen = KeyGenerator.getInstance(algorithm, BC_PROVIDER)
         keyGen.init(KEMGenerateSpec(publicKey, "AES"), random)
         return keyGen.generateKey() as SecretKeyWithEncapsulation
     }
 
     fun decryptEncapsulatedAESKey(privateKey: PrivateKey, encapsulatedKey: ByteArray, algorithm: String, random: SecureRandom): ByteArray {
-        val keyGen = KeyGenerator.getInstance(algorithm, BCPQC_PROVIDER)
+        val keyGen = KeyGenerator.getInstance(algorithm, BC_PROVIDER)
         keyGen.init(KEMExtractSpec(privateKey, encapsulatedKey, "AES"), random)
         val secEnc = keyGen.generateKey() as SecretKeyWithEncapsulation
         return secEnc.encoded
@@ -58,7 +57,7 @@ object BouncyCastleUtils {
 
     fun generateKeyPair(algorithm: String, spec: AlgorithmParameterSpec, random: SecureRandom): KeyPair {
 
-        val kpg = KeyPairGenerator.getInstance(algorithm, BCPQC_PROVIDER)
+        val kpg = KeyPairGenerator.getInstance(algorithm, BC_PROVIDER)
         kpg.initialize(spec, random)
         return kpg.generateKeyPair()
     }
@@ -66,14 +65,14 @@ object BouncyCastleUtils {
     fun getPrivateKeyFromEncoded(encodedKey: ByteArray, algorithm: String): PrivateKey {
 
         val pkcs8EncodedKeySpec = PKCS8EncodedKeySpec(encodedKey)
-        val keyFactory = KeyFactory.getInstance(algorithm, BCPQC_PROVIDER)
+        val keyFactory = KeyFactory.getInstance(algorithm, BC_PROVIDER)
         return keyFactory.generatePrivate(pkcs8EncodedKeySpec)
     }
 
     fun getPublicKeyFromEncoded(encodedKey: ByteArray, algorithm: String): PublicKey {
 
         val x509EncodedKeySpec = X509EncodedKeySpec(encodedKey)
-        val keyFactory: KeyFactory = KeyFactory.getInstance(algorithm, BCPQC_PROVIDER)
+        val keyFactory: KeyFactory = KeyFactory.getInstance(algorithm, BC_PROVIDER)
         return keyFactory.generatePublic(x509EncodedKeySpec)
     }
 
