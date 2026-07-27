@@ -12,8 +12,8 @@ private class UniqueIdFactoryAdapter(random: Random = Random, clock: Clock = Clo
     override val ulid by lazy { UlidVariantSelectorAdapter(random, clock) }
     override val ksuid by lazy { KsuidVariantSelectorAdapter(random, clock) }
     override val uuid by lazy { UuidVariantSelectorAdapter() }
-    override val internal get() = ulid.monotonic
-    override val external by lazy { StringFactoryAdapter(random) { ulid.monotonic().stringValue } }
+    override val internal get() = uuid.v7
+    override val external by lazy { StringFactoryAdapter(random) { uuid.v7().stringValue } }
 }
 
 /** Creates a [UniqueIdFactory] with the given random source and clock. */
