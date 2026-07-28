@@ -33,7 +33,7 @@ spring-data-r2dbc = "4.1.0"
 liquibase = "5.0.3"
 snakeyaml = "2.6"
 liquibase-slf4j = "5.1.0"
-classgraph = "4.8.185"
+classgraph = "4.8.186"
 opentelemetry = "1.64.0"
 commons-codec = "1.22.0"
 # plugins
