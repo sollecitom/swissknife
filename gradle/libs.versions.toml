@@ -35,7 +35,7 @@ snakeyaml = "2.6"
 liquibase-slf4j = "5.1.0"
 classgraph = "4.8.186"
 opentelemetry = "1.64.0"
-commons-codec = "1.22.0"
+commons-codec = "1.22.1"
 # plugins
 sollecitom-gradle-plugins = "1.0.23"
 palantir-git-plugin = "5.0.0"
