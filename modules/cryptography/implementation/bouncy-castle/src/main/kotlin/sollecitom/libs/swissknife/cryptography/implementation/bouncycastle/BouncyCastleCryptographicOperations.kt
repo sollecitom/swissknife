@@ -5,9 +5,7 @@ import sollecitom.libs.swissknife.cryptography.domain.factory.CryptographicOpera
 import sollecitom.libs.swissknife.cryptography.domain.symmetric.SymmetricAlgorithmFamilySelector
 import sollecitom.libs.swissknife.cryptography.implementation.bouncycastle.asymmetric.AsymmetricAlgorithmFamilyCustomizer
 import sollecitom.libs.swissknife.cryptography.implementation.bouncycastle.symmetric.SymmetricAlgorithmFamilyCustomizer
-import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.security.SecureRandom
-import java.security.Security
 
 private class BouncyCastleCryptographicOperations(private val random: SecureRandom) : CryptographicOperations {
 
@@ -16,9 +14,7 @@ private class BouncyCastleCryptographicOperations(private val random: SecureRand
 
     companion object {
         init {
-            if (Security.getProvider(BC_PROVIDER) == null) {
-                Security.addProvider(BouncyCastleProvider())
-            }
+            ensureBouncyCastleProviderIsRegistered()
         }
     }
 }

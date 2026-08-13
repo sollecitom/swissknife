@@ -19,7 +19,8 @@ private class CTROperationsAdapter(private val key: SecretKey, private val keyMe
 
     override fun decrypt(bytes: ByteArray, iv: ByteArray): ByteArray = BouncyCastleUtils.ctrDecrypt(key = key, iv = iv, cipherText = bytes)
 
-    private fun newIv() = random.generateSeed(randomSeedLength)
+    // nextBytes, not generateSeed: IVs are generated per message, and seed generation can block on the entropy source.
+    private fun newIv() = ByteArray(randomSeedLength).also(random::nextBytes)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

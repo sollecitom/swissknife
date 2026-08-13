@@ -18,10 +18,24 @@ internal class AESKeyAdapter private constructor(private val keySpec: SecretKey,
 
     private constructor(encoded: ByteArray, random: SecureRandom) : this(SecretKeySpec(encoded, AES.name), random)
 
-    override val ctr: EncryptionMode.CTR.Operations by lazy { EncryptionMode.CTR.Operations.create(key = keySpec, keyMetadata = metadata, random = random) }
+    override val ctr: EncryptionMode.CTR.Operations by lazy { EncryptionMode.CTR.Operations.create(key = singleAesKey("CTR"), keyMetadata = metadata, random = random) }
+
+    override val gcm: EncryptionMode.GCM.Operations by lazy { EncryptionMode.GCM.Operations.create(key = singleAesKey("GCM"), keyMetadata = metadata, random = random) }
+
+    override val xts: EncryptionMode.XTS.Operations by lazy { EncryptionMode.XTS.Operations.create(key = keySpec.encoded, keyMetadata = metadata) }
 
     init {
         require(algorithm == AES.name) { "Key algorithm must be ${AES.name}" }
+    }
+
+    /**
+     * The single-key modes cannot run on double-length XTS material, so this reports that up front rather than
+     * letting the provider fail later with an opaque key-length error.
+     */
+    private fun singleAesKey(mode: String): SecretKey {
+        val keyLength = encoded.size * 8
+        require(keyLength in SINGLE_AES_KEY_LENGTHS) { "$mode needs a single AES key, but this key holds $keyLength bits: it was generated for XTS, which uses two AES keys" }
+        return keySpec
     }
 
     override fun equals(other: Any?): Boolean {
@@ -41,10 +55,19 @@ internal class AESKeyAdapter private constructor(private val keySpec: SecretKey,
 
         override fun invoke(arguments: AES.KeyArguments): SymmetricKey {
 
-            val rawKey = BouncyCastleUtils.generateSecretKey(algorithm = AES.name, length = arguments.variant.keyLength, provider = BC_PROVIDER)
+            val variant = arguments.variant
+            // An XTS key is two AES keys, a length the AES key generator rejects, so its material is drawn directly.
+            val rawKey = if (variant.isForXts) randomXtsKey(variant.keyLength) else BouncyCastleUtils.generateSecretKey(algorithm = AES.name, length = variant.keyLength, provider = BC_PROVIDER)
             return AESKeyAdapter(keySpec = rawKey, random = random)
         }
 
+        private fun randomXtsKey(keyLength: Int): SecretKey = SecretKeySpec(ByteArray(keyLength / 8).also(random::nextBytes), AES.name)
+
         override fun from(bytes: ByteArray): SymmetricKey = AESKeyAdapter(encoded = bytes, random = random)
+    }
+
+    private companion object {
+
+        val SINGLE_AES_KEY_LENGTHS = listOf(AES.Variant.AES_128, AES.Variant.AES_192, AES.Variant.AES_256).map { it.keyLength }
     }
 }

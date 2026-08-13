@@ -55,6 +55,28 @@ class AESTests {
 
             assertThat(AES.Variant.AES_256.algorithmName).isEqualTo("AES256")
         }
+
+        @Test
+        fun `XTS variants hold two AES keys`() {
+
+            assertThat(AES.Variant.AES_128_XTS.keyLength).isEqualTo(AES.Variant.AES_128.keyLength * 2)
+            assertThat(AES.Variant.AES_256_XTS.keyLength).isEqualTo(AES.Variant.AES_256.keyLength * 2)
+        }
+
+        @Test
+        fun `XTS variants have the correct algorithm names`() {
+
+            assertThat(AES.Variant.AES_128_XTS.algorithmName).isEqualTo("AES128-XTS")
+            assertThat(AES.Variant.AES_256_XTS.algorithmName).isEqualTo("AES256-XTS")
+        }
+
+        @Test
+        fun `only the XTS variants are marked as being for XTS`() {
+
+            val forXts = AES.Variant.entries.filter { it.isForXts }
+
+            assertThat(forXts).isEqualTo(listOf(AES.Variant.AES_128_XTS, AES.Variant.AES_256_XTS))
+        }
     }
 
     @Nested
