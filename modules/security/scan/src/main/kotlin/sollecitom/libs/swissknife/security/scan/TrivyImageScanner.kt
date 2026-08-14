@@ -17,7 +17,7 @@ class TrivyScanFailed(imageName: String, trivyImage: String, attempts: Int, val 
 object TrivyImageScanner {
 
     private const val DEFAULT_TRIVY_IMAGE = "aquasec/trivy"
-    private const val DEFAULT_TRIVY_VERSION = "0.73.0"
+    private const val DEFAULT_TRIVY_VERSION = "0.74.0"
 
     /** Trivy's cache directory inside the container: the vulnerability DB and the Java DB both live here. */
     private const val CONTAINER_CACHE_DIRECTORY = "/root/.cache/trivy"
