@@ -30,7 +30,7 @@ rebuild:
     ./gradlew clean build --refresh-dependencies --rerun-tasks
 
 publish:
-    ./scripts/publish-if-changed.sh
+    bash ../scripts/publish-if-changed.sh
 
 update-dependencies:
     ./gradlew versionCatalogUpdate
