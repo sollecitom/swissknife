@@ -13,7 +13,6 @@ import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
-import javax.crypto.spec.IvParameterSpec
 
 object BouncyCastleUtils {
 
@@ -81,18 +80,6 @@ object BouncyCastleUtils {
         val x509EncodedKeySpec = X509EncodedKeySpec(encodedKey)
         val keyFactory: KeyFactory = KeyFactory.getInstance(algorithm, BC_PROVIDER)
         return keyFactory.generatePublic(x509EncodedKeySpec)
-    }
-
-    fun ctrEncrypt(key: SecretKey, iv: ByteArray, data: ByteArray): Pair<ByteArray, ByteArray> {
-        val cipher = Cipher.getInstance("AES/CTR/NoPadding", BC_PROVIDER)
-        cipher.init(Cipher.ENCRYPT_MODE, key, IvParameterSpec(iv))
-        return cipher.iv to cipher.doFinal(data)
-    }
-
-    fun ctrDecrypt(key: SecretKey, iv: ByteArray, cipherText: ByteArray): ByteArray {
-        val cipher = Cipher.getInstance("AES/CTR/NoPadding", BC_PROVIDER)
-        cipher.init(Cipher.DECRYPT_MODE, key, IvParameterSpec(iv))
-        return cipher.doFinal(cipherText)
     }
 
     fun gcmEncrypt(key: SecretKey, iv: ByteArray, data: ByteArray, associatedData: ByteArray?, tagLengthInBits: Int): ByteArray {

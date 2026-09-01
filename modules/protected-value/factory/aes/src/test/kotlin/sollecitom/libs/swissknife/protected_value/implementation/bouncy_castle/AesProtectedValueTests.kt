@@ -28,7 +28,7 @@ private class AesProtectedValueTests : CoreDataGenerator by CoreDataGenerator.pr
     fun `protected value masks the original value`() = test {
 
         val key = newAesKey(variant = AES_256)
-        val factory = ProtectedValueFactory.aes256WithCTR { key }
+        val factory = ProtectedValueFactory.aes256WithGCM { key }
         val owner = newId.external()
         val originalValue = "jo.blogs@jp.com"
         val valueName = "email".let(::Name)
@@ -45,7 +45,7 @@ private class AesProtectedValueTests : CoreDataGenerator by CoreDataGenerator.pr
     fun `value can be protected and unprotected`() = test {
 
         val key = newAesKey(variant = AES_256)
-        val factory = ProtectedValueFactory.aes256WithCTR { key }.accessible { key }
+        val factory = ProtectedValueFactory.aes256WithGCM { key }.accessible { key }
         val owner = newId.external()
         val originalValue = "jo.blogs@jp.com"
         val valueName = "email".let(::Name)
@@ -61,7 +61,7 @@ private class AesProtectedValueTests : CoreDataGenerator by CoreDataGenerator.pr
     fun `value can be protected and unprotected with a typed factory`() = test {
 
         val key = newAesKey(variant = AES_256)
-        val factory = ProtectedValueFactory.aes256WithCTR { key }.accessible { key }.forType({ it.toString().toByteArray() }, { String(it).toInt() })
+        val factory = ProtectedValueFactory.aes256WithGCM { key }.accessible { key }.forType({ it.toString().toByteArray() }, { String(it).toInt() })
         val owner = newId.external()
         val originalValue = 1234
         val valueName = "email".let(::Name)

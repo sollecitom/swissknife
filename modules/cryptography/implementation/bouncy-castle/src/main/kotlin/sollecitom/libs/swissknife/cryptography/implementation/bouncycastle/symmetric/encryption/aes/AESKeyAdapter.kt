@@ -18,8 +18,6 @@ internal class AESKeyAdapter private constructor(private val keySpec: SecretKey,
 
     private constructor(encoded: ByteArray, random: SecureRandom) : this(SecretKeySpec(encoded, AES.name), random)
 
-    override val ctr: EncryptionMode.CTR.Operations by lazy { EncryptionMode.CTR.Operations.create(key = singleAesKey("CTR"), keyMetadata = metadata, random = random) }
-
     override val gcm: EncryptionMode.GCM.Operations by lazy { EncryptionMode.GCM.Operations.create(key = singleAesKey("GCM"), keyMetadata = metadata, random = random) }
 
     override val xts: EncryptionMode.XTS.Operations by lazy { EncryptionMode.XTS.Operations.create(key = keySpec.encoded, keyMetadata = metadata) }

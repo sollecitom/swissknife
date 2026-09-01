@@ -2,53 +2,13 @@ package sollecitom.libs.swissknife.cryptography.domain.symmetric
 
 import sollecitom.libs.swissknife.cryptography.domain.key.CryptographicKey
 
-/** Defines encryption modes (e.g. CTR, GCM, XTS) with their operations and metadata. */
+/** Defines encryption modes (GCM, XTS) with their operations and metadata. */
 object EncryptionMode {
 
-    object CTR {
-
-        interface Operations {
-
-            fun encrypt(bytes: ByteArray, iv: ByteArray): EncryptedData<Metadata>
-
-            fun encryptWithRandomIV(bytes: ByteArray): EncryptedData<Metadata>
-
-            fun decrypt(bytes: ByteArray, iv: ByteArray): ByteArray
-
-            companion object {
-                const val DEFAULT_RANDOM_IV_LENGTH = 16
-            }
-        }
-
-        data class Metadata(val iv: ByteArray, override val key: CryptographicKey.Metadata) : EncryptionMode.Metadata {
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) return true
-                if (javaClass != other?.javaClass) return false
-
-                other as Metadata
-
-                if (!iv.contentEquals(other.iv)) return false
-                if (key != other.key) return false
-
-                return true
-            }
-
-            override fun hashCode(): Int {
-                var result = iv.contentHashCode()
-                result = 31 * result + key.hashCode()
-                return result
-            }
-
-            override fun toString() = "Metadata(iv=${iv.contentToString()}, key=$key)"
-
-            companion object
-        }
-    }
-
     /**
-     * Galois/Counter Mode: authenticated encryption (AEAD). Unlike [CTR], decryption fails if the ciphertext,
-     * the authentication tag, or the associated data were tampered with.
+     * Galois/Counter Mode: authenticated encryption (AEAD). Decryption fails if the ciphertext, the
+     * authentication tag, or the associated data were tampered with. This is the default choice for
+     * protecting a value: it is counter mode plus authentication, so it costs only the 16-byte tag.
      *
      * The IV must never be reused with the same key: doing so breaks both confidentiality and authenticity.
      * Prefer [Operations.encryptWithRandomIV].
@@ -165,13 +125,15 @@ object EncryptionMode {
         }
     }
 
+    /** The mode-agnostic view of encryption metadata, so a protected value can carry whichever mode produced it. */
     interface Metadata {
 
         val key: CryptographicKey.Metadata
+
+        companion object
     }
 }
 
-fun EncryptionMode.CTR.Operations.decrypt(data: EncryptedData<EncryptionMode.CTR.Metadata>) = decrypt(data.content, data.metadata.iv)
 
 fun EncryptionMode.GCM.Operations.decrypt(data: EncryptedData<EncryptionMode.GCM.Metadata>) = decrypt(data.content, data.metadata.iv, data.metadata.associatedData)
 

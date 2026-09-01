@@ -47,11 +47,11 @@ interface CryptographyTestSpecification {
         // Alice
         // after the handshake is completed
         val aliceMessage = "a message".toByteArray() // prepares a message for Bob
-        val encryptedByAlice = aliceSymmetricKey.ctr.encryptWithRandomIV(aliceMessage) // encrypts the message using the symmetric key and sends it to Bob
+        val encryptedByAlice = aliceSymmetricKey.gcm.encryptWithRandomIV(aliceMessage) // encrypts the message using the symmetric key and sends it to Bob
 
         // Bob
         // receives the encrypted data from Alice
-        val decryptedByBobMessage = bobSymmetricKey.ctr.decrypt(encryptedByAlice) // decrypts the message
+        val decryptedByBobMessage = bobSymmetricKey.gcm.decrypt(encryptedByAlice) // decrypts the message
         assertThat(decryptedByBobMessage).isEqualTo(aliceMessage)
 
         assertThat(aliceSymmetricKey::encoded).isEqualTo(bobSymmetricKey.encoded)
@@ -131,19 +131,6 @@ interface CryptographyTestSpecification {
         assertThat(keyPair.public::algorithm).isEqualTo(ML_DSA_87.value)
         assertThat(decodedPrivateKey).isEqualTo(keyPair.private)
         assertThat(decodedPublicKey).isEqualTo(keyPair.public)
-    }
-
-    @Test
-    fun `encrypting and decrypting with AES-256`() {
-
-        val message = "something secret".toByteArray()
-        val secretKey = aes.key(variant = AES_256)
-        val decodedKey = aes.key.from(bytes = secretKey.encoded)
-
-        val encrypted = secretKey.ctr.encryptWithRandomIV(message)
-        val decrypted = decodedKey.ctr.decrypt(encrypted)
-
-        assertThat(decrypted).isEqualTo(message)
     }
 
     @Test
@@ -242,7 +229,6 @@ interface CryptographyTestSpecification {
 
         val xtsKey = aes.key(variant = AES_256_XTS)
 
-        assertThrows<IllegalArgumentException> { xtsKey.ctr }
         assertThrows<IllegalArgumentException> { xtsKey.gcm }
     }
 

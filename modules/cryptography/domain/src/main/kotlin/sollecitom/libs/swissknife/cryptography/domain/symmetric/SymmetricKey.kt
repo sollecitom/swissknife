@@ -5,7 +5,7 @@ import sollecitom.libs.swissknife.cryptography.domain.key.CryptographicKey
 /**
  * A symmetric encryption key that provides per-mode encryption/decryption operations.
  *
- * Not every key can drive every mode: [xts] needs two AES keys, while [ctr] and [gcm] need a single one. A key
+ * Not every key can drive every mode: [xts] needs two AES keys, while [gcm] needs a single one. A key
  * that cannot support a mode is rejected when that mode is used, not when the key is created, so the modes a
  * key does support stay usable.
  *
@@ -13,8 +13,6 @@ import sollecitom.libs.swissknife.cryptography.domain.key.CryptographicKey
  * AES-128 keys. Generate keys with the variant matching their intended mode to keep those purposes separate.
  */
 interface SymmetricKey : CryptographicKey {
-
-    val ctr: EncryptionMode.CTR.Operations
 
     val gcm: EncryptionMode.GCM.Operations
 

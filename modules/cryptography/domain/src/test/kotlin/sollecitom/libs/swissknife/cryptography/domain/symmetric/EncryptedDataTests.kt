@@ -59,11 +59,11 @@ class EncryptedDataTests {
         assertThat(data.toString()).contains("EncryptedData")
     }
 
-    private fun testMetadata(): EncryptionMode.CTR.Metadata {
+    private fun testMetadata(): EncryptionMode.GCM.Metadata {
         val hash = object : Hash {
             override val bytes = byteArrayOf(10, 20)
         }
         val keyMetadata = CryptographicKey.Metadata(algorithm = "AES", format = "RAW", hash = hash)
-        return EncryptionMode.CTR.Metadata(iv = byteArrayOf(99), key = keyMetadata)
+        return EncryptionMode.GCM.Metadata(iv = byteArrayOf(99), authenticationTagLengthInBits = 128, associatedData = null, key = keyMetadata)
     }
 }
