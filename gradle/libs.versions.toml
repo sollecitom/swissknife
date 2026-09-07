@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.4.10"
+kotlin = "2.4.20"
 kotlinx-coroutines = "1.11.0"
 slf4j = "2.0.19"
 http4k = "6.58.0.0"
@@ -37,7 +37,7 @@ classgraph = "4.8.194"
 opentelemetry = "1.65.0"
 commons-codec = "1.22.1"
 # plugins
-sollecitom-gradle-plugins = "1.0.27"
+sollecitom-gradle-plugins = "1.0.28"
 palantir-git-plugin = "5.1.0"
 
 [libraries]
