@@ -6,7 +6,7 @@ object HttpHeaders {
     val ContentType: HttpHeader get() = ContentTypeHeader
     val ContentLength: HttpHeader get() = ContentLengthHeader
     val Location: HttpHeader get() = LocationHeader
-    val UserAgent: HttpHeader get() = LocationHeader
+    val UserAgent: HttpHeader get() = UserAgentHeader
     val Authorization: HttpHeader get() = AuthorizationHeader
 }
 
@@ -20,7 +20,7 @@ private object AuthorizationHeader : HttpHeader {
     override val name = "authorization"
 }
 
-private object UserAgent : HttpHeader {
+private object UserAgentHeader : HttpHeader {
 
     override val name = "user-agent"
 }

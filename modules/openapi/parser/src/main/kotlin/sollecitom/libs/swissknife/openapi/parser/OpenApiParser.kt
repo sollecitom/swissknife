@@ -5,7 +5,6 @@ import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.parser.core.models.ParseOptions
 import java.net.URL
 import java.nio.file.Path
-import kotlin.io.path.toPath
 
 interface OpenApiParser {
 
@@ -27,4 +26,4 @@ interface OpenApiParser {
 
 fun OpenApiParser.parse(openApiLocation: Path, options: ParseOptions = fullyResolvedParseOptions()) = parse(openApiLocation.toString(), options)
 
-fun OpenApiParser.parse(validOpenApiUrl: URL) = parse(validOpenApiUrl.toURI().toPath().toString())
+fun OpenApiParser.parse(validOpenApiUrl: URL) = parse(validOpenApiUrl.toString())

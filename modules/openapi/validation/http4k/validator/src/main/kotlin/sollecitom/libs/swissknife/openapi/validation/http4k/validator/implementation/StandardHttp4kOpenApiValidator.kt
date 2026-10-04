@@ -30,7 +30,7 @@ internal class StandardHttp4kOpenApiValidator(openApi: OpenAPI, rejectUnknownReq
         OpenApiHelper.bindMultipleTypesToASingleType()
     }
 
-    private val requestValidator: OpenApiInteractionValidator = OpenApiInteractionValidator.createFor(openApi).withRejectUnknownRequestHeaders(rejectUnknownRequestParameters).build()
+    private val requestValidator: OpenApiInteractionValidator = OpenApiInteractionValidator.createFor(openApi).withRejectUnknownRequestHeaders(rejectUnknownRequestParameters, openApi).build()
     private val responseJsonBodyValidator = ResponseJsonBodyValidator(jsonSchemasDirectoryName = jsonSchemasDirectoryName)
     private val responseValidator: OpenApiResponseValidator = OpenApiResponseValidator.createFor(openApi).withRejectUnknownResponseHeaders(rejectUnknownResponseHeaders).withCustomResponseValidation(responseJsonBodyValidator).build()
 
@@ -69,8 +69,8 @@ internal class StandardHttp4kOpenApiValidator(openApi: OpenAPI, rejectUnknownReq
         return builder.build()
     }
 
-    private fun OpenApiInteractionValidator.Builder.withRejectUnknownRequestHeaders(rejectUnknownParameters: Boolean): OpenApiInteractionValidator.Builder = when (rejectUnknownParameters) {
-        true -> withCustomRequestValidation(UnknownHeadersRejectingRequestValidator).withCustomRequestValidation(UnknownQueryParamsRejectingRequestValidator)
+    private fun OpenApiInteractionValidator.Builder.withRejectUnknownRequestHeaders(rejectUnknownParameters: Boolean, openApi: OpenAPI): OpenApiInteractionValidator.Builder = when (rejectUnknownParameters) {
+        true -> withCustomRequestValidation(UnknownHeadersRejectingRequestValidator(openApi)).withCustomRequestValidation(UnknownQueryParamsRejectingRequestValidator(openApi))
         else -> this
     }
 

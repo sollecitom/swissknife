@@ -54,9 +54,9 @@ sealed class Topic(val persistent: Boolean, val namespace: Namespace?, val name:
         internal const val SEPARATOR = "/"
         private const val EXPECTED_PARTS_COUNT = 5
         private const val PROTOCOL_GROUP = "(persistent|non-persistent)"
-        private const val TENANT_GROUP = "([a-zA-Z0-9.\\-]+)"
-        private const val NAMESPACE_GROUP = "([a-zA-Z0-9.\\-]+)"
-        private const val NAME_GROUP = "([a-zA-Z0-9.\\-]+)"
+        private const val TENANT_GROUP = "([\\w.=:\\-]+)"
+        private const val NAMESPACE_GROUP = "([\\w.=:\\-]+)"
+        private const val NAME_GROUP = "([\\w.=:\\-]+)"
         private const val PATTERN = "$PROTOCOL_GROUP://$TENANT_GROUP/$NAMESPACE_GROUP/$NAME_GROUP"
         private val compiled by lazy { Pattern.compile(PATTERN) }
 
@@ -64,7 +64,7 @@ sealed class Topic(val persistent: Boolean, val namespace: Namespace?, val name:
 
             require(rawTopic.split(SEPARATOR).size <= EXPECTED_PARTS_COUNT) { "Invalid topic. Maximum $EXPECTED_PARTS_COUNT parts are expected." }
             val matcher = compiled.matcher(rawTopic)
-            if (!matcher.find()) {
+            if (!matcher.matches()) {
                 error("Topic format '$rawTopic' does not match the expected pattern $PATTERN")
             }
             val protocol = matcher.group(1)?.let(::Name) ?: Persistent.protocol

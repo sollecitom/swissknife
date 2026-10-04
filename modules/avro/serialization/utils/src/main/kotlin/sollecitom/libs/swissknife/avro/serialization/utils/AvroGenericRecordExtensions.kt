@@ -19,13 +19,13 @@ fun GenericRecord.getString(key: String) = getStringOrNull(key) ?: missingField(
 fun GenericRecord.getIntOrNull(key: String): Int? = get(key)?.let { it as Int }
 fun GenericRecord.getInt(key: String) = getIntOrNull(key) ?: missingField(key)
 
-fun GenericRecord.getBigIntegerOrNull(key: String): BigInteger? = get(key)?.let { it as BigInteger }
+fun GenericRecord.getBigIntegerOrNull(key: String): BigInteger? = get(key)?.let { it as? BigInteger ?: BigInteger(it.asString()) }
 fun GenericRecord.getBigInteger(key: String) = getBigIntegerOrNull(key) ?: missingField(key)
 
 fun GenericRecord.getBooleanOrNull(key: String): Boolean? = get(key)?.let { it as Boolean }
 fun GenericRecord.getBoolean(key: String) = getBooleanOrNull(key) ?: missingField(key)
 
-fun GenericRecord.getBigDecimalOrNull(key: String): BigDecimal? = get(key)?.let { it as BigDecimal }
+fun GenericRecord.getBigDecimalOrNull(key: String): BigDecimal? = get(key)?.let { it as? BigDecimal ?: BigDecimal(it.asString()) }
 fun GenericRecord.getBigDecimal(key: String) = getBigDecimalOrNull(key) ?: missingField(key)
 
 fun GenericRecord.getLongOrNull(key: String): Long? = get(key)?.let { it as Long }

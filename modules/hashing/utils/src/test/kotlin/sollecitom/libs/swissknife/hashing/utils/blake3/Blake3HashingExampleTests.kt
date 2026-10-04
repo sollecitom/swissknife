@@ -67,6 +67,18 @@ private class Blake3HashingExampleTests {
         assertThat(hash.bytes.toHexString(format = HexFormat.Default)).isEqualTo(expectedHashHex)
     }
 
+    @Test
+    fun `hashing a range of bytes hashes only that range`() {
+
+        val key = WELL_KNOWN_KEY_HEX.hexToByteArray()
+        val hashFunction = Blake3.hashVariable(hashBytesLength = 32, key = key)
+        val bytes = "--${WELL_KNOWN_DIGEST}--".toByteArray()
+
+        val hash = hashFunction(bytes, offset = 2, length = WELL_KNOWN_DIGEST.length)
+
+        assertThat(hash.bytes.toHexString(format = HexFormat.Default)).isEqualTo(WELL_KNOWN_DIGEST_BLAKE3_256_BITS_HASH_HEX_LOWERCASE)
+    }
+
     private fun Assert<Hash>.matches(expected: Hash) = given { actual ->
 
         assertThat(actual.bytes).isEqualTo(expected.bytes)

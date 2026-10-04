@@ -8,6 +8,7 @@ data class WhitelistedAlphabetFieldNameRule(val alphabet: Set<Char>) : Complianc
 
     override fun invoke(target: Schema): ComplianceRule.Result<Schema> {
 
+        if (target.type != Schema.Type.RECORD) return ComplianceRule.Result.Compliant()
         val violations = target.fields.mapNotNull(::check).toSet()
         return ComplianceRule.Result.withViolations(violations)
     }

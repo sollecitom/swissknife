@@ -14,12 +14,9 @@ private class NatsConsumerAdapter(options: Options, private val subjects: Set<St
 
     private val executor = Executors.newVirtualThreadPerTaskExecutor()
     private val connection by lazy { Nats.connect(Options.Builder(options).executor(executor).build()) }
-    private lateinit var dispatcher: Dispatcher
     private val _messages = MutableSharedFlow<Message>()
-
-    override val messages: Flow<Message>
-        get() = _messages.onSubscription {
-            dispatcher = connection.createDispatcher()
+    private val dispatcher: Dispatcher by lazy {
+        connection.createDispatcher().also { dispatcher ->
             subjects.onEach {
                 dispatcher.subscribe(it) { message ->
                     runBlocking {
@@ -28,6 +25,10 @@ private class NatsConsumerAdapter(options: Options, private val subjects: Set<St
                 }
             }
         }
+    }
+
+    override val messages: Flow<Message>
+        get() = _messages.onSubscription { dispatcher }
 
     override suspend fun stop() {
         connection.close()

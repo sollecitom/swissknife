@@ -113,6 +113,17 @@ class TenantAgnosticTopicTests {
         }
 
         @Test
+        fun `parsing a tenant-agnostic topic with underscores in its namespace and name`() {
+
+            val rawTopic = "persistent://my_namespace/my_topic"
+
+            val topic = TenantAgnosticTopic.parse(rawTopic)
+
+            assertThat(topic.namespaceName).isEqualTo(Name("my_namespace"))
+            assertThat(topic.name).isEqualTo(Name("my_topic"))
+        }
+
+        @Test
         fun `parsing an invalid format`() {
 
             val result = runCatching { TenantAgnosticTopic.parse("invalid") }

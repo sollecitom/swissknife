@@ -74,7 +74,7 @@ internal class AvroRecordBuilderImpl(schema: Schema) : GenericRecordBuilder(sche
     override fun setInstants(fieldName: String, value: List<Instant>?): AvroRecordBuilder = value?.map(Instant::toString).ifNotNullOrUnset(fieldName, ::setStrings)
 
     override fun setRecords(fieldName: String, value: List<GenericRecord>?): AvroRecordBuilder = if (value != null) {
-        val fieldSchema = schema.fields.single { it.name() == fieldName }.schema()
+        val fieldSchema = schema.fields.single { it.name() == fieldName }.schema().arraySchema()
         set(fieldName, GenericData.Array(fieldSchema, value))
         this
     } else {
@@ -93,6 +93,8 @@ internal class AvroRecordBuilderImpl(schema: Schema) : GenericRecordBuilder(sche
             else -> fieldSchema
         }
     }
+
+    private fun Schema.arraySchema(): Schema = if (type == Schema.Type.UNION) types.first { it.type == Schema.Type.ARRAY } else this
 
     private fun setValueAndReturnSelf(fieldName: String, value: Any?): AvroRecordBuilder {
 

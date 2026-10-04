@@ -23,7 +23,7 @@ data class JsonSchema(internal val value: Schema, private val source: JSONObject
     }
 
     val properties: Set<Property> by lazy {
-        val schema = value as CompositeSchema? ?: return@lazy emptySet()
+        val schema = value as? CompositeSchema ?: return@lazy emptySet()
         schema.propertySchemas.map { (fieldName, fieldSchema) -> Property(fieldName, JsonSchema(fieldSchema)) }.toSet()
     }
 

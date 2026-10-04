@@ -7,4 +7,4 @@ import sollecitom.libs.swissknife.core.utils.RandomGenerator
 import sollecitom.libs.swissknife.kotlin.extensions.text.CharacterGroups.lowercaseCaseLetters
 
 context(_: RandomGenerator)
-fun EmailAddress.Companion.create(prefix: Name = Name.random(), domain: Name = "${Name.random(wordLengths = 4..8, alphabet = lowercaseCaseLetters).value}.com".let(::Name)) = EmailAddress("${prefix.value}@${domain.value}.")
+fun EmailAddress.Companion.create(prefix: Name = Name.random(), domain: Name = "${Name.random(wordLengths = 4..8, alphabet = lowercaseCaseLetters).value}.com".let(::Name)) = EmailAddress("${prefix.value}@${domain.value}")

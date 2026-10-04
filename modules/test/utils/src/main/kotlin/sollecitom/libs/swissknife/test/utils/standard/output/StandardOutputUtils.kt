@@ -9,7 +9,7 @@ inline fun <T> withCapturedStandardOutput(standardPrintStream: StandardPrintStre
     try {
         val outputStreamCaptor = ByteArrayOutputStream()
         val printStream = PrintStream(outputStreamCaptor)
-        System.setOut(printStream)
+        standardPrintStream.set(printStream)
         return printStream.use {
             val result = action()
             printStream.flush()

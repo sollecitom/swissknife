@@ -7,8 +7,6 @@ import java.io.File
 
 class LocalResourcesAvroSchemaRepository(private val rootPackage: String, private val extension: String = defaultExtension) : AvroSchemaRepository {
 
-    private val classGraph: ClassGraph by lazy(::ClassGraph)
-
     override fun getByFullyQualifiedNameOrNull(name: AvroSchemaName): AvroSchemaLocator? = runCatching {
         name.path().also {
             ensureResourceAtPathExists(it)
@@ -21,7 +19,7 @@ class LocalResourcesAvroSchemaRepository(private val rootPackage: String, privat
 
     override fun findAllInNamespace(namespace: Name): Sequence<AvroSchemaLocator> {
 
-        val resources = classGraph.acceptPaths(namespace.directory()).scan().use { it.getResourcesWithExtension(extension) }.asSequence()
+        val resources = ClassGraph().acceptPaths(namespace.directory()).scan().use { it.getResourcesWithExtension(extension) }.asSequence()
         return resources.map { ResourceAvroSchemaLocator(it.path) }
     }
 

@@ -2,6 +2,7 @@ package sollecitom.libs.swissknife.core.domain.identity.uuid
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFailure
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isLessThan
@@ -136,5 +137,15 @@ class UUIDTests {
         val id = Id.fromString(text)
 
         assertThat(id).isInstanceOf(UUIDv7::class)
+    }
+
+    @Test
+    fun `a UUID of another version is not accepted as a v7 UUID`() {
+
+        val v4Text = "550e8400-e29b-41d4-a716-446655440000"
+
+        val result = runCatching { UUIDv7(v4Text) }
+
+        assertThat(result).isFailure().isInstanceOf(IllegalArgumentException::class)
     }
 }

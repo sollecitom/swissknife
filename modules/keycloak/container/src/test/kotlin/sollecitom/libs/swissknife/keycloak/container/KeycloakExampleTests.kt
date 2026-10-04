@@ -3,7 +3,6 @@ package sollecitom.libs.swissknife.keycloak.container
 import sollecitom.libs.swissknife.test.utils.execution.utils.test
 import dasniko.testcontainers.keycloak.KeycloakContainer
 import jakarta.ws.rs.ClientErrorException
-import kotlinx.coroutines.delay
 import org.apache.http.HttpStatus
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -79,7 +78,6 @@ class KeycloakExampleTests {
         println("Bruce's ID token is ${token.idToken}")
         println("Bruce's access token is ${token.token}")
         println("Bruce's refresh token is ${token.refreshToken}")
-        delay(timeout)
     }
 }
 
@@ -87,7 +85,7 @@ fun KeycloakContainer.authzClient(realm: String, clientId: String, clientSecret:
 
 fun KeycloakContainer.authzClient(realm: Realm, client: Client): AuthzClient = authzClient(realm = realm.name, client = client)
 
-fun KeycloakContainer.authzClient(realm: String, client: Client): AuthzClient = authzClient(realm = realm, clientId = client.id, clientSecret = client.secret, clientSecretType = client.secretType)
+fun KeycloakContainer.authzClient(realm: String, client: Client): AuthzClient = authzClient(realm = realm, clientId = client.clientId, clientSecret = client.secret, clientSecretType = client.secretType)
 
 fun KeycloakClient.createRealm(name: String, isEnabled: Boolean = true, customize: RealmRepresentation.() -> Unit = { }): Realm {
 
@@ -132,6 +130,7 @@ internal class RealmAdapter(private val representation: RealmRepresentation, pri
     override fun createClient(name: String, isEnabled: Boolean, customize: ClientRepresentation.() -> Unit): Client {
 
         val client = ClientRepresentation().also(customize).apply {
+            this.clientId = name
             this.name = name
             this.isEnabled = isEnabled
         }
@@ -139,12 +138,12 @@ internal class RealmAdapter(private val representation: RealmRepresentation, pri
         if (response.status != HttpStatus.SC_CREATED && response.status != HttpStatus.SC_CONFLICT) {
             error("Unexpected response with status ${response.status} and body '${response.readEntity(String::class.java)}'")
         }
-        val representation = operations.clients().findAll().single { it.name == name }
-        val operations = operations.clients().get(representation.clientId)
+        val representation = operations.clients().findByClientId(name).single()
+        val operations = operations.clients().get(representation.id)
         return ClientAdapter(representation, operations, this)
     }
 
-    override fun clients(): List<Client> = operations.clients().findAll().map { ClientAdapter(it, operations.clients().get(it.clientId), this) }
+    override fun clients(): List<Client> = operations.clients().findAll().map { ClientAdapter(it, operations.clients().get(it.id), this) }
 
     override fun createRole(name: String, description: String, customize: RoleRepresentation.() -> Unit): Role {
 
@@ -200,6 +199,7 @@ internal class RealmAdapter(private val representation: RealmRepresentation, pri
 interface Client {
 
     val id: String
+    val clientId: String
     val name: String
     val secretType: String
     val secret: String
@@ -212,6 +212,7 @@ interface Client {
 internal class ClientAdapter(private val representation: ClientRepresentation, private val operations: ClientResource, private val realm: Realm) : Client {
 
     override val id: String get() = representation.id
+    override val clientId: String get() = representation.clientId
     override val name: String get() = representation.name
     override val secretType: String get() = operations.secret.type
     override val secret: String get() = operations.secret.value

@@ -9,6 +9,7 @@ import io.swagger.v3.oas.models.media.Schema
 import io.swagger.v3.oas.models.parameters.Parameter
 import io.swagger.v3.oas.models.parameters.RequestBody
 import io.swagger.v3.oas.models.responses.ApiResponse
+import org.json.JSONArray
 import org.json.JSONObject
 import sollecitom.libs.swissknife.compliance.checker.domain.ComplianceRule
 import sollecitom.libs.swissknife.json.utils.JsonSchema
@@ -96,14 +97,18 @@ class ExamplesSchemaComplianceRule(private val mediaTypesToCheck: Set<String>, p
         }
         val jsonValue = runCatching { toJson(value) }.getOrElse { return invalidJsonViolation(value) }
         val path = validationPath + apiLocation.location.path
-        val validationFailure = jsonSchema.validate(jsonValue, path)
+        val validationFailure = when (jsonValue) {
+            is JSONArray -> jsonSchema.validate(jsonValue, path)
+            else -> jsonSchema.validate(jsonValue as JSONObject, path)
+        }
         if (validationFailure != null) return incompatibleJsonSchemaViolation(validationFailure, jsonSchema)
         return null
     }
 
-    private fun toJson(value: Any): JSONObject = when (value) {
+    private fun toJson(value: Any): Any = when (value) {
         is Map<*, *> -> JSONObject(value)
-        else -> JSONObject(value.toString())
+        is Collection<*> -> JSONArray(value)
+        else -> value.toString().let { text -> runCatching { JSONObject(text) }.getOrElse { JSONArray(text) } }
     }
 
     context(apiLocation: OpenApiLocation, exampleInfo: ExampleInfo)
@@ -131,7 +136,7 @@ class ExamplesSchemaComplianceRule(private val mediaTypesToCheck: Set<String>, p
 
     private val Parameter.examplesWithSchema: List<ExampleInfo>
         get() = buildList {
-            val examples = schema?.let { schema -> examples.orEmpty().map { ExampleInfo(it.key, it.value.value, schema) } }.orEmpty()
+            val examples = schema?.let { schema -> examples.orEmpty().mapNotNull { (name, example) -> example.value?.let { ExampleInfo(name, it, schema) } } }.orEmpty()
             addAll(examples)
 
             val example = schema?.let { schema -> example?.let { ExampleInfo("<unnamed single example>", it, schema) } }
@@ -142,7 +147,7 @@ class ExamplesSchemaComplianceRule(private val mediaTypesToCheck: Set<String>, p
 
     private val MediaTypeWithName.examplesWithSchema: List<ExampleInfo>
         get() = buildList {
-            val examples = value.schema?.let { schema -> value.examples.orEmpty().map { ExampleInfo(it.key, it.value.value, schema) } }.orEmpty()
+            val examples = value.schema?.let { schema -> value.examples.orEmpty().mapNotNull { (name, example) -> example.value?.let { ExampleInfo(name, it, schema) } } }.orEmpty()
             addAll(examples)
 
             val example = value.schema?.let { schema -> value.example?.let { ExampleInfo("<unnamed single example>", it, schema) } }

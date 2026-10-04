@@ -52,6 +52,14 @@ class TrivyImageScannerTests {
         }
 
         @Test
+        fun `a scan of a missing image fails after a single attempt`() {
+
+            val failure = assertThrows<TrivyScanFailed> { TrivyImageScanner.scan(imageName = "swissknife-missing-image:does-not-exist", maximumAttempts = 3) }
+
+            assertThat(failure.message.orEmpty()).contains("after 1 attempt(s)")
+        }
+
+        @Test
         fun `at least one attempt is required`() {
 
             assertThrows<IllegalArgumentException> { TrivyImageScanner.scan(imageName = "example:latest", maximumAttempts = 0) }

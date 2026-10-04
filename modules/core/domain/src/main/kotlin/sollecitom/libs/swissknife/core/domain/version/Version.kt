@@ -24,6 +24,8 @@ sealed interface Version : Comparable<Version> {
 
         override val value = "${major}$SEPARATOR${minor}$SEPARATOR${patch}".let(::Name)
 
+        override fun compareTo(other: Version) = if (other is Semantic) compareValuesBy(this, other, Semantic::major, Semantic::minor, Semantic::patch) else super.compareTo(other)
+
         companion object {
             const val SEPARATOR = "."
 

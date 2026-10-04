@@ -70,8 +70,10 @@ object TrivyImageScanner {
         val trivyImage = "$DEFAULT_TRIVY_IMAGE:$trivyVersion"
         var lastFailure: Throwable? = null
         var lastOutput = ""
+        var attempts = 0
 
-        repeat(maximumAttempts) { attemptIndex ->
+        for (attemptIndex in 0 until maximumAttempts) {
+            attempts = attemptIndex + 1
             val outputConsumer = ToStringConsumer()
             val container = newContainer(trivyImage, command, cacheDirectory, trivyIgnoreContent, outputConsumer)
             try {
@@ -82,7 +84,7 @@ object TrivyImageScanner {
                 lastOutput = capturedOutput(container, outputConsumer)
                 val attemptsLeft = maximumAttempts - attemptIndex - 1
                 // A missing image is a real error rather than a flaky download, so there is nothing to gain by retrying.
-                if (attemptsLeft == 0 || !isWorthRetrying(lastOutput)) return@repeat
+                if (attemptsLeft == 0 || !isWorthRetrying(lastOutput)) break
                 println("Trivy scan of '$imageName' failed (${failureSummary(lastOutput)}); retrying, $attemptsLeft attempt(s) left.")
                 System.out.flush()
                 Thread.sleep(DELAY_BETWEEN_ATTEMPTS.toMillis())
@@ -90,7 +92,7 @@ object TrivyImageScanner {
                 runCatching { container.stop() }
             }
         }
-        throw TrivyScanFailed(imageName, trivyImage, maximumAttempts, lastOutput, lastFailure)
+        throw TrivyScanFailed(imageName, trivyImage, attempts, lastOutput, lastFailure)
     }
 
     /**

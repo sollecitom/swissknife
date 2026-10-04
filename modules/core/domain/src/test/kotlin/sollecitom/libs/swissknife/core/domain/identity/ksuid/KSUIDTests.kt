@@ -8,6 +8,7 @@ import sollecitom.libs.swissknife.core.domain.identity.utils.invoke
 import sollecitom.libs.swissknife.kotlin.extensions.time.fixed
 import sollecitom.libs.swissknife.kotlin.extensions.time.truncatedToSeconds
 import kotlin.time.Clock
+import kotlin.time.Instant
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
@@ -49,5 +50,37 @@ class KSUIDTests {
         val id = Id.Factory.invoke(clock = clock).ksuid.monotonic(timestamp = futureTimestamp)
 
         assertThat(id.timestamp).isEqualTo(futureTimestamp.truncatedToSeconds())
+    }
+
+    @Test
+    fun `monotonic KSUIDs use the time of creation`() {
+
+        var now = Instant.parse("2026-01-01T00:00:00Z")
+        val clock = object : Clock {
+            override fun now() = now
+        }
+        val factory = Id.Factory.invoke(clock = clock).ksuid.monotonic
+        factory()
+        now = Instant.parse("2026-01-01T01:00:00Z")
+
+        val id = factory()
+
+        assertThat(id.timestamp).isEqualTo(Instant.parse("2026-01-01T01:00:00Z"))
+    }
+
+    @Test
+    fun `sub-second precision KSUIDs use the time of creation`() {
+
+        var now = Instant.parse("2026-01-01T00:00:00Z")
+        val clock = object : Clock {
+            override fun now() = now
+        }
+        val factory = Id.Factory.invoke(clock = clock).ksuid.withSubSecondPrecision
+        factory()
+        now = Instant.parse("2026-01-01T01:00:00Z")
+
+        val id = factory()
+
+        assertThat(id.timestamp).isEqualTo(Instant.parse("2026-01-01T01:00:00Z"))
     }
 }

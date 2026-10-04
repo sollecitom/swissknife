@@ -8,6 +8,8 @@ sealed class ValidationReportError(val key: String) {
 
         data object UnknownHeader : Request("validation.request.parameter.header.unknown")
 
+        data object UnknownQueryParam : Request("validation.request.parameter.query.unknown")
+
         data object UnknownPath : Request("validation.request.path.missing")
 
         data object ContentTypeNotAllowed : Request("validation.request.contentType.notAllowed")
@@ -24,7 +26,7 @@ sealed class ValidationReportError(val key: String) {
 
     sealed class Response(key: String) : ValidationReportError(key) {
 
-        data object MissingRequiredHeader : Request("validation.response.header.missing")
+        data object MissingRequiredHeader : Response("validation.response.header.missing")
 
         data object UnknownHeader : Response("validation.response.header.unknown")
 

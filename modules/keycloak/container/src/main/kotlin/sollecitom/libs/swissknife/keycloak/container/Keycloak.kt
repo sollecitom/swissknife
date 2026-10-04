@@ -18,12 +18,12 @@ object Keycloak {
     fun newContainer(version: String = defaultImageVersion, adminUsername: String = defaultAdminUsername, adminPassword: String = defaultAdminPassword, startupAttempts: Int = 10, startupTimeout: Duration = 2.minutes, initialRamPercentage: Int = defaultInitialRamPercentage, maxRamPercentage: Int = defaultMaxRamPercentage, customize: KeycloakContainer.() -> KeycloakContainer = { this }): KeycloakContainer {
 
         val imageName = "$defaultImageName:$version"
-        val keycloak = KeycloakContainer(imageName).customize()
+        val keycloak = KeycloakContainer(imageName)
         keycloak.withAdminUsername(adminUsername)
         keycloak.withAdminPassword(adminPassword)
         keycloak.withStartupAttempts(startupAttempts)
         keycloak.withStartupTimeout(startupTimeout.toJavaDuration())
         keycloak.withRamPercentage(initialRamPercentage, maxRamPercentage)
-        return keycloak
+        return keycloak.customize()
     }
 }

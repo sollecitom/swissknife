@@ -71,5 +71,17 @@ class ActorTestFactoryTests : CoreDataGenerator by CoreDataGenerator.testProvide
             assertThat(impersonating.authentication).isEqualTo(actor.authentication)
             assertThat(impersonating.benefitingAccount).isEqualTo(impersonated)
         }
+
+        @Test
+        fun `created with given accounts`() {
+
+            val impersonated = Actor.Account.user()
+            val impersonator = Actor.Account.user()
+
+            val actor = Actor.impersonating(impersonating = impersonated, impersonator = impersonator)
+
+            assertThat(actor.account).isEqualTo(impersonated)
+            assertThat(actor.impersonator).isEqualTo(impersonator)
+        }
     }
 }

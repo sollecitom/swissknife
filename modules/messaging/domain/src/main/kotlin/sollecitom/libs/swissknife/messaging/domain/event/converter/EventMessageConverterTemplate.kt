@@ -18,7 +18,7 @@ abstract class EventMessageConverterTemplate<EVENT : Event>(private val property
 
     protected abstract fun key(event: EVENT): String
 
-    protected fun additionalProperties(event: EVENT): Map<String, String> = emptyMap()
+    protected open fun additionalProperties(event: EVENT): Map<String, String> = emptyMap()
 
     protected fun standardEventProperties(event: EVENT): Map<String, String> = mapOf(
         propertyNames.forEvents.type to event.type.stringValue

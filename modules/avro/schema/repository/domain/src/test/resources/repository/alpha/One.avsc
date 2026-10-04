@@ -1,0 +1,1 @@
+{"type":"record","name":"One","namespace":"alpha","fields":[{"name":"value","type":"string"}]}

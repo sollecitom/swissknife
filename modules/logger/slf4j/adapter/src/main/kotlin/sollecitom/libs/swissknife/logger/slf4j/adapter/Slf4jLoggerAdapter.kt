@@ -14,9 +14,9 @@ class Slf4jLoggerAdapter(private val logger: Logger) : Slf4jLogger {
     override fun isTraceEnabled() = with(logger) { sollecitom.libs.swissknife.logger.core.LoggingLevel.TRACE.isEnabledForLoggerName(logger.name) }
     override fun isTraceEnabled(marker: Marker?) = isTraceEnabled()
     override fun trace(msg: String) = logger.trace { msg }
-    override fun trace(format: String, arg: Any?) = logger.trace { format(format, arg) }
-    override fun trace(format: String, arg1: Any?, arg2: Any?) = logger.trace { format(format, arg1, arg2) }
-    override fun trace(format: String, vararg arguments: Any?) = logger.trace { format(format, *arguments) }
+    override fun trace(format: String, arg: Any?) = logger.trace(throwableIn(arg)) { format(format, arg) }
+    override fun trace(format: String, arg1: Any?, arg2: Any?) = logger.trace(throwableIn(arg1, arg2)) { format(format, arg1, arg2) }
+    override fun trace(format: String, vararg arguments: Any?) = logger.trace(throwableIn(*arguments)) { format(format, *arguments) }
     override fun trace(msg: String, t: Throwable?) = logger.trace(t) { msg }
     override fun trace(marker: Marker?, msg: String) = logger.trace { msg }
     override fun trace(marker: Marker?, format: String, arg: Any?) = trace(format, arg)
@@ -27,9 +27,9 @@ class Slf4jLoggerAdapter(private val logger: Logger) : Slf4jLogger {
     override fun isDebugEnabled() = with(logger) { sollecitom.libs.swissknife.logger.core.LoggingLevel.DEBUG.isEnabledForLoggerName(logger.name) }
     override fun isDebugEnabled(marker: Marker?) = isDebugEnabled()
     override fun debug(msg: String) = logger.debug { msg }
-    override fun debug(format: String, arg: Any?) = logger.debug { format(format, arg) }
-    override fun debug(format: String, arg1: Any?, arg2: Any?) = logger.debug { format(format, arg1, arg2) }
-    override fun debug(format: String, vararg arguments: Any?) = logger.debug { format(format, *arguments) }
+    override fun debug(format: String, arg: Any?) = logger.debug(throwableIn(arg)) { format(format, arg) }
+    override fun debug(format: String, arg1: Any?, arg2: Any?) = logger.debug(throwableIn(arg1, arg2)) { format(format, arg1, arg2) }
+    override fun debug(format: String, vararg arguments: Any?) = logger.debug(throwableIn(*arguments)) { format(format, *arguments) }
     override fun debug(msg: String, t: Throwable?) = logger.debug(t) { msg }
     override fun debug(marker: Marker?, msg: String) = logger.debug { msg }
     override fun debug(marker: Marker?, format: String, arg: Any?) = debug(format, arg)
@@ -40,9 +40,9 @@ class Slf4jLoggerAdapter(private val logger: Logger) : Slf4jLogger {
     override fun isInfoEnabled() = with(logger) { sollecitom.libs.swissknife.logger.core.LoggingLevel.INFO.isEnabledForLoggerName(logger.name) }
     override fun isInfoEnabled(marker: Marker?) = isInfoEnabled()
     override fun info(msg: String) = logger.info { msg }
-    override fun info(format: String, arg: Any?) = logger.info { format(format, arg) }
-    override fun info(format: String, arg1: Any?, arg2: Any?) = logger.info { format(format, arg1, arg2) }
-    override fun info(format: String, vararg arguments: Any?) = logger.info { format(format, *arguments) }
+    override fun info(format: String, arg: Any?) = logger.info(throwableIn(arg)) { format(format, arg) }
+    override fun info(format: String, arg1: Any?, arg2: Any?) = logger.info(throwableIn(arg1, arg2)) { format(format, arg1, arg2) }
+    override fun info(format: String, vararg arguments: Any?) = logger.info(throwableIn(*arguments)) { format(format, *arguments) }
     override fun info(msg: String, t: Throwable?) = logger.info(t) { msg }
     override fun info(marker: Marker?, msg: String) = logger.info { msg }
     override fun info(marker: Marker?, format: String, arg: Any?) = info(format, arg)
@@ -53,9 +53,9 @@ class Slf4jLoggerAdapter(private val logger: Logger) : Slf4jLogger {
     override fun isWarnEnabled() = with(logger) { sollecitom.libs.swissknife.logger.core.LoggingLevel.WARN.isEnabledForLoggerName(logger.name) }
     override fun isWarnEnabled(marker: Marker?) = isWarnEnabled()
     override fun warn(msg: String) = logger.warn { msg }
-    override fun warn(format: String, arg: Any?) = logger.warn { format(format, arg) }
-    override fun warn(format: String, arg1: Any?, arg2: Any?) = logger.warn { format(format, arg1, arg2) }
-    override fun warn(format: String, vararg arguments: Any?) = logger.warn { format(format, *arguments) }
+    override fun warn(format: String, arg: Any?) = logger.warn(throwableIn(arg)) { format(format, arg) }
+    override fun warn(format: String, arg1: Any?, arg2: Any?) = logger.warn(throwableIn(arg1, arg2)) { format(format, arg1, arg2) }
+    override fun warn(format: String, vararg arguments: Any?) = logger.warn(throwableIn(*arguments)) { format(format, *arguments) }
     override fun warn(msg: String, t: Throwable?) = logger.warn(t) { msg }
     override fun warn(marker: Marker?, msg: String) = logger.warn { msg }
     override fun warn(marker: Marker?, format: String, arg: Any?) = warn(format, arg)
@@ -66,9 +66,9 @@ class Slf4jLoggerAdapter(private val logger: Logger) : Slf4jLogger {
     override fun isErrorEnabled() = with(logger) { sollecitom.libs.swissknife.logger.core.LoggingLevel.ERROR.isEnabledForLoggerName(logger.name) }
     override fun isErrorEnabled(marker: Marker?) = isErrorEnabled()
     override fun error(msg: String) = logger.error { msg }
-    override fun error(format: String, arg: Any?) = logger.error { format(format, arg) }
-    override fun error(format: String, arg1: Any?, arg2: Any?) = logger.error { format(format, arg1, arg2) }
-    override fun error(format: String, vararg arguments: Any?) = logger.error { format(format, *arguments) }
+    override fun error(format: String, arg: Any?) = logger.error(throwableIn(arg)) { format(format, arg) }
+    override fun error(format: String, arg1: Any?, arg2: Any?) = logger.error(throwableIn(arg1, arg2)) { format(format, arg1, arg2) }
+    override fun error(format: String, vararg arguments: Any?) = logger.error(throwableIn(*arguments)) { format(format, *arguments) }
     override fun error(msg: String, t: Throwable?) = logger.error(t) { msg }
     override fun error(marker: Marker?, msg: String) = logger.error { msg }
     override fun error(marker: Marker?, format: String, arg: Any?) = error(format, arg)
@@ -77,6 +77,8 @@ class Slf4jLoggerAdapter(private val logger: Logger) : Slf4jLogger {
     override fun error(marker: Marker?, msg: String, t: Throwable?) = error(msg, t)
 
     private fun format(template: String, vararg args: Any?): String = MessageFormatter.arrayFormat(template, args).message
+
+    private fun throwableIn(vararg args: Any?): Throwable? = MessageFormatter.getThrowableCandidate(args)
 }
 
 fun Logger.asSlf4jLogger(): Slf4jLogger = Slf4jLoggerAdapter(this)

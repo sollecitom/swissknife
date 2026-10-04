@@ -114,6 +114,27 @@ class TopicTests {
         }
 
         @Test
+        fun `parsing a topic with underscores in its tenant, namespace and name`() {
+
+            val rawTopic = "persistent://my_tenant/my_namespace/my_topic"
+
+            val topic = Topic.parse(rawTopic)
+
+            assertThat(topic.name).isEqualTo(Name("my_topic"))
+            assertThat(topic.namespace).isEqualTo(Topic.Namespace(Name("my_tenant"), Name("my_namespace")))
+        }
+
+        @Test
+        fun `parsing a topic with trailing characters outside the allowed alphabet`() {
+
+            val invalidTopic = "persistent://my-tenant/my-namespace/my-topic?"
+
+            val result = runCatching { Topic.parse(invalidTopic) }
+
+            assertThat(result).isFailure().isInstanceOf<IllegalStateException>()
+        }
+
+        @Test
         fun `parsing an invalid topic format`() {
 
             val invalidTopic = "not-a-valid-topic"

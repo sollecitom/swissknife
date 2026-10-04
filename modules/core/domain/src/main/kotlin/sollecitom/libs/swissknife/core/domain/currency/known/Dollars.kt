@@ -15,6 +15,6 @@ class Dollars(units: BigInteger) : SpecificCurrencyAmountTemplate<Dollars>(units
     constructor(decimalValue: BigDecimal) : this(decimalValue.toUnits(Currency.USD))
 }
 
-val Number.dollars: Dollars get() = Dollars(toDouble().toBigDecimal())
+val Number.dollars: Dollars get() = Dollars(toDecimal())
 val Int.cents: Dollars get() = Dollars(toBigInteger())
 val Long.cents: Dollars get() = Dollars(toBigInteger())

@@ -10,13 +10,16 @@ import java.time.Instant
 
 class DefaultLoggerFactory(defaultLoggingFunction: Log = DefaultLogToConsole) : LoggerFactory {
 
-    private var alreadyConfigured = false
+    @Volatile
     override var loggingFunction: Log = defaultLoggingFunction
+
+    @Volatile
     override var timeNow: () -> Instant = Instant::now
+
+    @Volatile
     override var isEnabledForLoggerName: LoggingLevel.(name: String) -> Boolean = { true }
 
     override fun configure(customize: LoggerFactory.Customizer.() -> Unit) {
-        check(!alreadyConfigured) { "LoggerFactory can be configured only once." }
         customize(Customizer())
     }
 

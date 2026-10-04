@@ -8,4 +8,4 @@ interface SigningPrivateKey : sollecitom.libs.swissknife.cryptography.domain.asy
     fun sign(input: ByteArray): Signature
 }
 
-fun <OPTIONS> SigningPrivateKey.sign(input: String, charset: Charset = Charsets.UTF_8) = sign(input.toByteArray(charset))
+fun SigningPrivateKey.sign(input: String, charset: Charset = Charsets.UTF_8) = sign(input.toByteArray(charset))

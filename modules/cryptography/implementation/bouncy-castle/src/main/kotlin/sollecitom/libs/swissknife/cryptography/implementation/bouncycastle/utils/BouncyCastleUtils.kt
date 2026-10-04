@@ -21,10 +21,10 @@ object BouncyCastleUtils {
         ensureBouncyCastleProviderIsRegistered()
     }
 
-    fun sign(privateKey: PrivateKey, message: ByteArray, signatureAlgorithm: String, provider: String): ByteArray {
+    fun sign(privateKey: PrivateKey, message: ByteArray, signatureAlgorithm: String, provider: String, random: SecureRandom): ByteArray {
 
         val sig: Signature = Signature.getInstance(signatureAlgorithm, provider)
-        sig.initSign(privateKey, SecureRandom())
+        sig.initSign(privateKey, random)
         sig.update(message, 0, message.size)
         return sig.sign()
     }
@@ -40,10 +40,10 @@ object BouncyCastleUtils {
         return sig.verify(signature)
     }
 
-    fun generateSecretKey(algorithm: String, length: Int, provider: String): SecretKey {
+    fun generateSecretKey(algorithm: String, length: Int, provider: String, random: SecureRandom): SecretKey {
 
         val keyGenerator = KeyGenerator.getInstance(algorithm, provider)
-        keyGenerator.init(length)
+        keyGenerator.init(length, random)
         return keyGenerator.generateKey()
     }
 

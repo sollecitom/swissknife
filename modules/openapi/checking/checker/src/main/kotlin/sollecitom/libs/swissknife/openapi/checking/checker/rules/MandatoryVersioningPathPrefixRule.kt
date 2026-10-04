@@ -26,8 +26,8 @@ class MandatoryVersioningPathPrefixRule(private val minimumAllowedVersion: Int =
 
         regex.find(this) ?: return true
         val prefixMatch = prefixRegex.find(this)!!
-        val version = prefixMatch.groupValues.drop(1).single().toInt()
-        return version < minimumAllowedVersion
+        val version = prefixMatch.groupValues.drop(1).single().toBigInteger()
+        return version < minimumAllowedVersion.toBigInteger()
     }
 
     data class Violation(val pathName: String, val minimumAllowedVersion: Int) : ComplianceRule.Result.Violation<OpenAPI> {
@@ -36,7 +36,7 @@ class MandatoryVersioningPathPrefixRule(private val minimumAllowedVersion: Int =
     }
 
     companion object {
-        private val prefixRegex = "/v([0-9])".toRegex()
-        private val regex = "/v([0-9]/.+)".toRegex()
+        private val prefixRegex = "^/v([0-9]+)".toRegex()
+        private val regex = "^/v([0-9]+)/.+".toRegex()
     }
 }

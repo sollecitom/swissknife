@@ -25,14 +25,12 @@ fun <T> Flow<T>.chunkUntil(aggregateUntil: (index: Int, rawChunk: List<T>) -> Bo
 
 private fun <T> Flow<T>.chunkUntilPrivate(maxChunkingPeriod: Duration?, aggregateUntil: ((index: Int, rawChunk: List<T>) -> Boolean)?): Flow<List<T>> = object : Flow<List<T>> {
 
-    private var original = this@chunkUntilPrivate
-
     override suspend fun collect(collector: FlowCollector<List<T>>) = coroutineScope {
 
         val chunk = mutableListOf<T>()
 
         suspend fun flush() {
-            collector.emit(chunk)
+            collector.emit(chunk.toList())
             chunk.clear()
         }
 
@@ -42,7 +40,7 @@ private fun <T> Flow<T>.chunkUntilPrivate(maxChunkingPeriod: Duration?, aggregat
             ticker = async(start = CoroutineStart.LAZY) { periods.onEach { flush() }.collect() }
         }
 
-        original = original.onCompletion {
+        val original = this@chunkUntilPrivate.onCompletion {
             ticker?.cancel()
             flush()
         }

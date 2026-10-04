@@ -68,6 +68,17 @@ class HappeningTypeTests {
         }
 
         @Test
+        fun `parsing a type string whose name contains the version separator`() {
+
+            val rawValue = "user--verified--v1"
+
+            val type = Happening.Type.parse(rawValue)
+
+            assertThat(type.name).isEqualTo(Name("user--verified"))
+            assertThat(type.version).isEqualTo(IntVersion(1))
+        }
+
+        @Test
         fun `parsing an invalid type string`() {
 
             val invalidValue = "no-version-here"

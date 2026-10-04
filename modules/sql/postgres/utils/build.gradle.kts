@@ -9,4 +9,6 @@ dependencies {
     api(projects.readinessDomain)
 
     implementation(projects.loggerCore)
+
+    testImplementation(projects.testUtils)
 }

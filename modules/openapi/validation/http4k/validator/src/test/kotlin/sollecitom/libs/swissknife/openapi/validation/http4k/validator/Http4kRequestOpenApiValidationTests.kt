@@ -5,11 +5,16 @@ import assertk.assertions.isSuccess
 import sollecitom.libs.swissknife.core.domain.text.Name
 import sollecitom.libs.swissknife.http4k.utils.body
 import sollecitom.libs.swissknife.logger.core.loggable.Loggable
+import sollecitom.libs.swissknife.openapi.builder.buildOpenApi
+import sollecitom.libs.swissknife.openapi.builder.get
+import sollecitom.libs.swissknife.openapi.builder.parameters
+import sollecitom.libs.swissknife.openapi.builder.responses
 import sollecitom.libs.swissknife.openapi.parser.OpenApiReader
 import sollecitom.libs.swissknife.openapi.validation.http4k.validator.implementation.invoke
 import sollecitom.libs.swissknife.openapi.validation.request.validator.ValidationReportError
 import sollecitom.libs.swissknife.openapi.validation.request.validator.test.utils.containsOnly
 import sollecitom.libs.swissknife.openapi.validation.request.validator.test.utils.hasNoErrors
+import io.swagger.v3.oas.models.media.StringSchema
 import org.http4k.core.*
 import org.json.JSONArray
 import org.json.JSONObject
@@ -80,7 +85,75 @@ class Http4kRequestOpenApiValidationTests {
 
             val report = validator.validate(request)
 
+            assertThat(report).containsOnly(ValidationReportError.Request.UnknownQueryParam)
+        }
+
+        @Test
+        fun `are rejected with a single error when multiple unknown headers are specified`() {
+
+            val json = validPersonDetails.toJson()
+            val request = validRequest(json).header("Unknown-Header", "value").header("Another-Unknown-Header", "value")
+
+            val report = validator.validate(request)
+
             assertThat(report).containsOnly(ValidationReportError.Request.UnknownHeader)
+        }
+
+        @Test
+        fun `are confirmed valid when specifying a header declared for the whole path`() {
+
+            val api = OpenApiReader.parseContent(
+                """
+                openapi: 3.1.0
+                info:
+                  title: Things
+                  version: "1.0"
+                paths:
+                  /things:
+                    parameters:
+                      - name: X-Thing
+                        in: header
+                        schema:
+                          type: string
+                    get:
+                      responses:
+                        "200":
+                          description: Found
+                """.trimIndent()
+            )
+            val request = Request(Method.GET, uri("/things")).header("X-Thing", "value")
+
+            val report = Http4kOpenApiValidator(openApi = api).validate(request)
+
+            assertThat(report).hasNoErrors()
+        }
+
+        @Test
+        fun `are confirmed valid when specifying a header declared by a programmatically built specification`() {
+
+            val api = buildOpenApi {
+                path("/things") {
+                    get {
+                        parameters {
+                            add {
+                                name = "X-Thing"
+                                `in` = "header"
+                                schema = StringSchema()
+                            }
+                        }
+                        responses {
+                            status(200) {
+                                description("Found")
+                            }
+                        }
+                    }
+                }
+            }
+            val request = Request(Method.GET, uri("/things")).header("X-Thing", "value")
+
+            val report = Http4kOpenApiValidator(openApi = api).validate(request)
+
+            assertThat(report).hasNoErrors()
         }
 
         @Test
@@ -191,6 +264,6 @@ class Http4kRequestOpenApiValidationTests {
         val validPersonDetails = Person("Bruce".let(::Name), "Wayne".let(::Name), 36)
         const val API_FILE_LOCATION = "api/api.yml"
 
-        fun uri(path: String) = "http://localhost:8080/$path"
+        fun uri(path: String) = "http://localhost:8080$path"
     }
 }

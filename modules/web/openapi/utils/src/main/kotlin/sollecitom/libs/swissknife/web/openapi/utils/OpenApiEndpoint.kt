@@ -17,14 +17,12 @@ class OpenApiEndpoint(private val openApiLocation: String) : Endpoint {
     private val openApi by lazy { OpenApiDefinitionReader.standard.read(openApiLocation) }
     private val openApiYamlDefinition by lazy { openApi.asYaml }
     private val openApiJsonDefinition by lazy { openApi.asJson }
-    private val byContentType = mutableMapOf<ContentType, String>()
     override val path: String get() = "/api"
     override val methods: Set<Method> = setOf(Method.GET)
     override val route = path bind Method.GET to { request ->
 
-        val contentType = request.accept()?.contentTypes?.map { it.content }?.firstOrNull { supportedContentTypes.any { supported -> supported.equalsIgnoringDirectives(it) } } ?: defaultContentType
-        val body = byContentType.getOrPut(contentType) { contentType.representation() }
-        Response(OK).body(body).contentType(contentType)
+        val contentType = request.accept()?.contentTypes?.map { it.content }?.firstNotNullOfOrNull { requested -> supportedContentTypes.firstOrNull { supported -> supported.equalsIgnoringDirectives(requested) } } ?: defaultContentType
+        Response(OK).body(contentType.representation()).contentType(contentType)
     }
 
     private fun ContentType.representation(): String = when {

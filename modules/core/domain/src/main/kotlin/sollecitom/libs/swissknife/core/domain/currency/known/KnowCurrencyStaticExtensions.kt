@@ -6,6 +6,7 @@ import sollecitom.libs.swissknife.core.domain.currency.Currency
 import sollecitom.libs.swissknife.core.domain.currency.SpecificCurrencyAmount
 import sollecitom.libs.swissknife.kotlin.extensions.number.withPrecision
 import java.math.BigDecimal
+import java.math.BigInteger
 import kotlin.reflect.KClass
 
 val <CURRENCY : SpecificCurrencyAmount<CURRENCY>> KClass<CURRENCY>.currency: Currency<CURRENCY>
@@ -27,4 +28,12 @@ fun <CURRENCY : SpecificCurrencyAmount<CURRENCY>> BigDecimal.toCurrencyAmount(cu
         Currency.JPY -> Yen(rounded) as CURRENCY
         else -> error("Unsupported currency $currency")
     }
+}
+
+internal fun Number.toDecimal(): BigDecimal = when (this) {
+    is BigDecimal -> this
+    is BigInteger -> toBigDecimal()
+    is Long, is Int, is Short, is Byte -> toLong().toBigDecimal()
+    is Float -> toString().toBigDecimal()
+    else -> toDouble().toBigDecimal()
 }

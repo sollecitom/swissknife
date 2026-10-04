@@ -1,6 +1,7 @@
 package sollecitom.libs.swissknife.cryptography.test.specification
 
 import assertk.assertThat
+import assertk.assertions.doesNotContain
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isNotEqualTo
@@ -16,6 +17,7 @@ import sollecitom.libs.swissknife.cryptography.domain.factory.CryptographicOpera
 import sollecitom.libs.swissknife.cryptography.domain.symmetric.EncryptionMode
 import sollecitom.libs.swissknife.cryptography.domain.symmetric.EncryptionMode.GCM.Operations.Companion.DEFAULT_AUTHENTICATION_TAG_LENGTH_IN_BITS
 import sollecitom.libs.swissknife.cryptography.domain.symmetric.EncryptionMode.GCM.Operations.Companion.DEFAULT_RANDOM_IV_LENGTH
+import sollecitom.libs.swissknife.cryptography.domain.symmetric.SymmetricKeyWithEncapsulation
 import sollecitom.libs.swissknife.cryptography.domain.symmetric.decrypt
 import sollecitom.libs.swissknife.cryptography.domain.symmetric.encryption.aes.AES
 import sollecitom.libs.swissknife.cryptography.domain.symmetric.encryption.aes.AES.Variant.AES_256
@@ -252,6 +254,18 @@ interface CryptographyTestSpecification {
         val encrypted = key.xts.encrypt(message, dataUnitNumber = 1)
 
         assertThat(key.xts.decrypt(encrypted)).isEqualTo(message)
+    }
+
+    @Test
+    fun `the string form of a symmetric key does not reveal the key material`() {
+
+        val key = aes.key(variant = AES_256)
+        val keyWithEncapsulation = SymmetricKeyWithEncapsulation(key = key, encapsulation = byteArrayOf(1, 2, 3))
+
+        listOf(key.toString(), keyWithEncapsulation.toString()).forEach { text ->
+            assertThat(text).doesNotContain(key.encoded.contentToString())
+            assertThat(text).doesNotContain(key.encodedAsHexString)
+        }
     }
 
     val cryptography: CryptographicOperations

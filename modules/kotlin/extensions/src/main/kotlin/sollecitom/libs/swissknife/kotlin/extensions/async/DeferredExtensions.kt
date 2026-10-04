@@ -3,6 +3,7 @@ package sollecitom.libs.swissknife.kotlin.extensions.async
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.selects.select
 import kotlinx.coroutines.withTimeout
@@ -10,7 +11,7 @@ import java.util.concurrent.CompletionStage
 import kotlin.time.Duration
 
 /** Awaits the first deferred result matching the [predicate], cancels the rest. Returns null if the collection is empty. */
-suspend fun <V> Collection<Deferred<V>>.awaitAny(predicate: (V) -> Boolean = { true }): V? = if (isEmpty()) null else
+suspend fun <V> Collection<Deferred<V>>.awaitAny(predicate: (V) -> Boolean = { true }): V? = if (isEmpty()) null else try {
     select {
         forEach { deferred ->
             deferred.onAwait { result ->
@@ -18,7 +19,10 @@ suspend fun <V> Collection<Deferred<V>>.awaitAny(predicate: (V) -> Boolean = { t
                 else (this@awaitAny - deferred).awaitAny(predicate)
             }
         }
-    }.also { filter { task -> task.isActive }.forEach { it.cancelAndJoin() } }
+    }
+} finally {
+    filter { task -> task.isActive }.onEach { it.cancel() }.joinAll()
+}
 
 suspend fun <VALUE> Deferred<VALUE>.await(timeout: Duration): VALUE = withTimeout(timeout) { await() }
 

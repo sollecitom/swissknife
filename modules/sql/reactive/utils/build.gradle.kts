@@ -13,4 +13,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.reactor)
 
     implementation(projects.kotlinExtensions)
+
+    testImplementation(projects.testUtils)
 }

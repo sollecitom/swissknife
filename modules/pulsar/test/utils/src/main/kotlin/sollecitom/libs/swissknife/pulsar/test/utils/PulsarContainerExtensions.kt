@@ -31,7 +31,7 @@ fun PulsarContainer.withBrokerEnv(propertyName: String, propertyValue: String) =
 
 fun PulsarContainer.withBrokerEnv(variables: Map<String, String>): PulsarContainer {
 
-    return variables.entries.map(Map.Entry<String, String>::toPair).fold(this) { container, (propertyName, propertyValue) -> container.withEnv(propertyName, propertyValue) }
+    return variables.entries.map(Map.Entry<String, String>::toPair).fold(this) { container, (propertyName, propertyValue) -> container.withBrokerEnv(propertyName, propertyValue) }
 }
 
 fun PulsarContainer.withNetworkAndAliases(network: Network, vararg aliases: String = arrayOf(PULSAR_NETWORK_ALIAS)): PulsarContainer = withNetwork(network).withNetworkAliases(*aliases)

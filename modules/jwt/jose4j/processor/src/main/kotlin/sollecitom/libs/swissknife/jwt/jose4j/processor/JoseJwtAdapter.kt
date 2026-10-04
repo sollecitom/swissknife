@@ -8,12 +8,12 @@ import org.json.JSONObject
 
 internal class JoseJwtAdapter(private val delegate: JwtClaims) : JWT {
 
-    override val id: String get() = delegate.jwtId
-    override val subject: String get() = delegate.subject
+    override val id: String get() = checkNotNull(delegate.jwtId) { "The JWT has no 'jti' claim" }
+    override val subject: String get() = checkNotNull(delegate.subject) { "The JWT has no 'sub' claim" }
     override val claimsAsJson = delegate.toJson().let(::JSONObject)
-    override val issuerId = delegate.issuer.let(::StringOrURI)
+    override val issuerId: StringOrURI get() = checkNotNull(delegate.issuer) { "The JWT has no 'iss' claim" }.let(::StringOrURI)
     override val audienceIds = delegate.audience.map(::StringOrURI)
-    override val issuedAt: Instant = delegate.issuedAt.let { Instant.fromEpochMilliseconds(it.valueInMillis) }
+    override val issuedAt: Instant get() = checkNotNull(delegate.issuedAt) { "The JWT has no 'iat' claim" }.let { Instant.fromEpochMilliseconds(it.valueInMillis) }
     override val expirationTime: Instant? = delegate.expirationTime?.let { Instant.fromEpochMilliseconds(it.valueInMillis) }
     override val notBeforeTime: Instant? = delegate.notBefore?.let { Instant.fromEpochMilliseconds(it.valueInMillis) }
 

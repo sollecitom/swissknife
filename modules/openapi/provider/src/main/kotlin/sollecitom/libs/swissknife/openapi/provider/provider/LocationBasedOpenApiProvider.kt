@@ -29,8 +29,7 @@ class LocationBasedOpenApiProvider(private val openApiFileName: String) : OpenAp
             if (adjustedLocation.lowercase(Locale.getDefault()).startsWith("http")) {
                 return RemoteUrl.urlToString(adjustedLocation, auth)
             } else if (adjustedLocation.lowercase(Locale.getDefault()).startsWith("jar:")) {
-                val inputStream = URI(adjustedLocation).toURL().openStream()
-                return IOUtils.toString(inputStream, encoding)
+                return URI(adjustedLocation).toURL().openStream().use { inputStream -> IOUtils.toString(inputStream, encoding) }
             } else {
                 val fileScheme = "file:"
                 val path = if (adjustedLocation.lowercase(Locale.getDefault()).startsWith(fileScheme)) Paths.get(URI.create(adjustedLocation)) else Paths.get(adjustedLocation)

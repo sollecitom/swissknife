@@ -20,8 +20,8 @@ data class TenantAgnosticTopic(val name: Name, val namespaceName: Name, val pers
 
         private const val EXPECTED_PARTS_COUNT = 4
         private const val PROTOCOL_GROUP = "(persistent|non-persistent)"
-        private const val NAMESPACE_GROUP = "([a-zA-Z0-9\\-]+)"
-        private const val NAME_GROUP = "([a-zA-Z0-9\\-]+)"
+        private const val NAMESPACE_GROUP = "([\\w.=:\\-]+)"
+        private const val NAME_GROUP = "([\\w.=:\\-]+)"
         private const val PATTERN = "$PROTOCOL_GROUP://$NAMESPACE_GROUP/$NAME_GROUP"
         private val compiled by lazy { Pattern.compile(PATTERN) }
 
@@ -29,7 +29,7 @@ data class TenantAgnosticTopic(val name: Name, val namespaceName: Name, val pers
 
             require(rawTopic.split(Topic.SEPARATOR).size <= EXPECTED_PARTS_COUNT) { "Invalid topic. Maximum $EXPECTED_PARTS_COUNT parts are expected." }
             val matcher = compiled.matcher(rawTopic)
-            if (!matcher.find()) {
+            if (!matcher.matches()) {
                 error("Topic format '$rawTopic' does not match the expected pattern $PATTERN")
             }
             val protocol = matcher.group(1)?.let(::Name) ?: Topic.Persistent.protocol

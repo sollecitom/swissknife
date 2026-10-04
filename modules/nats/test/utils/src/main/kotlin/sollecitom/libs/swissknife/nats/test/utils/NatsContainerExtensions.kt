@@ -9,9 +9,9 @@ import org.testcontainers.containers.Network
 
 private const val NATS_NETWORK_ALIAS = "nats"
 
-fun NatsContainer.newPublisher(customize: Options.Builder.() -> Unit = {}) = NatsPublisher.create(options = Options.builder().server(host = host, port = clientPort).build())
+fun NatsContainer.newPublisher(customize: Options.Builder.() -> Unit = {}) = NatsPublisher.create(options = Options.builder().server(host = host, port = clientPort).apply(customize).build())
 
-fun NatsContainer.newConsumer(subjects: Set<String>, customize: Options.Builder.() -> Unit = {}) = NatsConsumer.create(options = Options.builder().server(host = host, port = clientPort).build(), subjects)
+fun NatsContainer.newConsumer(subjects: Set<String>, customize: Options.Builder.() -> Unit = {}) = NatsConsumer.create(options = Options.builder().server(host = host, port = clientPort).apply(customize).build(), subjects)
 
 fun NatsContainer.newConsumer(subject: String, customize: Options.Builder.() -> Unit = {}) = newConsumer(setOf(subject), customize)
 

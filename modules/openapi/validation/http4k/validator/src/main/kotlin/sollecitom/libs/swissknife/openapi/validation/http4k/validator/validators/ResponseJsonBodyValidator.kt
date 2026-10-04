@@ -4,19 +4,18 @@ import com.atlassian.oai.validator.interaction.response.CustomResponseValidator
 import com.atlassian.oai.validator.model.ApiOperation
 import com.atlassian.oai.validator.model.Response
 import com.atlassian.oai.validator.report.ValidationReport
+import com.atlassian.oai.validator.util.ContentTypeUtils
 import sollecitom.libs.swissknife.json.utils.JsonSchema
 import sollecitom.libs.swissknife.json.utils.asSchema
 import sollecitom.libs.swissknife.json.utils.jsonSchemaAt
 import sollecitom.libs.swissknife.kotlin.extensions.optional.asNullable
 import sollecitom.libs.swissknife.openapi.validation.http4k.validator.model.ResponseWithHeadersAdapter
+import sollecitom.libs.swissknife.openapi.validation.http4k.validator.utils.responseFor
 import com.fasterxml.jackson.databind.node.ObjectNode
 import io.swagger.v3.core.util.Json
-import io.swagger.v3.oas.models.responses.ApiResponse
-import org.http4k.core.ContentType
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import java.nio.charset.Charset
 import io.swagger.v3.oas.models.media.Schema as SwaggerSchema
 
 internal class ResponseJsonBodyValidator(val jsonSchemasDirectoryName: String = defaultJsonSchemasDirectory) : CustomResponseValidator {
@@ -26,19 +25,21 @@ internal class ResponseJsonBodyValidator(val jsonSchemasDirectoryName: String = 
     override fun validate(rawResponse: Response, apiOperation: ApiOperation): ValidationReport {
 
         val response = (rawResponse as ResponseWithHeadersAdapter)
-        val bodyAsString = response.responseBody.asNullable()?.toString(Charset.defaultCharset())
-        val responseDefinition = apiOperation.operation.responses[response.status.toString()]
-        val bodySwaggerSchema = responseDefinition?.content?.get(response.acceptHeader.withNoDirectives().toHeaderValue())?.schema
+        val bodyAsString = response.responseBody.asNullable()?.toString(Charsets.UTF_8)
+        val responseContent = apiOperation.responseFor(response.status)?.content
+        val declaredMediaType = responseContent?.keys?.let { ContentTypeUtils.findMostSpecificMatch(response.mediaType(), it).asNullable() }
+        val bodySwaggerSchema = declaredMediaType?.let { responseContent[it] }?.schema
         val bodySchema = bodySwaggerSchema?.`$ref`?.resolveAsSchemaLocation()?.let { jsonSchemaAt(it) }
+        val declaresAJsonContentType = declaredMediaType != null && ContentTypeUtils.isJsonContentType(declaredMediaType)
         return when {
-            !bodyAsString.isNullOrEmpty() && bodySwaggerSchema.isDefined() && responseDefinition.declaresAJsonContentType() -> {
-                val json = bodyAsString.toJsonValue()
+            !bodyAsString.isNullOrEmpty() && bodySwaggerSchema.isDefined() && declaresAJsonContentType -> {
+                val json = bodyAsString.toJsonValue() ?: return invalidJson()
                 bodySwaggerSchema!!.asJsonSchema().validate(json).toValidationReport()
             }
 
-            !bodyAsString.isNullOrEmpty() && !bodySwaggerSchema.isDefined() && responseDefinition.declaresAJsonContentType() -> {
+            !bodyAsString.isNullOrEmpty() && !bodySwaggerSchema.isDefined() && declaresAJsonContentType -> {
                 bodySchema ?: return ValidationReport.singleton(CustomValidation.message(RESPONSE_BODY_PATH, "Present but JSON schema is not declared"))
-                val json = bodyAsString.toJsonValue()
+                val json = bodyAsString.toJsonValue() ?: return invalidJson()
                 bodySchema.validate(json).toValidationReport()
             }
 
@@ -61,17 +62,23 @@ internal class ResponseJsonBodyValidator(val jsonSchemasDirectoryName: String = 
 
     private fun JsonSchema.ValidationFailure?.toValidationReport() = this?.let { ValidationReport.singleton(CustomValidation.message(it.fullPathAsString, it.message)) } ?: ValidationReport.empty()
 
-    private fun ApiResponse?.declaresAJsonContentType() = this?.content?.keys?.any { it == ContentType.APPLICATION_JSON.value } ?: false
+    private fun ResponseWithHeadersAdapter.mediaType(): String = contentType.asNullable() ?: acceptHeader.withNoDirectives().toHeaderValue()
+
+    private fun invalidJson() = ValidationReport.singleton(CustomValidation.message(INVALID_JSON_KEY, "Present but not valid JSON"))
 
     private fun String.resolveAsSchemaLocation(): String = when {
         startsWith("#/components/schemas/") -> "${removePrefix("#/components/schemas/")}.json"
         else -> removePrefix("./$jsonSchemasDirectoryName/")
     }
 
-    private fun String.toJsonValue(): JsonValue = try {
+    private fun String.toJsonValue(): JsonValue? = try {
         JSONObject(this).let(JsonValue::Object)
     } catch (e: JSONException) {
-        JSONArray(this).let(JsonValue::Array)
+        try {
+            JSONArray(this).let(JsonValue::Array)
+        } catch (e: JSONException) {
+            null
+        }
     }
 
     private fun JsonSchema.validate(json: JsonValue) = when (json) {
@@ -82,5 +89,6 @@ internal class ResponseJsonBodyValidator(val jsonSchemasDirectoryName: String = 
     companion object {
         const val defaultJsonSchemasDirectory = "schemas/json"
         const val RESPONSE_BODY_PATH = "validation.response.body.schema"
+        private const val INVALID_JSON_KEY = "validation.response.body.schema.invalidJson"
     }
 }

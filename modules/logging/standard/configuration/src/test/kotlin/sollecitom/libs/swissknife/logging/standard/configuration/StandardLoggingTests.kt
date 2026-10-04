@@ -10,12 +10,21 @@ import sollecitom.libs.swissknife.logging.standard.configuration.LogFormat.JSON
 import sollecitom.libs.swissknife.logging.standard.configuration.LogFormat.PLAIN
 import sollecitom.libs.swissknife.test.utils.standard.output.withCapturedStandardOutput
 import org.json.JSONObject
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 
 @TestInstance(PER_CLASS)
 class StandardLoggingTests {
+
+    private val customPropertyName = "CUSTOM_LOG_FORMAT_PROPERTY_NAME"
+
+    @AfterEach
+    fun afterEach() {
+        System.clearProperty(StandardLoggingConfiguration.Properties.FORMAT_ENV_VARIABLE)
+        System.clearProperty(customPropertyName)
+    }
 
     @Test
     fun `selecting the JSON format option explicitly`() {
@@ -45,7 +54,6 @@ class StandardLoggingTests {
     @Test
     fun `selecting the JSON format option by using the a custom log format property name`() {
 
-        val customPropertyName = "CUSTOM_LOG_FORMAT_PROPERTY_NAME"
         System.setProperty(customPropertyName, StandardLoggingConfiguration.Properties.FORMAT_JSON)
         StandardLoggingConfiguration(defaultLogFormat = PLAIN, logFormatEnvironmentVariableName = customPropertyName).applyTo(JvmLoggerFactory)
         val logger = JvmLoggerFactory.logger("Some logger")

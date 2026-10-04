@@ -17,5 +17,5 @@ fun KeycloakContainer.adminClient(realm: String = KeycloakContainer.MASTER_REALM
     .realm(realm)
     .clientId(clientId)
     .username(username)
-    .password(adminPassword)
+    .password(password)
     .build()

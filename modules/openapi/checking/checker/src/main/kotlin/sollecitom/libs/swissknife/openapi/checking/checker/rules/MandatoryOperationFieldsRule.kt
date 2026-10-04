@@ -25,8 +25,6 @@ class MandatoryOperationFieldsRule(private val requiredFields: Set<OpenApiField<
 
     private fun OperationWithContext.violation(missingRequiredFields: Set<OpenApiField<Operation, Any?>>) = Violation(this, requiredFields, missingRequiredFields)
 
-    private fun OperationWithContext.isNotCompliant(): Boolean = requiredFields.any { field -> field.getter(operation.operation)?.trimmed() == null }
-
     data class Violation(val operation: OperationWithContext, val requiredFields: Set<OpenApiField<Operation, Any?>>, val missingRequiredFields: Set<OpenApiField<Operation, Any?>>) : ComplianceRule.Result.Violation<OpenAPI> {
 
         override val message = "Operation ${operation.operation.method} on path ${operation.pathName} should specify the following mandatory fields ${requiredFields.map(OpenApiField<Operation, *>::name)}, but fields ${missingRequiredFields.map(OpenApiField<Operation, *>::name)} were missing"

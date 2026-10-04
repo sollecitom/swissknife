@@ -67,6 +67,28 @@ class XtsAesTests {
             assertThat(encrypted.encodeHex()).isEqualTo(expected)
             assertThat(XtsAes.decrypt(key = key, tweak = XtsAes.tweakOf(0xff), data = encrypted)).isEqualTo(plaintext)
         }
+
+        @Test
+        fun `vectors 15 to 18 - XTS-AES-128 with ciphertext stealing`() {
+
+            val key = ("fffefdfcfbfaf9f8f7f6f5f4f3f2f1f0" + "bfbebdbcbbbab9b8b7b6b5b4b3b2b1b0").decodeHex()
+            val tweak = XtsAes.tweakOf(0x123456789aL)
+            val vectors = mapOf(
+                "000102030405060708090a0b0c0d0e0f10" to "6c1625db4671522d3d7599601de7ca09ed",
+                "000102030405060708090a0b0c0d0e0f1011" to "d069444b7a7e0cab09e24447d24deb1fedbf",
+                "000102030405060708090a0b0c0d0e0f101112" to "e5df1351c0544ba1350b3363cd8ef4beedbf9d",
+                "000102030405060708090a0b0c0d0e0f10111213" to "9d84c813f719aa2c7be3f66171c7c5c2edbf9dac",
+            )
+
+            vectors.forEach { (plaintextHex, expected) ->
+                val plaintext = plaintextHex.decodeHex()
+
+                val encrypted = XtsAes.encrypt(key = key, tweak = tweak, data = plaintext)
+
+                assertThat(encrypted.encodeHex()).isEqualTo(expected)
+                assertThat(XtsAes.decrypt(key = key, tweak = tweak, data = encrypted)).isEqualTo(plaintext)
+            }
+        }
     }
 
     @Nested

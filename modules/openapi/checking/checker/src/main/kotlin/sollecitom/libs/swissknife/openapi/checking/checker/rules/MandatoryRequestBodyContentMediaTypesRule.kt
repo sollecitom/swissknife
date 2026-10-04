@@ -26,7 +26,7 @@ class MandatoryRequestBodyContentMediaTypesRule(private val methodsToCheck: Set<
 
     private fun OperationWithContext.violation() = Violation(this, methodsToCheck)
 
-    private fun OperationWithContext.isNotCompliant(): Boolean = requestBody != null && requestBody.content.entries.isEmpty()
+    private fun OperationWithContext.isNotCompliant(): Boolean = requestBody != null && requestBody.content.isNullOrEmpty()
 
     data class Violation(val operation: OperationWithContext, val methodsToCheck: Set<HttpMethod>) : ComplianceRule.Result.Violation<OpenAPI> {
 

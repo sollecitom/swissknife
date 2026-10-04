@@ -41,10 +41,10 @@ context(_: UniqueIdGenerator, _: TimeGenerator)
 fun DirectActor.Companion.create(account: Actor.Account = Actor.UserAccount.create(), authentication: Authentication = Authentication.credentialsBased()): DirectActor = DirectActor(account, authentication)
 
 context(_: UniqueIdGenerator, _: TimeGenerator)
-fun Actor.Companion.impersonating(impersonating: Actor.Account = Actor.UserAccount.create(), impersonator: Actor.Account = Actor.UserAccount.create(), authentication: Authentication = Authentication.credentialsBased()): ImpersonatingActor = ImpersonatingActor(impersonator = impersonating, impersonated = impersonator, authentication = authentication)
+fun Actor.Companion.impersonating(impersonating: Actor.Account = Actor.UserAccount.create(), impersonator: Actor.Account = Actor.UserAccount.create(), authentication: Authentication = Authentication.credentialsBased()): ImpersonatingActor = ImpersonatingActor(impersonator = impersonator, impersonated = impersonating, authentication = authentication)
 
 context(_: UniqueIdGenerator, _: TimeGenerator)
-fun ImpersonatingActor.Companion.create(impersonating: Actor.Account = Actor.UserAccount.create(), impersonator: Actor.Account = Actor.UserAccount.create(), authentication: Authentication = Authentication.credentialsBased()): ImpersonatingActor = ImpersonatingActor(impersonator = impersonating, impersonated = impersonator, authentication = authentication)
+fun ImpersonatingActor.Companion.create(impersonating: Actor.Account = Actor.UserAccount.create(), impersonator: Actor.Account = Actor.UserAccount.create(), authentication: Authentication = Authentication.credentialsBased()): ImpersonatingActor = ImpersonatingActor(impersonator = impersonator, impersonated = impersonating, authentication = authentication)
 
 context(_: UniqueIdGenerator, _: TimeGenerator)
 fun Actor.Companion.onBehalf(account: Actor.Account = Actor.UserAccount.create(), benefitingAccount: Actor.Account = Actor.UserAccount.create(), authentication: Authentication = Authentication.credentialsBased()): ActorOnBehalf = ActorOnBehalf(account = account, benefitingAccount = benefitingAccount, authentication = authentication)

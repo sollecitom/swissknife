@@ -48,4 +48,12 @@ private class ResourceLoaderTest {
 
         assertThat(result).isFailure().hasMessage("resource FileThatDoesNotExist not found.")
     }
+
+    @Test
+    fun `falls back to the classpath when the resource name contains a colon`() {
+
+        val result = runCatching { ResourceLoader.openAsStream("db:FileThatDoesNotExist.sql") }
+
+        assertThat(result).isFailure().hasMessage("resource db:FileThatDoesNotExist.sql not found.")
+    }
 }

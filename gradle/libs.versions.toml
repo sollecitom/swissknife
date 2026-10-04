@@ -21,7 +21,6 @@ pulsar = "4.2.4"
 avro = "1.12.2"
 yauaa = "8.2.0"
 log4j = "2.26.1"
-zero-allocation-hashing = "2026.0"
 jnats = "2.26.3"
 jose4j = "0.9.7"
 micrometer = "1.17.1"
@@ -37,7 +36,7 @@ classgraph = "4.8.196"
 opentelemetry = "1.66.0"
 commons-codec = "1.22.1"
 # plugins
-sollecitom-gradle-plugins = "1.0.32"
+sollecitom-gradle-plugins = "1.0.33"
 palantir-git-plugin = "5.1.0"
 
 [libraries]
@@ -87,7 +86,6 @@ pulsar-client-admin = { module = "org.apache.pulsar:pulsar-client-admin", versio
 apache-avro-core = { module = "org.apache.avro:avro", version.ref = "avro" }
 yet-another-user-agent-analyzer = { module = "nl.basjes.parse.useragent:yauaa", version.ref = "yauaa" }
 log4j-to-slf4j = { module = "org.apache.logging.log4j:log4j-to-slf4j", version.ref = "log4j" }
-zero-allocation-hashing = { module = "net.openhft:zero-allocation-hashing", version.ref = "zero-allocation-hashing" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 r2dbc-pool = { module = "io.r2dbc:r2dbc-pool", version.ref = "r2dbc-pool" }
 r2dbc-spi = { module = "io.r2dbc:r2dbc-spi", version.ref = "r2dbc-spi" }

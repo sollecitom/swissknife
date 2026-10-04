@@ -9,6 +9,8 @@ import sollecitom.libs.swissknife.core.domain.currency.times
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
+import java.math.BigDecimal
+import java.math.BigInteger
 
 @TestInstance(PER_CLASS)
 class KnownCurrenciesExampleTests {
@@ -95,5 +97,21 @@ class KnownCurrenciesExampleTests {
         val result = amount / factor
 
         assertThat(result).isEqualTo(11.32.dollars)
+    }
+
+    @Test
+    fun `creating an amount from a float uses its decimal representation`() {
+
+        val amount = 0.1f.euros
+
+        assertThat(amount.units).isEqualTo(BigInteger("10"))
+    }
+
+    @Test
+    fun `creating an amount from a big decimal keeps every digit`() {
+
+        val amount = BigDecimal("12345678901234567.89").dollars
+
+        assertThat(amount.units).isEqualTo(BigInteger("1234567890123456789"))
     }
 }

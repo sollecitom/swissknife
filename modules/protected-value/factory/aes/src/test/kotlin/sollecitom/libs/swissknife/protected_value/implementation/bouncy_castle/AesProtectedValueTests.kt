@@ -35,7 +35,7 @@ private class AesProtectedValueTests : CoreDataGenerator by CoreDataGenerator.pr
 
         val protectedValue = factory.protectValue(originalValue, valueName, owner, String::toByteArray)
 
-        assertThat(protectedValue.value).isNotEqualTo(originalValue)
+        assertThat(protectedValue.value).isNotEqualTo(originalValue.toByteArray())
         assertThat(protectedValue.name).isEqualTo(valueName)
         assertThat(String(protectedValue.value)).isNotEqualTo(originalValue)
         assertThat(protectedValue.toString()).doesNotContain(originalValue)

@@ -15,6 +15,6 @@ class Euros(units: BigInteger) : SpecificCurrencyAmountTemplate<Euros>(units, Cu
     constructor(decimalValue: BigDecimal) : this(decimalValue.toUnits(Currency.EUR))
 }
 
-val Number.euros: Euros get() = Euros(toDouble().toBigDecimal())
+val Number.euros: Euros get() = Euros(toDecimal())
 val Int.euroCents: Euros get() = Euros(toBigInteger())
 val Long.euroCents: Euros get() = Euros(toBigInteger())

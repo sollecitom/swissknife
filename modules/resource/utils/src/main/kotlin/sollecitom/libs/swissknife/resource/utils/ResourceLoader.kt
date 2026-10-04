@@ -2,6 +2,7 @@ package sollecitom.libs.swissknife.resource.utils
 
 import com.google.common.io.Resources
 import java.io.InputStream
+import java.net.MalformedURLException
 import java.net.URI
 import java.net.URL
 import java.nio.file.Path
@@ -21,6 +22,8 @@ object ResourceLoader {
     fun resolve(resourceName: String): URL = try {
         URI.create(resourceName).toURL()
     } catch (error: IllegalArgumentException) {
+        Resources.getResource(resourceName)
+    } catch (error: MalformedURLException) {
         Resources.getResource(resourceName)
     }
 }

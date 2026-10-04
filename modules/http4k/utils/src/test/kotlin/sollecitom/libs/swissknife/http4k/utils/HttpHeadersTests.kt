@@ -28,6 +28,12 @@ class HttpHeadersTests {
     }
 
     @Test
+    fun `UserAgent header has the correct name`() {
+
+        assertThat(HttpHeaders.UserAgent.name).isEqualTo("user-agent")
+    }
+
+    @Test
     fun `Authorization header has the correct name`() {
 
         assertThat(HttpHeaders.Authorization.name).isEqualTo("authorization")

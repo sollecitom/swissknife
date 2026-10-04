@@ -5,6 +5,8 @@ import sollecitom.libs.swissknife.logger.core.loggable.Loggable
 import sollecitom.libs.swissknife.readiness.domain.ReadinessAware
 import sollecitom.libs.swissknife.readiness.domain.ReadinessCheckResult
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.future.await
 import org.apache.pulsar.client.api.PulsarClient
 import org.apache.pulsar.client.api.PulsarClientException
@@ -23,6 +25,7 @@ class PulsarReadinessCheck(private val pulsar: PulsarClient, private val adapter
             logger.debug { "Successfully connected to '${adapterName.value}' as part of a readiness check." }
             ReadinessCheckResult.Passed
         } catch (error: Exception) {
+            currentCoroutineContext().ensureActive()
             logger.debug(error) { "Failed to connect to ${readinessCheckName.value}" }
             ReadinessCheckResult.Failed("Failed to connect to '${adapterName.value}' as part of a readiness check.")
         }

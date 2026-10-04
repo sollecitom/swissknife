@@ -8,7 +8,7 @@ data class WhitelistedAlphabetNamespaceNameRule(val alphabet: Set<Char>) : Compl
 
     override fun invoke(target: Schema): ComplianceRule.Result<Schema> {
 
-        val violation = check(target.namespace)
+        val violation = check(target.namespace.orEmpty())
         return ComplianceRule.Result.withViolationOrNull(violation)
     }
 

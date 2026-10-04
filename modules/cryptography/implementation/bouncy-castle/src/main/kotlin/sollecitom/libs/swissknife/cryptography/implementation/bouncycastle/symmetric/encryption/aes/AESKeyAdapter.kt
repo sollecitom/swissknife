@@ -47,7 +47,7 @@ internal class AESKeyAdapter private constructor(private val keySpec: SecretKey,
 
     override fun hashCode() = encoded.contentHashCode()
 
-    override fun toString() = "JavaAESKeyAdapter(encoded=${encoded.contentToString()}, keySpec=${keySpec})"
+    override fun toString() = "AESKeyAdapter(algorithm=$algorithm, format=$format, hash=$hash)"
 
     data class Factory(val random: SecureRandom) : SecretKeyFactory<AES.KeyArguments, SymmetricKey> {
 
@@ -55,7 +55,7 @@ internal class AESKeyAdapter private constructor(private val keySpec: SecretKey,
 
             val variant = arguments.variant
             // An XTS key is two AES keys, a length the AES key generator rejects, so its material is drawn directly.
-            val rawKey = if (variant.isForXts) randomXtsKey(variant.keyLength) else BouncyCastleUtils.generateSecretKey(algorithm = AES.name, length = variant.keyLength, provider = BC_PROVIDER)
+            val rawKey = if (variant.isForXts) randomXtsKey(variant.keyLength) else BouncyCastleUtils.generateSecretKey(algorithm = AES.name, length = variant.keyLength, provider = BC_PROVIDER, random = random)
             return AESKeyAdapter(keySpec = rawKey, random = random)
         }
 

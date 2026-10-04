@@ -33,7 +33,7 @@ All modules live under `modules/` and are organized by concern area. Each module
 | `configuration/` | Configuration loading via Http4k Environment (YAML, JVM properties, env vars) |
 | `pagination/` | Cursor-based pagination domain model |
 | `serialization/` | Generic Serializer/Deserializer interfaces |
-| `protected-value/` | Encrypted value protection with AES-CTR implementation |
+| `protected-value/` | Encrypted value protection with AES-GCM implementation |
 | `hashing/` | Hash function abstractions and Blake3 implementation |
 | `readiness/` | Readiness check domain (health checking) |
 | `service/` | Service identity/lifecycle and HTTP readiness adapters |
@@ -103,7 +103,7 @@ Reusable test contracts defined as interfaces with default test methods. Impleme
    ```
 
 ### Convention Plugins
-Convention plugins are defined in the external `../gradle-plugins` repository and applied via `includeBuild`. Key conventions:
+Convention plugins are defined in the external `../gradle-plugins` repository and resolved from Maven Local (see `pluginManagement` in `settings.gradle.kts`). Key conventions:
 - `sollecitom.kotlin-library-conventions` -- Standard Kotlin/JVM library setup
 - `sollecitom.maven-publish-conventions` -- Maven Local publishing
 - `sollecitom.dependency-update-conventions` -- Dependency update checking
@@ -135,20 +135,20 @@ just build               # Shortcut via justfile
 
 ## Build System
 
-- **Gradle 9.4.0** with Kotlin DSL
-- **Kotlin 2.3.20** targeting JVM
+- **Gradle 9.8.0** with Kotlin DSL
+- **Kotlin 2.4.20** targeting JVM
 - Version management via `libs.versions.toml` (version catalog)
 - Typesafe project accessors enabled (`TYPESAFE_PROJECT_ACCESSORS`)
-- Git-based versioning via Palantir plugin (currently SNAPSHOT)
-- Publishing to Maven Local via `./gradlew publishToMavenLocal` or `just publish`
+- Version set by `currentVersion` in `gradle.properties`
+- Publishing to Maven Local via `./gradlew publishToMavenLocal`, or `just publish` (only when the artifacts changed)
 
 ### Key Build Commands
 | Command | Description |
 |---------|-------------|
 | `just build` | Build and test everything |
 | `just rebuild` | Clean build with dependency refresh |
-| `just publish` | Publish to Maven Local |
-| `just update-dependencies` | Check for dependency updates |
+| `just publish` | Publish to Maven Local when the artifacts changed |
+| `just update-dependencies` | Update dependency versions in the version catalog |
 | `just update-gradle` | Update Gradle wrapper to latest |
 
 ## Swissknife vs Pillar

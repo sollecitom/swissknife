@@ -11,7 +11,7 @@ import kotlin.random.asJavaRandom
 
 internal class SubSecondPrecisionKsuidFactoryAdapter(random: Random, clock: Clock) : SortableTimestampedUniqueIdentifierFactory<KSUID> {
 
-    private val delegate: KsuidFactory = KsuidFactory.newSubsecondInstance(random.asJavaRandom(), clock.now()::toJavaInstant)
+    private val delegate: KsuidFactory = KsuidFactory.newSubsecondInstance(random.asJavaRandom()) { clock.now().toJavaInstant() }
 
     override fun invoke() = delegate.create().let(::KSUID)
 

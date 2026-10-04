@@ -8,17 +8,18 @@ import sollecitom.libs.swissknife.http4k.utils.HttpHeaders
 import sollecitom.libs.swissknife.openapi.validation.http4k.validator.utils.inHeader
 import sollecitom.libs.swissknife.openapi.validation.http4k.validator.utils.parameters
 import sollecitom.libs.swissknife.openapi.validation.request.validator.ValidationReportError
+import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.parameters.Parameter
 
-internal object UnknownHeadersRejectingRequestValidator : CustomRequestValidator {
+internal class UnknownHeadersRejectingRequestValidator(private val openApi: OpenAPI) : CustomRequestValidator {
 
     private val whitelistedUnknownHeaderNames = setOf(HttpHeaders.ContentType.name.lowercase())
 
     override fun validate(request: Request, apiOperation: ApiOperation): ValidationReport {
 
-        val operationHeaders = apiOperation.parameters().inHeader().toSet()
+        val operationHeaders = apiOperation.parameters(openApi).inHeader().toSet()
         val unknownHeaderNames = request.headers.notDeclaredIn(operationHeaders)
-        return if (unknownHeaderNames.isNotEmpty()) ValidationReport.from(unknownHeaderNames.map { CustomValidation.message(ValidationReportError.Request.UnknownHeader.key, "Unknown request headers ${unknownHeaderNames.joinToString(separator = ",", prefix = "[", postfix = "]")}") }) else ValidationReport.empty()
+        return if (unknownHeaderNames.isNotEmpty()) ValidationReport.singleton(CustomValidation.message(ValidationReportError.Request.UnknownHeader.key, "Unknown request headers ${unknownHeaderNames.joinToString(separator = ",", prefix = "[", postfix = "]")}")) else ValidationReport.empty()
     }
 
     private fun Map<String, Collection<String>>.notDeclaredIn(knownHeaders: Set<Parameter>): Set<String> {

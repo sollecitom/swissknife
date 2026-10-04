@@ -2,6 +2,7 @@ package sollecitom.libs.swissknife.web.api.test.utils
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNotEmpty
 import sollecitom.libs.swissknife.core.domain.networking.Port
 import sollecitom.libs.swissknife.http4k.utils.invoke
 import sollecitom.libs.swissknife.test.utils.execution.utils.test
@@ -23,7 +24,7 @@ interface PrometheusMetricsEndpointTestSpecification : WithHttpDrivingAdapterTes
         val response = httpClient(request)
 
         assertThat(response.status).isEqualTo(Status.OK)
-        println(response.bodyString())
+        assertThat(response.bodyString()).isNotEmpty()
     }
 
     @Test

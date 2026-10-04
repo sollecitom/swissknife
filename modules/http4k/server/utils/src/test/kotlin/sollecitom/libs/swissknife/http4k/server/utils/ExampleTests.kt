@@ -29,13 +29,13 @@ class ExampleTests {
             return Response(OK).body("Hello, ${request.query("name")}!")
         }
 
-        val server = ::testApp.asServer(JettyLoom(0)).start()
-        val client = ApacheClient()
-        val request = Request(Method.GET, "http://localhost:${server.port()}").query("name", "John Doe")
+        ::testApp.asServer(JettyLoom(0)).start().use { server ->
+            val client = ApacheClient()
+            val request = Request(Method.GET, "http://localhost:${server.port()}").query("name", "John Doe")
 
-        val response = client(request)
-        assertThat(response.status).isEqualTo(OK)
-        assertThat(isServerThreadVirtual).isTrue()
-        server.stop()
+            val response = client(request)
+            assertThat(response.status).isEqualTo(OK)
+            assertThat(isServerThreadVirtual).isTrue()
+        }
     }
 }

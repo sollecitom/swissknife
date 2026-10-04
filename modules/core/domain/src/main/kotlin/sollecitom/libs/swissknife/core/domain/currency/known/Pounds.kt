@@ -15,6 +15,6 @@ class Pounds(units: BigInteger) : SpecificCurrencyAmountTemplate<Pounds>(units, 
     constructor(decimalValue: BigDecimal) : this(decimalValue.toUnits(Currency.GBP))
 }
 
-val Number.pounds: Pounds get() = Pounds(toDouble().toBigDecimal())
+val Number.pounds: Pounds get() = Pounds(toDecimal())
 val Int.pence: Pounds get() = Pounds(toBigInteger())
 val Long.pence: Pounds get() = Pounds(toBigInteger())

@@ -13,7 +13,7 @@ internal data class JavaSigningKeyAdapter(private val key: JavaPrivateKey, priva
 
     override fun sign(input: ByteArray): Signature {
 
-        val bytes = BouncyCastleUtils.sign(privateKey = key, message = input, signatureAlgorithm = key.algorithm, provider = BC_PROVIDER)
+        val bytes = BouncyCastleUtils.sign(privateKey = key, message = input, signatureAlgorithm = key.algorithm, provider = BC_PROVIDER, random = random)
         return Signature(bytes = bytes, metadata = Signature.Metadata(hash, key.algorithm))
     }
 

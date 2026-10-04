@@ -21,19 +21,18 @@ object Blake3 {
     fun hashVariable(hashBytesLength: Int, key: ByteArray? = null): HashFunction<Hash> = object : HashFunction<Hash> {
 
         override fun invoke(bytes: ByteArray, offset: Int, length: Int): Hash {
-            val hashBytes = blake3(bytes, hashBytesLength, offset, hashBytesLength, key)
+            val hashBytes = blake3(bytes, offset, length, hashBytesLength, key)
             return Hash.create(hashBytes)
         }
     }
 
-    private fun blake3(bytes: ByteArray, hashBytesLength: Int = MIN_HASH_LENGTH_BITES, offset: Int = 0, length: Int = hashBytesLength, key: ByteArray? = null): ByteArray {
+    private fun blake3(bytes: ByteArray, offset: Int, length: Int, hashBytesLength: Int, key: ByteArray?): ByteArray {
 
         require(hashBytesLength >= MIN_HASH_LENGTH_BITES) { "Minimum hash length for BLAKE3 is $MIN_HASH_LENGTH_BITES, but $hashBytesLength was requested." }
         val hasher = hasher(key)
-        hasher.update(bytes)
-        println("HashBytesLength: $hashBytesLength, length: $length")
+        hasher.update(bytes, offset, length)
         val hash = ByteArray(hashBytesLength)
-        hasher.doFinalize(hash, offset, hashBytesLength)
+        hasher.doFinalize(hash)
         return hash
     }
 

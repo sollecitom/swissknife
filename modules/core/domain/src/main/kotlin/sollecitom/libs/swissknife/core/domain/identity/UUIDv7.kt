@@ -6,6 +6,10 @@ import kotlin.uuid.Uuid
 /** A version 7 (time-ordered) UUID: sortable and carrying its creation [timestamp]. Create via [UUIDv7.invoke] or a [UniqueIdFactory]. */
 class UUIDv7 internal constructor(private val delegate: Uuid) : SortableTimestampedUniqueIdentifier<UUIDv7> {
 
+    init {
+        require(delegate.version == 7) { "Expected a version 7 UUID, but $delegate has version ${delegate.version}" }
+    }
+
     override val stringValue by lazy(delegate::toString)
     override val bytesValue: ByteArray by lazy(delegate::toByteArray)
     override val timestamp: Instant by lazy { Instant.fromEpochMilliseconds(delegate.unixMillis) }

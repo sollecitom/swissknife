@@ -10,6 +10,7 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.net.URI
+import java.util.concurrent.ConcurrentHashMap
 
 private val initialBaseURI = URI("mem://input")
 private val schemaClient: SchemaClient by lazy { CachedSchemaClient(CustomSchemaClient(initialBaseURI.toString())) }
@@ -34,7 +35,7 @@ fun JSONObject.asSchema(): JsonSchema {
 
 private class CachedSchemaClient(private val delegate: SchemaClient) : SchemaClient by delegate {
 
-    private val cache: MutableMap<URI, ByteArray> = mutableMapOf()
+    private val cache: MutableMap<URI, ByteArray> = ConcurrentHashMap()
 
     override fun get(uri: URI): InputStream = ByteArrayInputStream(
         cache.computeIfAbsent(uri) {
