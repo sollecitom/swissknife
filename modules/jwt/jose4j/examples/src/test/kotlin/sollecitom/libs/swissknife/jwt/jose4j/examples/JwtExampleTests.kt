@@ -170,6 +170,10 @@ class JwtExampleTests : CoreDataGenerator by CoreDataGenerator.testProvider {
         val readJwt = processor.readWithoutVerifying(issuedJwt)
 
         assertThat(readJwt.expirationTime).isEqualTo(expiryTime.truncatedToSeconds())
+        assertThat(readJwt.issuerId).isNull()
+        assertThat(readJwt.subject).isNull()
+        assertThat(readJwt.id).isNull()
+        assertThat(readJwt.issuedAt).isNull()
         assertThat(readJwt.notBeforeTime).isNull()
     }
 
@@ -189,6 +193,7 @@ class JwtExampleTests : CoreDataGenerator by CoreDataGenerator.testProvider {
 
         assertThat(processedJwt.subject).isEqualTo(subject)
         assertThat(processedJwt.issuerId).isEqualTo(issuer.id)
+        assertThat(processedJwt.issuedAt).isNull()
     }
 
     @Test

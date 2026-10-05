@@ -52,11 +52,35 @@ class TrivyImageScannerTests {
         }
 
         @Test
-        fun `a scan of a missing image fails after a single attempt`() {
+        fun `a failure not worth retrying gives up after a single attempt`() {
 
-            val failure = assertThrows<TrivyScanFailed> { TrivyImageScanner.scan(imageName = "swissknife-missing-image:does-not-exist", maximumAttempts = 3) }
+            val failure = Attempt.Failed(IllegalStateException("missing image"), output = "no such image")
 
-            assertThat(failure.message.orEmpty()).contains("after 1 attempt(s)")
+            val outcome = attemptWithRetries<String>(maximumAttempts = 3, isWorthRetrying = { false }, beforeRetry = { _, _ -> }) { failure }
+
+            assertThat(outcome).isEqualTo(RetryOutcome.GaveUp(attempts = 1, lastFailure = failure))
+        }
+
+        @Test
+        fun `a failure worth retrying is retried until the attempts run out`() {
+
+            val failure = Attempt.Failed(IllegalStateException("truncated download"), output = "unexpected EOF")
+            val attemptsLeftBeforeEachRetry = mutableListOf<Int>()
+
+            val outcome = attemptWithRetries<String>(maximumAttempts = 3, isWorthRetrying = { true }, beforeRetry = { _, attemptsLeft -> attemptsLeftBeforeEachRetry += attemptsLeft }) { failure }
+
+            assertThat(outcome).isEqualTo(RetryOutcome.GaveUp(attempts = 3, lastFailure = failure))
+            assertThat(attemptsLeftBeforeEachRetry).isEqualTo(listOf(2, 1))
+        }
+
+        @Test
+        fun `a retried attempt that succeeds yields its value`() {
+
+            val outcomes = ArrayDeque(listOf(Attempt.Failed(IllegalStateException("truncated download"), output = "unexpected EOF"), Attempt.Succeeded("report")))
+
+            val outcome = attemptWithRetries(maximumAttempts = 3, isWorthRetrying = { true }, beforeRetry = { _, _ -> }) { outcomes.removeFirst() }
+
+            assertThat(outcome).isEqualTo(RetryOutcome.Succeeded("report"))
         }
 
         @Test

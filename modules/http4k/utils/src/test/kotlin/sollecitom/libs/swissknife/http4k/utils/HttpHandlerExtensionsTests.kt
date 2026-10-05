@@ -2,7 +2,7 @@ package sollecitom.libs.swissknife.http4k.utils
 
 import assertk.assertThat
 import assertk.assertions.isNull
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
 import org.http4k.client.AsyncHttpHandler
 import org.http4k.core.Method
@@ -20,14 +20,14 @@ class HttpHandlerExtensionsTests {
 
     @Test
     @Timeout(value = 5, threadMode = SEPARATE_THREAD)
-    fun `invoking an async handler that never responds can be cancelled`() {
+    fun `invoking an async handler that never responds can be cancelled`() = runTest {
 
         val neverResponding = object : AsyncHttpHandler {
             override fun invoke(request: Request, fn: (Response) -> Unit) = Unit
         }
         val request = Request(Method.GET, "/test")
 
-        val response = runBlocking { withTimeoutOrNull(100.milliseconds) { neverResponding(request) } }
+        val response = withTimeoutOrNull(100.milliseconds) { neverResponding(request) }
 
         assertThat(response).isNull()
     }

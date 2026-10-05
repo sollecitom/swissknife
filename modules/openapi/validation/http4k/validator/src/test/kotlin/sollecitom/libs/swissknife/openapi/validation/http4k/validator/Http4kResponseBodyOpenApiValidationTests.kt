@@ -103,7 +103,7 @@ class Http4kResponseBodyOpenApiValidationTests {
 
         val report = validator.validate(PATH, Method.GET, ContentType.APPLICATION_JSON, response)
 
-        assertThat(report).hasExactlyOneErrorWithKey("validation.response.body.schema.invalidJson")
+        assertThat(report).hasExactlyOneErrorWithKey(ValidationReportError.Response.InvalidJson.key)
     }
 
     @Test

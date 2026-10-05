@@ -17,21 +17,20 @@ import sollecitom.libs.swissknife.ddd.domain.Happening
 import sollecitom.libs.swissknife.ddd.test.utils.create
 import sollecitom.libs.swissknife.messaging.domain.message.ReceivedMessage
 import sollecitom.libs.swissknife.messaging.test.utils.message.inMemorySpy
-import kotlin.coroutines.cancellation.CancellationException
 
 @TestInstance(PER_CLASS)
 class CompositeEventProcessingUtilsTests : CoreDataGenerator by CoreDataGenerator.testProvider {
 
     @Test
-    fun `cancellation while processing propagates instead of becoming a failure`() {
+    fun `an error while processing propagates, so the message is not acknowledged`() {
 
         val message = ReceivedMessage.inMemorySpy(value = Event.Composite(data = TestData, metadata = Event.Metadata.create()))
 
         val result = with(InvocationContext.unauthenticated()) {
-            runCatching { message.processAsCompositeEvent { _, _ -> throw CancellationException("stopped") } }
+            runCatching { message.processAsCompositeEvent { _, _ -> throw IllegalStateException("broken") } }
         }
 
-        assertThat(result).isFailure().isInstanceOf(CancellationException::class)
+        assertThat(result).isFailure().isInstanceOf(IllegalStateException::class)
     }
 
     private data object TestData : Event.Data {

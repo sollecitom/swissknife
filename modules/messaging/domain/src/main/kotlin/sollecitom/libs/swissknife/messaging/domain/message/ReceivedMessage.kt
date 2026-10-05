@@ -29,8 +29,6 @@ interface ReceivedMessage<out VALUE> : Message<VALUE>, Comparable<ReceivedMessag
 
     suspend fun acknowledge()
 
-    suspend fun acknowledgeAsFailed()
-
     override fun compareTo(other: ReceivedMessage<*>) = id.compareTo(other.id)
 
     companion object

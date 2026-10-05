@@ -24,6 +24,7 @@ log4j = "2.26.1"
 jnats = "2.26.3"
 jose4j = "0.9.7"
 micrometer = "1.17.1"
+prometheus-metrics = "1.7.0"
 postgres = "42.7.13"
 r2dbc-spi = "1.0.0.RELEASE"
 r2dbc-pool = "1.0.2.RELEASE"
@@ -62,6 +63,7 @@ http4k-server-jetty = { module = "org.http4k:http4k-server-jetty" }
 http4k-client-apache = { module = "org.http4k:http4k-client-apache" }
 http4k-client-apache-async = { module = "org.http4k:http4k-client-apache-async" }
 micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometer" }
+prometheus-metrics-exposition-textformats = { module = "io.prometheus:prometheus-metrics-exposition-textformats", version.ref = "prometheus-metrics" }
 ulid-creator = { module = "com.github.f4b6a3:ulid-creator", version.ref = "ulid-creator" }
 ksuid-creator = { module = "com.github.f4b6a3:ksuid-creator", version.ref = "ksuid-creator" }
 org-json = { module = "org.json:json", version.ref = "org-json" }

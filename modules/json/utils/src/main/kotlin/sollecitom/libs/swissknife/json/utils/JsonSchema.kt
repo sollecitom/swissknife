@@ -35,11 +35,13 @@ data class JsonSchema(internal val value: Schema, private val source: JSONObject
 
     fun validate(json: JSONArray, parentPath: List<String> = emptyList()): ValidationFailure? = value.validate(json)?.adapted(parentPath)
 
-    private fun Schema.validate(json: IJsonValue) = Validator.forSchema(this).validate(json)
+    fun validate(json: String, parentPath: List<String> = emptyList()): ValidationFailure? = value.validate(json)?.adapted(parentPath)
 
-    private fun Schema.validate(json: JSONObject) = validate(JsonParser(json.toString()).parse())
+    fun validate(json: Number, parentPath: List<String> = emptyList()): ValidationFailure? = value.validate(json)?.adapted(parentPath)
 
-    private fun Schema.validate(json: JSONArray) = validate(JsonParser(json.toString()).parse())
+    fun validate(json: Boolean, parentPath: List<String> = emptyList()): ValidationFailure? = value.validate(json)?.adapted(parentPath)
+
+    private fun Schema.validate(json: Any) = Validator.forSchema(this).validate(JsonParser(JSONObject.valueToString(json)).parse())
 
     private fun SkemaValidationFailure.adapted(parentPath: List<String>) = ValidationFailure(this, parentPath)
 

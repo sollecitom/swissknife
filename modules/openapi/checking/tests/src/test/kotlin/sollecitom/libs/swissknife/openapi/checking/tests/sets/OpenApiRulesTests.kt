@@ -124,6 +124,64 @@ class OpenApiRulesTests {
         }
 
         @Test
+        fun `rejects an array example that does not comply with its schema`() {
+
+            val api = apiWithResponseMediaType {
+                schema = Schema<Any>().`$ref`("#/components/schemas/Things")
+                examples = mapOf("Things" to Example().value(Json.mapper().readTree("""[{"name":"a"}]""")))
+            }
+
+            val result = api.checkAgainstRules(rule)
+
+            assertThat(result).isNotCompliantWithOnlyViolation<ExamplesSchemaComplianceRule.IncompatibleJsonSchemaViolation, OpenAPI> { violation ->
+                assertThat(violation.example.name).isEqualTo("Things")
+            }
+        }
+
+        @Test
+        fun `accepts a scalar example that complies with its schema`() {
+
+            val api = apiWithResponseMediaType {
+                schema = Schema<Any>().`$ref`("#/components/schemas/Code")
+                examples = mapOf("Code" to Example().value(Json.mapper().readTree(""" "ABC" """)))
+            }
+
+            val result = api.checkAgainstRules(rule)
+
+            assertThat(result).isCompliant()
+        }
+
+        @Test
+        fun `rejects a scalar example that does not comply with its schema`() {
+
+            val api = apiWithResponseMediaType {
+                schema = Schema<Any>().`$ref`("#/components/schemas/Code")
+                examples = mapOf("Code" to Example().value("ABCD"))
+            }
+
+            val result = api.checkAgainstRules(rule)
+
+            assertThat(result).isNotCompliantWithOnlyViolation<ExamplesSchemaComplianceRule.IncompatibleJsonSchemaViolation, OpenAPI> { violation ->
+                assertThat(violation.example.name).isEqualTo("Code")
+            }
+        }
+
+        @Test
+        fun `rejects a scalar example of the wrong type`() {
+
+            val api = apiWithResponseMediaType {
+                schema = Schema<Any>().`$ref`("#/components/schemas/Code")
+                examples = mapOf("Code" to Example().value(1))
+            }
+
+            val result = api.checkAgainstRules(rule)
+
+            assertThat(result).isNotCompliantWithOnlyViolation<ExamplesSchemaComplianceRule.IncompatibleJsonSchemaViolation, OpenAPI> { violation ->
+                assertThat(violation.example.name).isEqualTo("Code")
+            }
+        }
+
+        @Test
         fun `ignores examples with an external value`() {
 
             val api = apiWithResponseMediaType {

@@ -1,7 +1,12 @@
 package sollecitom.libs.swissknife.kotlin.extensions.flows
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.onSuccess
+import kotlinx.coroutines.channels.produce
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.selects.select
 import kotlin.time.Duration
 
 /** Batches flow emissions into lists of at most [maxChunkSize] elements. */
@@ -23,36 +28,40 @@ fun <T> Flow<T>.chunkWhile(aggregateWhile: (index: Int, rawChunk: List<T>) -> Bo
 
 fun <T> Flow<T>.chunkUntil(aggregateUntil: (index: Int, rawChunk: List<T>) -> Boolean, maxChunkingPeriod: Duration): Flow<List<T>> = chunkUntilPrivate(aggregateUntil = aggregateUntil, maxChunkingPeriod = maxChunkingPeriod)
 
-private fun <T> Flow<T>.chunkUntilPrivate(maxChunkingPeriod: Duration?, aggregateUntil: ((index: Int, rawChunk: List<T>) -> Boolean)?): Flow<List<T>> = object : Flow<List<T>> {
+private fun <T> Flow<T>.chunkUntilPrivate(maxChunkingPeriod: Duration?, aggregateUntil: ((index: Int, rawChunk: List<T>) -> Boolean)?): Flow<List<T>> = flow {
 
-    override suspend fun collect(collector: FlowCollector<List<T>>) = coroutineScope {
-
+    coroutineScope {
+        val values = buffer(Channel.RENDEZVOUS).produceIn(this)
+        val periodEnds = maxChunkingPeriod?.let { period -> produce { while (true) { delay(period); send(Unit) } } }
         val chunk = mutableListOf<T>()
-
-        suspend fun flush() {
-            collector.emit(chunk.toList())
-            chunk.clear()
-        }
-
-        var ticker: Job? = null
-        if (maxChunkingPeriod != null) {
-            val periods = generateSequence(1) { it + 1 }.asFlow().onEach { delay(maxChunkingPeriod) }
-            ticker = async(start = CoroutineStart.LAZY) { periods.onEach { flush() }.collect() }
-        }
-
-        val original = this@chunkUntilPrivate.onCompletion {
-            ticker?.cancel()
-            flush()
-        }
-
-        ticker?.start()
-        original.collectIndexed { index, value ->
-            if (aggregateUntil != null && aggregateUntil(index, chunk)) {
-                flush()
+        var index = 0
+        var isUpstreamComplete = false
+        while (!isUpstreamComplete) {
+            select {
+                values.onReceiveCatching { received ->
+                    received.exceptionOrNull()?.let { throw it }
+                    received.onSuccess { value ->
+                        if (aggregateUntil != null && aggregateUntil(index, chunk)) {
+                            emitAndClear(chunk)
+                        }
+                        chunk += value
+                        index++
+                    }
+                    isUpstreamComplete = received.isClosed
+                }
+                if (periodEnds != null) {
+                    periodEnds.onReceive { emitAndClear(chunk) }
+                }
             }
-            chunk += value
         }
+        periodEnds?.cancel()
+        emitAndClear(chunk)
     }
+}
+
+private suspend fun <T> FlowCollector<List<T>>.emitAndClear(chunk: MutableList<T>) {
+    emit(chunk.toList())
+    chunk.clear()
 }
 
 private fun <T> ((Int, List<T>) -> Boolean).toUntilPredicate(): ((Int, List<T>) -> Boolean) = { index, rawChunk -> !invoke(index, rawChunk) }

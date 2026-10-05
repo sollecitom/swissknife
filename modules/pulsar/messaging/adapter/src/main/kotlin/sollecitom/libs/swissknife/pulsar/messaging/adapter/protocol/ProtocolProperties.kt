@@ -2,7 +2,7 @@ package sollecitom.libs.swissknife.pulsar.messaging.adapter.protocol
 
 internal object ProtocolProperties {
 
-    private const val PROTOCOL_PROPERTY_PREFIX = "PROTOCOL-"
+    private const val PROTOCOL_PROPERTY_PREFIX = "swissknife-protocol-"
 
     fun removeFrom(properties: Map<String, String>): Map<String, String> = properties.filterKeys { !it.startsWith(PROTOCOL_PROPERTY_PREFIX) }
 

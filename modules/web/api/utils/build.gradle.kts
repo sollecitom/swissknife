@@ -17,6 +17,7 @@ dependencies {
 
     implementation(projects.correlationLoggingUtils)
     implementation(libs.http4k.server.jetty)
+    implementation(libs.prometheus.metrics.exposition.textformats)
     implementation(projects.kotlinExtensions)
     implementation(projects.lensCorrelationExtensions)
     implementation(projects.webClientInfoAnalyzer)

@@ -21,7 +21,7 @@ class StandardLoggingTests {
     private val customPropertyName = "CUSTOM_LOG_FORMAT_PROPERTY_NAME"
 
     @AfterEach
-    fun afterEach() {
+    fun clearLogFormatProperties() {
         System.clearProperty(StandardLoggingConfiguration.Properties.FORMAT_ENV_VARIABLE)
         System.clearProperty(customPropertyName)
     }

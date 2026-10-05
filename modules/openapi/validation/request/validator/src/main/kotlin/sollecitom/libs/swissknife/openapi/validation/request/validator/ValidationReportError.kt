@@ -30,6 +30,8 @@ sealed class ValidationReportError(val key: String) {
 
         data object UnknownHeader : Response("validation.response.header.unknown")
 
+        data object InvalidJson : Response("validation.response.body.schema.invalidJson")
+
         sealed class Body(key: String) : Response(key) {
 
             data object MissingRequiredField : Body("validation.response.body.schema.required")

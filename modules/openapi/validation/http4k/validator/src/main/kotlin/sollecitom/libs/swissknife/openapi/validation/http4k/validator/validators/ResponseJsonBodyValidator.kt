@@ -11,6 +11,7 @@ import sollecitom.libs.swissknife.json.utils.jsonSchemaAt
 import sollecitom.libs.swissknife.kotlin.extensions.optional.asNullable
 import sollecitom.libs.swissknife.openapi.validation.http4k.validator.model.ResponseWithHeadersAdapter
 import sollecitom.libs.swissknife.openapi.validation.http4k.validator.utils.responseFor
+import sollecitom.libs.swissknife.openapi.validation.request.validator.ValidationReportError
 import com.fasterxml.jackson.databind.node.ObjectNode
 import io.swagger.v3.core.util.Json
 import org.json.JSONArray
@@ -64,7 +65,7 @@ internal class ResponseJsonBodyValidator(val jsonSchemasDirectoryName: String = 
 
     private fun ResponseWithHeadersAdapter.mediaType(): String = contentType.asNullable() ?: acceptHeader.withNoDirectives().toHeaderValue()
 
-    private fun invalidJson() = ValidationReport.singleton(CustomValidation.message(INVALID_JSON_KEY, "Present but not valid JSON"))
+    private fun invalidJson() = ValidationReport.singleton(CustomValidation.message(ValidationReportError.Response.InvalidJson.key, "Present but not valid JSON"))
 
     private fun String.resolveAsSchemaLocation(): String = when {
         startsWith("#/components/schemas/") -> "${removePrefix("#/components/schemas/")}.json"
@@ -89,6 +90,5 @@ internal class ResponseJsonBodyValidator(val jsonSchemasDirectoryName: String = 
     companion object {
         const val defaultJsonSchemasDirectory = "schemas/json"
         const val RESPONSE_BODY_PATH = "validation.response.body.schema"
-        private const val INVALID_JSON_KEY = "validation.response.body.schema.invalidJson"
     }
 }

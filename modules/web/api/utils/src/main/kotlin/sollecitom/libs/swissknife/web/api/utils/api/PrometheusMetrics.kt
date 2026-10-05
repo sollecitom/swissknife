@@ -1,18 +1,18 @@
 package sollecitom.libs.swissknife.web.api.utils.api
 
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
+import io.prometheus.metrics.expositionformats.ExpositionFormats
 import org.http4k.core.*
-import org.http4k.lens.Header
-import org.http4k.lens.accept
 
 internal object PrometheusMetrics {
 
     const val PATH = "/prometheus"
+    private val expositionFormats = ExpositionFormats.init()
 
     operator fun invoke(meterRegistry: PrometheusMeterRegistry): HttpHandler = { request ->
 
-        val requestedContentType = request.accept()?.contentTypes?.map(QualifiedContent::content)?.firstOrNull()?.takeUnless { '*' in it.value } ?: ContentType.TEXT_PLAIN // TODO check what happens when the first is not supported by Prometheus but others are
-        val body = meterRegistry.scrape(requestedContentType.value) // TODO use toHeaderValue() instead, as it includes the directives?
-        Response(Status.OK).with(Header.CONTENT_TYPE of requestedContentType).body(body)
+        val accept = request.header("Accept").orEmpty()
+        val contentType = expositionFormats.findWriter(accept).contentType
+        Response(Status.OK).header("Content-Type", contentType).body(meterRegistry.scrape(accept))
     }
 }

@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.map
 context(propertyNames: MessagePropertyNames)
 fun <EVENT : Event> Message<EVENT>.eventType(): Happening.Type {
 
-    val rawType = properties[propertyNames.forEvents.type]!!
+    val rawType = properties[propertyNames.forEvents.type] ?: error("Message has no '${propertyNames.forEvents.type}' property, so its event type is unknown")
     return Happening.Type.parse(rawType)
 }
 
@@ -31,7 +31,7 @@ fun <EVENT : Event> Flow<ReceivedMessage<EVENT>>.onlyWithTypeIn(types: Set<Happe
     if (!needsProcessing) {
         logger.debug { "Skipped message with ID '${it.id.stringRepresentation}' and type '${it.eventType().stringValue}', as its type is not included in $types" }
         it.acknowledge()
-        logger.debug { "Skipped message with ID '${it.id.stringRepresentation}' and type '${it.eventType().stringValue}', as its type is not included in $types" }
+        logger.debug { "Acknowledged skipped message with ID '${it.id.stringRepresentation}'" }
     }
     needsProcessing
 }

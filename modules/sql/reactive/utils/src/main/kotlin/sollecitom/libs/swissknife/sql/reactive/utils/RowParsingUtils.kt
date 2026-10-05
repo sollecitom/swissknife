@@ -6,9 +6,6 @@ inline fun <reified TYPE : Any> Readable.getValueOrNull(columnName: String): TYP
 
 inline fun <reified TYPE> Readable.cast(columnName: String) = get(columnName) as TYPE
 
-fun Readable.booleanValue(columnName: String) = when (val value = get(columnName)) {
-    is Boolean -> value
-    else -> (value as Byte).toInt() != 0
-}
+fun Readable.booleanValue(columnName: String): Boolean = getValue(columnName)
 
 inline fun <reified TYPE : Any> Readable.getValue(key: String): TYPE = getValueOrNull(key)!!

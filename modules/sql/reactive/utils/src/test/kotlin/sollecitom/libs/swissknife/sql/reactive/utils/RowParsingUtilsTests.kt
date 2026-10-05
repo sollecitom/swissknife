@@ -18,13 +18,6 @@ class RowParsingUtilsTests {
         assertThat(SingleColumnReadable(false).booleanValue(COLUMN)).isFalse()
     }
 
-    @Test
-    fun `reads a boolean stored as a byte`() {
-
-        assertThat(SingleColumnReadable(1.toByte()).booleanValue(COLUMN)).isTrue()
-        assertThat(SingleColumnReadable(0.toByte()).booleanValue(COLUMN)).isFalse()
-    }
-
     private class SingleColumnReadable(private val value: Any) : Readable {
 
         override fun <T : Any?> get(index: Int, type: Class<T>): T = type.cast(value)

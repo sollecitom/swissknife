@@ -16,11 +16,11 @@ data class DockerImage(val name: String)
  * Unacceptable means: at the given [severities] (default CRITICAL + HIGH) and NOT explicitly accepted.
  *
  * Accepted CVEs are read from [acceptedVulnerabilitiesContent] (the contents of a `.trivyignore` file), or, when that
- * is `null`, from the file pointed to by the `securityScan.trivyIgnoreFile` system property. Accepted CVEs do NOT fail
- * the build — but, unlike Trivy's `--ignorefile`, they are NOT silently dropped: any accepted CVE that is still present
- * in the image is reported as a loud WARNING. This keeps suppressed issues visible and the warning self-clears once
- * the CVE is no longer present (e.g. after a base-image rebuild), at which point the stale `.trivyignore` entry can be
- * removed.
+ * is `null`, from the file pointed to by the `securityScan.trivyIgnoreFile` system property (set by the Gradle
+ * `securityScan` convention). Accepted CVEs do NOT fail the build — but, unlike Trivy's `--ignorefile`, they are NOT
+ * silently dropped: any accepted CVE that is still present in the image is reported as a loud WARNING. This keeps
+ * suppressed issues visible and the warning self-clears once the CVE is no longer present (e.g. after a base-image
+ * rebuild), at which point the stale `.trivyignore` entry can be removed.
  *
  * `.trivyignore` format: one CVE ID per line; lines starting with `#` are comments; an inline `# reason` after a CVE
  * ID is shown in the warning to explain why it was accepted.

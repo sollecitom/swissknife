@@ -6,12 +6,12 @@ import org.json.JSONObject
 /** A parsed JWT token with access to its standard claims. */
 interface JWT {
 
-    val id: String
-    val subject: String
+    val id: String?
+    val subject: String?
     val claimsAsJson: JSONObject
-    val issuerId: StringOrURI
+    val issuerId: StringOrURI?
     val audienceIds: List<StringOrURI>
-    val issuedAt: Instant
+    val issuedAt: Instant?
     val expirationTime: Instant?
     val notBeforeTime: Instant?
 

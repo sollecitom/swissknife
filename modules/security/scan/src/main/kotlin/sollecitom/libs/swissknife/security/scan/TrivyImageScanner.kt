@@ -68,31 +68,34 @@ object TrivyImageScanner {
         }
 
         val trivyImage = "$DEFAULT_TRIVY_IMAGE:$trivyVersion"
-        var lastFailure: Throwable? = null
-        var lastOutput = ""
-        var attempts = 0
-
-        for (attemptIndex in 0 until maximumAttempts) {
-            attempts = attemptIndex + 1
-            val outputConsumer = ToStringConsumer()
-            val container = newContainer(trivyImage, command, cacheDirectory, trivyIgnoreContent, outputConsumer)
-            try {
-                container.start()
-                return parseReport(reportOutput(container, outputConsumer), imageName, trivyImage)
-            } catch (failure: Exception) {
-                lastFailure = failure
-                lastOutput = capturedOutput(container, outputConsumer)
-                val attemptsLeft = maximumAttempts - attemptIndex - 1
-                // A missing image is a real error rather than a flaky download, so there is nothing to gain by retrying.
-                if (attemptsLeft == 0 || !isWorthRetrying(lastOutput)) break
-                println("Trivy scan of '$imageName' failed (${failureSummary(lastOutput)}); retrying, $attemptsLeft attempt(s) left.")
+        val outcome = attemptWithRetries(
+            maximumAttempts = maximumAttempts,
+            // A missing image is a real error rather than a flaky download, so there is nothing to gain by retrying.
+            isWorthRetrying = { failed -> isWorthRetrying(failed.output) },
+            beforeRetry = { failed, attemptsLeft ->
+                println("Trivy scan of '$imageName' failed (${failureSummary(failed.output)}); retrying, $attemptsLeft attempt(s) left.")
                 System.out.flush()
                 Thread.sleep(DELAY_BETWEEN_ATTEMPTS.toMillis())
-            } finally {
-                runCatching { container.stop() }
-            }
+            },
+        ) { scanOnce(imageName, trivyImage, command, cacheDirectory, trivyIgnoreContent) }
+        return when (outcome) {
+            is RetryOutcome.Succeeded -> outcome.value
+            is RetryOutcome.GaveUp -> throw TrivyScanFailed(imageName, trivyImage, outcome.attempts, outcome.lastFailure.output, outcome.lastFailure.cause)
         }
-        throw TrivyScanFailed(imageName, trivyImage, attempts, lastOutput, lastFailure)
+    }
+
+    private fun scanOnce(imageName: String, trivyImage: String, command: List<String>, cacheDirectory: File, trivyIgnoreContent: String?): Attempt<List<Vulnerability>> {
+
+        val outputConsumer = ToStringConsumer()
+        val container = newContainer(trivyImage, command, cacheDirectory, trivyIgnoreContent, outputConsumer)
+        return try {
+            container.start()
+            Attempt.Succeeded(parseReport(reportOutput(container, outputConsumer), imageName, trivyImage))
+        } catch (failure: Exception) {
+            Attempt.Failed(cause = failure, output = capturedOutput(container, outputConsumer))
+        } finally {
+            runCatching { container.stop() }
+        }
     }
 
     /**

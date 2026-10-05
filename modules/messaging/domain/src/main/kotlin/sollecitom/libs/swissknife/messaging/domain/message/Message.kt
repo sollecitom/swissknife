@@ -2,10 +2,10 @@ package sollecitom.libs.swissknife.messaging.domain.message
 
 import sollecitom.libs.swissknife.messaging.domain.topic.Topic
 
-/** A message with a key, value, properties, and parent/originating message context for lineage tracking. */
+/** A message with an optional key, a value, properties, and parent/originating message context for lineage tracking. */
 interface Message<out VALUE> {
 
-    val key: String
+    val key: String?
     val value: VALUE
     val rawData: ByteArray
     val properties: Map<String, String>
@@ -46,6 +46,12 @@ fun Message<*>.descendsFrom(message: ReceivedMessage<*>) = descendsFromMessageWi
 
 fun Message<*>.originatesFromMessageWithId(messageId: Message.Id) = context.originatingMessageId == messageId
 fun Message<*>.originatesFrom(message: ReceivedMessage<*>) = originatesFromMessageWithId(message.id)
+
+val Message<*>.keyOrNull: String? get() = key
+
+fun Message<*>.keyOrThrow(): String = key ?: error("Message has no key")
+
+fun Message<*>.keyOrFailure(): Result<String> = runCatching { keyOrThrow() }
 
 fun Message<*>.getProperty(propertyKey: String): String = getPropertyOrNull(propertyKey) ?: error("No value for property with key $propertyKey")
 

@@ -10,5 +10,7 @@ import org.apache.pulsar.client.api.Producer
 suspend fun <VALUE> Producer<VALUE>.produce(message: Message<VALUE>): Message.Id {
 
     val contextProperties = MessageContextPropertiesSerde.serialize(message.context)
-    return newMessage().key(message.key).value(message.value).properties(message.properties + contextProperties).produce().adapted(topic = Topic.parse(topic))
+    val builder = newMessage().value(message.value).properties(message.properties + contextProperties)
+    message.key?.let(builder::key)
+    return builder.produce().adapted(topic = Topic.parse(topic))
 }

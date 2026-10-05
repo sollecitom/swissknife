@@ -1,5 +1,6 @@
 package sollecitom.libs.swissknife.openapi.checking.checker.rules
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import io.swagger.v3.core.util.Json
 import io.swagger.v3.oas.models.OpenAPI
@@ -98,8 +99,12 @@ class ExamplesSchemaComplianceRule(private val mediaTypesToCheck: Set<String>, p
         val jsonValue = runCatching { toJson(value) }.getOrElse { return invalidJsonViolation(value) }
         val path = validationPath + apiLocation.location.path
         val validationFailure = when (jsonValue) {
+            is JSONObject -> jsonSchema.validate(jsonValue, path)
             is JSONArray -> jsonSchema.validate(jsonValue, path)
-            else -> jsonSchema.validate(jsonValue as JSONObject, path)
+            is String -> jsonSchema.validate(jsonValue, path)
+            is Number -> jsonSchema.validate(jsonValue, path)
+            is Boolean -> jsonSchema.validate(jsonValue, path)
+            else -> return invalidJsonViolation(value)
         }
         if (validationFailure != null) return incompatibleJsonSchemaViolation(validationFailure, jsonSchema)
         return null
@@ -108,7 +113,9 @@ class ExamplesSchemaComplianceRule(private val mediaTypesToCheck: Set<String>, p
     private fun toJson(value: Any): Any = when (value) {
         is Map<*, *> -> JSONObject(value)
         is Collection<*> -> JSONArray(value)
-        else -> value.toString().let { text -> runCatching { JSONObject(text) }.getOrElse { JSONArray(text) } }
+        is Number, is Boolean -> value
+        is JsonNode -> Json.mapper().treeToValue(value, Any::class.java)?.let(::toJson) ?: JSONObject.NULL
+        else -> value.toString().let { text -> runCatching { JSONObject(text) }.recoverCatching { JSONArray(text) }.getOrDefault(text) }
     }
 
     context(apiLocation: OpenApiLocation, exampleInfo: ExampleInfo)

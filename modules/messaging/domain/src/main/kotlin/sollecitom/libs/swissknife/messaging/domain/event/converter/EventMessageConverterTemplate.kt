@@ -16,7 +16,7 @@ abstract class EventMessageConverterTemplate<EVENT : Event>(private val property
         return OutboundMessage(key = key, value = value, properties = properties, context = context)
     }
 
-    protected abstract fun key(event: EVENT): String
+    protected abstract fun key(event: EVENT): String?
 
     protected open fun additionalProperties(event: EVENT): Map<String, String> = emptyMap()
 

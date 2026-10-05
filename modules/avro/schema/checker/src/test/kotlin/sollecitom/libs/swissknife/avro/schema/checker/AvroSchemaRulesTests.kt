@@ -5,6 +5,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import sollecitom.libs.swissknife.compliance.checker.domain.ComplianceRule
 import org.apache.avro.Schema
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
@@ -38,4 +39,108 @@ class AvroSchemaRulesTests {
 
         assertThat(result).isInstanceOf<ComplianceRule.Result.Compliant<Schema>>()
     }
+
+    @Nested
+    @TestInstance(PER_CLASS)
+    inner class NullFirstNullableUnions {
+
+        @Test
+        fun `a nullable field listing null first and defaulting to null complies`() {
+
+            val schema = record("""{"name":"value","type":["null","string"],"default":null}""")
+
+            val result = NullFirstNullableUnionsRule(schema)
+
+            assertThat(result).isInstanceOf<ComplianceRule.Result.Compliant<Schema>>()
+        }
+
+        @Test
+        fun `a nullable union not listing null first is a violation`() {
+
+            val schema = record("""{"name":"value","type":["string","null"],"default":"none"}""")
+
+            val result = NullFirstNullableUnionsRule(schema)
+
+            assertThat(result).isEqualTo(nonCompliant(NullFirstNullableUnionsRule.Violation.NullNotFirst(path = "acme.Thing.value"), NullFirstNullableUnionsRule.Violation.MissingNullDefault(path = "acme.Thing.value")))
+        }
+
+        @Test
+        fun `a nullable field without a null default is a violation`() {
+
+            val schema = record("""{"name":"value","type":["null","string"]}""")
+
+            val result = NullFirstNullableUnionsRule(schema)
+
+            assertThat(result).isEqualTo(nonCompliant(NullFirstNullableUnionsRule.Violation.MissingNullDefault(path = "acme.Thing.value")))
+        }
+
+        @Test
+        fun `nested nullable unions are checked too`() {
+
+            val schema = record("""{"name":"items","type":{"type":"array","items":{"type":"record","name":"Item","fields":[{"name":"note","type":["null","string"]},{"name":"tags","type":{"type":"map","values":["string","null"]}}]}}}""")
+
+            val result = NullFirstNullableUnionsRule(schema)
+
+            assertThat(result).isEqualTo(nonCompliant(NullFirstNullableUnionsRule.Violation.MissingNullDefault(path = "acme.Thing.items[].note"), NullFirstNullableUnionsRule.Violation.NullNotFirst(path = "acme.Thing.items[].tags{}")))
+        }
+
+        @Test
+        fun `a recursive schema is checked once per named type`() {
+
+            val schema = Schema.Parser().parse("""{"type":"record","name":"Node","namespace":"acme","fields":[{"name":"next","type":["null","Node"],"default":null}]}""")
+
+            val result = NullFirstNullableUnionsRule(schema)
+
+            assertThat(result).isInstanceOf<ComplianceRule.Result.Compliant<Schema>>()
+        }
+    }
+
+    @Nested
+    @TestInstance(PER_CLASS)
+    inner class MandatoryEnumDefaultSymbol {
+
+        private val rule = MandatoryEnumDefaultSymbolRule(symbol = "UNKNOWN")
+
+        @Test
+        fun `an enum declaring the symbol as its default complies`() {
+
+            val schema = Schema.Parser().parse("""{"type":"enum","name":"Colour","namespace":"acme","symbols":["UNKNOWN","RED"],"default":"UNKNOWN"}""")
+
+            val result = rule(schema)
+
+            assertThat(result).isInstanceOf<ComplianceRule.Result.Compliant<Schema>>()
+        }
+
+        @Test
+        fun `an enum without the symbol is a violation`() {
+
+            val result = rule(enumSchema)
+
+            assertThat(result).isEqualTo(nonCompliant(MandatoryEnumDefaultSymbolRule.Violation(enumName = "acme.Colour", symbol = "UNKNOWN")))
+        }
+
+        @Test
+        fun `an enum with the symbol but another default is a violation`() {
+
+            val schema = Schema.Parser().parse("""{"type":"enum","name":"Colour","namespace":"acme","symbols":["UNKNOWN","RED"],"default":"RED"}""")
+
+            val result = rule(schema)
+
+            assertThat(result).isEqualTo(nonCompliant(MandatoryEnumDefaultSymbolRule.Violation(enumName = "acme.Colour", symbol = "UNKNOWN")))
+        }
+
+        @Test
+        fun `an enum nested in a record is checked too`() {
+
+            val schema = record("""{"name":"colour","type":{"type":"enum","name":"Colour","symbols":["RED"]}}""")
+
+            val result = rule(schema)
+
+            assertThat(result).isEqualTo(nonCompliant(MandatoryEnumDefaultSymbolRule.Violation(enumName = "acme.Colour", symbol = "UNKNOWN")))
+        }
+    }
+
+    private fun record(vararg fields: String) = Schema.Parser().parse("""{"type":"record","name":"Thing","namespace":"acme","fields":[${fields.joinToString(",")}]}""")
+
+    private fun nonCompliant(vararg violations: ComplianceRule.Result.Violation<Schema>) = ComplianceRule.Result.NonCompliant(violations.toSet())
 }

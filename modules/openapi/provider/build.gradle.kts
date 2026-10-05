@@ -9,4 +9,6 @@ dependencies {
 
     implementation(projects.resourceUtils)
     implementation(projects.loggerCore)
+
+    testImplementation(projects.testUtils)
 }
