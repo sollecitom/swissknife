@@ -6,6 +6,7 @@ import io.swagger.v3.core.util.Json
 import io.swagger.v3.oas.models.PathItem.HttpMethod.POST
 import io.swagger.v3.oas.models.examples.Example
 import io.swagger.v3.oas.models.media.Schema
+import io.swagger.v3.oas.models.media.JsonSchema as SwaggerJsonSchema
 import io.swagger.v3.oas.models.parameters.Parameter
 import sollecitom.libs.swissknife.compliance.checker.domain.checkAgainstRules
 import sollecitom.libs.swissknife.compliance.checker.test.utils.isCompliant
@@ -182,6 +183,18 @@ class OpenApiRulesTests {
         }
 
         @Test
+        fun `validates a parameter example against an inline scalar schema`() {
+
+            val api = apiWithHeaderParameter(examples = mapOf("Valid" to Example().value("abc"), "TooLong" to Example().value("abcd")))
+
+            val result = api.checkAgainstRules(rule)
+
+            assertThat(result).isNotCompliantWithOnlyViolation<ExamplesSchemaComplianceRule.IncompatibleJsonSchemaViolation, OpenAPI> { violation ->
+                assertThat(violation.example.name).isEqualTo("TooLong")
+            }
+        }
+
+        @Test
         fun `ignores examples with an external value`() {
 
             val api = apiWithResponseMediaType {
@@ -192,6 +205,19 @@ class OpenApiRulesTests {
             val result = api.checkAgainstRules(rule)
 
             assertThat(result).isCompliant()
+        }
+
+        private fun apiWithHeaderParameter(examples: Map<String, Example>) = buildOpenApi {
+            path("/things") {
+                get {
+                    parameters = listOf(Parameter().name("x-code").`in`("header").schema(SwaggerJsonSchema().types(setOf("string")).maxLength(3)).examples(examples))
+                    responses {
+                        status(200) {
+                            description("Found")
+                        }
+                    }
+                }
+            }
         }
 
         private fun apiWithResponseMediaType(customize: io.swagger.v3.oas.models.media.MediaType.() -> Unit) = buildOpenApi {

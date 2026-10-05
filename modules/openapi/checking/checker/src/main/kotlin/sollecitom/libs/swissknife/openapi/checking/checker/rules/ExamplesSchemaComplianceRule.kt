@@ -89,12 +89,12 @@ class ExamplesSchemaComplianceRule(private val mediaTypesToCheck: Set<String>, p
     context(apiLocation: OpenApiLocation)
     private fun ExampleInfo.applicationJsonSchemaViolations(): ComplianceRule.Result.Violation<OpenAPI>? {
 
-        val jsonSchema = if (!schema.properties.isNullOrEmpty() || schema.oneOf != null || schema.allOf != null) {
-            runCatching { schema.asJsonSchema() }.getOrElse { error -> return invalidJsonSchema(error, schema) }
-        } else {
-            val ref = schema.`$ref` ?: return noRefForSchema()
-            val schemaLocation = ref.resolveAsSchemaLocation()
-            runCatching { schemaLocation.let(::jsonSchemaAt) }.getOrElse { error -> return invalidJsonSchemaReference(error, schemaLocation) }
+        val jsonSchema = when (val ref = schema.`$ref`) {
+            null -> runCatching { schema.asJsonSchema() }.getOrElse { error -> return invalidJsonSchema(error, schema) }
+            else -> {
+                val schemaLocation = ref.resolveAsSchemaLocation()
+                runCatching { schemaLocation.let(::jsonSchemaAt) }.getOrElse { error -> return invalidJsonSchemaReference(error, schemaLocation) }
+            }
         }
         val jsonValue = runCatching { toJson(value) }.getOrElse { return invalidJsonViolation(value) }
         val path = validationPath + apiLocation.location.path
@@ -120,9 +120,6 @@ class ExamplesSchemaComplianceRule(private val mediaTypesToCheck: Set<String>, p
 
     context(apiLocation: OpenApiLocation, exampleInfo: ExampleInfo)
     private fun invalidJsonSchema(error: Throwable, schemaValue: Any) = InvalidJsonSchemaViolation(error, schemaValue, exampleInfo, apiLocation.location, apiLocation.operation)
-
-    context(apiLocation: OpenApiLocation, exampleInfo: ExampleInfo)
-    private fun noRefForSchema() = NoRefForSchemaViolation(exampleInfo, APPLICATION_JSON, apiLocation.location, apiLocation.operation)
 
     context(apiLocation: OpenApiLocation, exampleInfo: ExampleInfo)
     private fun invalidJsonSchemaReference(error: Throwable, schemaLocation: String) = InvalidJsonSchemaReferenceViolation(error, schemaLocation, exampleInfo, apiLocation.location, apiLocation.operation)
@@ -196,11 +193,6 @@ class ExamplesSchemaComplianceRule(private val mediaTypesToCheck: Set<String>, p
     }
 
     data class ExampleInfo(val name: String, val value: Any, val schema: Schema<*>)
-
-    class NoRefForSchemaViolation(val example: ExampleInfo, val mediaTypeName: String, val location: Location, val operation: OperationWithContext) : ComplianceRule.Result.Violation<OpenAPI> {
-
-        override val message = "Operation ${operation.operation.method} on path ${operation.pathName} has an example with name '${example.name}' in ${location.description} with a $mediaTypeName schema that has no '\$ref'"
-    }
 
     class InvalidJsonSchemaViolation(val error: Throwable, val schemaValue: Any, val example: ExampleInfo, val location: Location, val operation: OperationWithContext) : ComplianceRule.Result.Violation<OpenAPI> {
 
