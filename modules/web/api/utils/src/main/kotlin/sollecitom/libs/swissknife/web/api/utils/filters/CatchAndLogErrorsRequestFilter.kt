@@ -16,7 +16,7 @@ private object CatchAndLogErrorsRequestFilter : Loggable() {
                 next(it)
             } catch (error: Throwable) {
                 if (error !is Exception) throw error
-                logger.error(error) { "An error was caught while processing request ${it.toMessage()}" }
+                logger.error(error) { "An error was caught while processing request ${it.method} ${it.uri.path}" }
                 Response(Status.INTERNAL_SERVER_ERROR).contentType(ContentType.TEXT_PLAIN).body("Something went wrong on the server.")
             }
         }
