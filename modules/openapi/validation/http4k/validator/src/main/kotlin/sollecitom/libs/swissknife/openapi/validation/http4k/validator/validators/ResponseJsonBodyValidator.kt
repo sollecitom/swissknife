@@ -15,7 +15,6 @@ import sollecitom.libs.swissknife.openapi.validation.request.validator.Validatio
 import com.fasterxml.jackson.databind.node.ObjectNode
 import io.swagger.v3.core.util.Json
 import org.json.JSONArray
-import org.json.JSONException
 import org.json.JSONObject
 import io.swagger.v3.oas.models.media.Schema as SwaggerSchema
 
@@ -72,15 +71,7 @@ internal class ResponseJsonBodyValidator(val jsonSchemasDirectoryName: String = 
         else -> removePrefix("./$jsonSchemasDirectoryName/")
     }
 
-    private fun String.toJsonValue(): JsonValue? = try {
-        JSONObject(this).let(JsonValue::Object)
-    } catch (e: JSONException) {
-        try {
-            JSONArray(this).let(JsonValue::Array)
-        } catch (e: JSONException) {
-            null
-        }
-    }
+    private fun String.toJsonValue(): JsonValue? = runCatching<JsonValue> { JSONObject(this).let(JsonValue::Object) }.recoverCatching { JSONArray(this).let(JsonValue::Array) }.getOrNull()
 
     private fun JsonSchema.validate(json: JsonValue) = when (json) {
         is JsonValue.Array -> validate(json.value, path)

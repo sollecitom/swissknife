@@ -32,7 +32,14 @@ private fun <T> Flow<T>.chunkUntilPrivate(maxChunkingPeriod: Duration?, aggregat
 
     coroutineScope {
         val values = buffer(Channel.RENDEZVOUS).produceIn(this)
-        val periodEnds = maxChunkingPeriod?.let { period -> produce { while (true) { delay(period); send(Unit) } } }
+        val periodEnds = maxChunkingPeriod?.let { period ->
+            produce {
+                while (true) {
+                    delay(period)
+                    send(Unit)
+                }
+            }
+        }
         val chunk = mutableListOf<T>()
         var index = 0
         var isUpstreamComplete = false

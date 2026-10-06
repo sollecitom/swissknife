@@ -22,31 +22,32 @@ internal fun PathItem.operations(pathName: String): Set<OperationWithContext> = 
 
 internal fun PathItem.operations(): Set<OperationWithMethod> {
 
+    val pathParameters = parameters.orEmpty()
     val allOperations = mutableSetOf<OperationWithMethod>()
 
     if (get != null) {
-        allOperations.add(OperationWithMethod(get, PathItem.HttpMethod.GET, parameters.orEmpty()))
+        allOperations.add(OperationWithMethod(get, PathItem.HttpMethod.GET, pathParameters))
     }
     if (put != null) {
-        allOperations.add(OperationWithMethod(put, PathItem.HttpMethod.PUT, parameters.orEmpty()))
+        allOperations.add(OperationWithMethod(put, PathItem.HttpMethod.PUT, pathParameters))
     }
     if (head != null) {
-        allOperations.add(OperationWithMethod(head, PathItem.HttpMethod.HEAD, parameters.orEmpty()))
+        allOperations.add(OperationWithMethod(head, PathItem.HttpMethod.HEAD, pathParameters))
     }
     if (post != null) {
-        allOperations.add(OperationWithMethod(post, PathItem.HttpMethod.POST, parameters.orEmpty()))
+        allOperations.add(OperationWithMethod(post, PathItem.HttpMethod.POST, pathParameters))
     }
     if (delete != null) {
-        allOperations.add(OperationWithMethod(delete, PathItem.HttpMethod.DELETE, parameters.orEmpty()))
+        allOperations.add(OperationWithMethod(delete, PathItem.HttpMethod.DELETE, pathParameters))
     }
     if (patch != null) {
-        allOperations.add(OperationWithMethod(patch, PathItem.HttpMethod.PATCH, parameters.orEmpty()))
+        allOperations.add(OperationWithMethod(patch, PathItem.HttpMethod.PATCH, pathParameters))
     }
     if (options != null) {
-        allOperations.add(OperationWithMethod(options, PathItem.HttpMethod.OPTIONS, parameters.orEmpty()))
+        allOperations.add(OperationWithMethod(options, PathItem.HttpMethod.OPTIONS, pathParameters))
     }
     if (trace != null) {
-        allOperations.add(OperationWithMethod(trace, PathItem.HttpMethod.TRACE, parameters.orEmpty()))
+        allOperations.add(OperationWithMethod(trace, PathItem.HttpMethod.TRACE, pathParameters))
     }
 
     return allOperations

@@ -21,10 +21,9 @@ sealed interface Happening : Versioned<IntVersion> {
 
             fun parse(stringValue: String): Type {
 
-                val separatorIndex = stringValue.lastIndexOf(VERSION_SEPARATOR)
-                check(separatorIndex >= 0) { "Problematic raw value: $stringValue" }
-                val name = stringValue.substring(0, separatorIndex).let(::Name)
-                val version = stringValue.substring(separatorIndex + VERSION_SEPARATOR.length).toInt().let(::IntVersion)
+                check(VERSION_SEPARATOR in stringValue) { "Problematic raw value: $stringValue" }
+                val name = stringValue.substringBeforeLast(VERSION_SEPARATOR).let(::Name)
+                val version = stringValue.substringAfterLast(VERSION_SEPARATOR).toInt().let(::IntVersion)
                 return Type(name, version)
             }
         }
