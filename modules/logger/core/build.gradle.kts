@@ -11,4 +11,6 @@ dependencies {
     implementation(libs.org.json)
 
     testImplementation(projects.testUtils)
+
+    testRuntimeOnly(projects.loggerSlf4jAdapter)
 }

@@ -7,7 +7,7 @@ import sollecitom.libs.swissknife.logger.core.defaults.DefaultLoggerFactory
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
-import java.time.Instant
+import kotlin.time.Clock
 
 @TestInstance(PER_CLASS)
 private class DefaultLoggerFactoryTest {
@@ -17,7 +17,7 @@ private class DefaultLoggerFactoryTest {
 
         val loggerName = this::class.java.canonicalName
         val message = "A very important message"
-        val timestamp = Instant.now()
+        val timestamp = Clock.System.now()
         val error = IllegalStateException("Boom")
         val context = LoggingContext.Empty
         val logEntries = mutableListOf<LogEntry>()

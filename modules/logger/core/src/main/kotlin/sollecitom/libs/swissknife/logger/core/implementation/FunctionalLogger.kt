@@ -5,7 +5,7 @@ import sollecitom.libs.swissknife.logger.core.LogEntry
 import sollecitom.libs.swissknife.logger.core.Logger
 import sollecitom.libs.swissknife.logger.core.LoggingContext
 import org.slf4j.MDC
-import java.time.Instant
+import kotlin.time.Instant
 
 internal class FunctionalLogger(override val name: String, override val isEnabledForLoggerName: sollecitom.libs.swissknife.logger.core.LoggingLevel.(name: String) -> Boolean, private val timeNow: () -> Instant, private val log: Log) : Logger {
 

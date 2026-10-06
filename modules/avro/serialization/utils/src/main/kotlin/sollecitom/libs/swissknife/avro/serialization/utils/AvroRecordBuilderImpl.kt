@@ -6,7 +6,7 @@ import org.apache.avro.generic.GenericRecord
 import org.apache.avro.generic.GenericRecordBuilder
 import java.math.BigDecimal
 import java.math.BigInteger
-import java.time.Instant
+import kotlin.time.Instant
 import java.util.*
 
 internal class AvroRecordBuilderImpl(schema: Schema) : GenericRecordBuilder(schema), AvroRecordBuilder {
@@ -22,8 +22,8 @@ internal class AvroRecordBuilderImpl(schema: Schema) : GenericRecordBuilder(sche
 
     override fun set(fieldName: String, value: Double?): AvroRecordBuilder = setValueAndReturnSelf(fieldName, value)
     override fun set(fieldName: String, value: Int?): AvroRecordBuilder = setValueAndReturnSelf(fieldName, value)
-    override fun set(fieldName: String, value: BigInteger?): AvroRecordBuilder = setValueAndReturnSelf(fieldName, value)
-    override fun set(fieldName: String, value: BigDecimal?): AvroRecordBuilder = setValueAndReturnSelf(fieldName, value)
+    override fun set(fieldName: String, value: BigInteger?): AvroRecordBuilder = setValueAndReturnSelf(fieldName, value?.toString())
+    override fun set(fieldName: String, value: BigDecimal?): AvroRecordBuilder = setValueAndReturnSelf(fieldName, value?.toString())
     override fun set(fieldName: String, value: Long?): AvroRecordBuilder = setValueAndReturnSelf(fieldName, value)
     override fun set(fieldName: String, value: Boolean?): AvroRecordBuilder = setValueAndReturnSelf(fieldName, value)
     override fun set(fieldName: String, value: GenericRecord?): AvroRecordBuilder = setValueAndReturnSelf(fieldName, value)

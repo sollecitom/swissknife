@@ -10,4 +10,5 @@ dependencies {
     implementation(projects.loggerCore)
 
     testImplementation(projects.coreTestUtils)
+    testImplementation(projects.pulsarTestUtils)
 }

@@ -14,7 +14,6 @@ import sollecitom.libs.swissknife.cryptography.domain.symmetric.encryption.aes.A
 import sollecitom.libs.swissknife.cryptography.implementation.bouncycastle.bouncyCastle
 import sollecitom.libs.swissknife.protected_value.domain.ProtectedValueFactory
 import sollecitom.libs.swissknife.protected_value.domain.forType
-import sollecitom.libs.swissknife.test.utils.execution.utils.test
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
@@ -25,7 +24,7 @@ private class AesProtectedValueTests : CoreDataGenerator by CoreDataGenerator.pr
     override val cryptographicOperations = CryptographicOperations.bouncyCastle(random = secureRandom)
 
     @Test
-    fun `protected value masks the original value`() = test {
+    suspend fun `protected value masks the original value`() {
 
         val key = newAesKey(variant = AES_256)
         val factory = ProtectedValueFactory.aes256WithGCM { key }
@@ -42,7 +41,7 @@ private class AesProtectedValueTests : CoreDataGenerator by CoreDataGenerator.pr
     }
 
     @Test
-    fun `value can be protected and unprotected`() = test {
+    suspend fun `value can be protected and unprotected`() {
 
         val key = newAesKey(variant = AES_256)
         val factory = ProtectedValueFactory.aes256WithGCM { key }.accessible { key }
@@ -58,7 +57,7 @@ private class AesProtectedValueTests : CoreDataGenerator by CoreDataGenerator.pr
     }
 
     @Test
-    fun `value can be protected and unprotected with a typed factory`() = test {
+    suspend fun `value can be protected and unprotected with a typed factory`() {
 
         val key = newAesKey(variant = AES_256)
         val factory = ProtectedValueFactory.aes256WithGCM { key }.accessible { key }.forType({ it.toString().toByteArray() }, { String(it).toInt() })

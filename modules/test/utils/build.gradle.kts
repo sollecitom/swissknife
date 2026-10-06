@@ -13,4 +13,5 @@ dependencies {
 
     runtimeOnly(libs.junit.jupiter.engine)
     runtimeOnly(libs.junit.platform.launcher)
+    runtimeOnly(libs.kotlin.reflect)
 }

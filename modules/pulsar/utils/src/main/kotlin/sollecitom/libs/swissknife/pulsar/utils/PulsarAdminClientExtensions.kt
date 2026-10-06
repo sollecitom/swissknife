@@ -3,8 +3,6 @@ package sollecitom.libs.swissknife.pulsar.utils
 import org.apache.avro.Schema
 import org.apache.pulsar.client.admin.PulsarAdmin
 import org.apache.pulsar.client.admin.PulsarAdminException
-import org.apache.pulsar.client.api.schema.GenericRecord
-import org.apache.pulsar.client.api.schema.GenericSchema
 import org.apache.pulsar.common.policies.data.AutoTopicCreationOverride
 import org.apache.pulsar.common.policies.data.SchemaCompatibilityStrategy
 import org.apache.pulsar.common.policies.data.TenantInfo
@@ -107,10 +105,12 @@ fun PulsarAdmin.ensureSchemaOnTopic(schema: PulsarSchema<*>, fullyQualifiedTopic
     registerSchema(fullyQualifiedTopic, schema)
 }
 
-private fun PulsarAdmin.register(topic: String, schema: Schema) = register(topic, schema.toPulsarGenericSchema())
+private fun PulsarAdmin.register(topic: String, schema: Schema) = register(topic, schema.toPulsarSchemaInfo())
 
-private fun PulsarAdmin.register(topic: String, schema: PulsarSchema<*>) = try {
-    schemas().createSchema(topic, schema.schemaInfo)
+private fun PulsarAdmin.register(topic: String, schema: PulsarSchema<*>) = register(topic, schema.schemaInfo)
+
+private fun PulsarAdmin.register(topic: String, schemaInfo: SchemaInfo) = try {
+    schemas().createSchema(topic, schemaInfo)
 } catch (e: PulsarAdminException) {
     when (e.statusCode) {
         incompatibleSchemaErrorCode -> throw PulsarIncompatibleSchemaChangeException(e)
@@ -118,4 +118,4 @@ private fun PulsarAdmin.register(topic: String, schema: PulsarSchema<*>) = try {
     }
 }
 
-private fun Schema.toPulsarGenericSchema(): GenericSchema<GenericRecord> = PulsarSchema.generic(SchemaInfo.builder().name(fullName).type(SchemaType.AVRO).schema(toString().toByteArray()).build())
+private fun Schema.toPulsarSchemaInfo(): SchemaInfo = SchemaInfo.builder().name(fullName).type(SchemaType.AVRO).schema(toString().toByteArray()).build()

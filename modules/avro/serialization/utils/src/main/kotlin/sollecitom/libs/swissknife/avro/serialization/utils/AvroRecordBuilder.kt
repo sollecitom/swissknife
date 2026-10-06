@@ -4,7 +4,7 @@ import org.apache.avro.Schema
 import org.apache.avro.generic.GenericRecord
 import java.math.BigDecimal
 import java.math.BigInteger
-import java.time.Instant
+import kotlin.time.Instant
 
 /** Creates a deep copy of this [GenericRecord], optionally applying modifications via the builder DSL. */
 fun GenericRecord.copy(schema: Schema = getSchema(), customise: AvroRecordBuilder.() -> Unit): GenericRecord = buildGenericRecord(this, schema, customise)

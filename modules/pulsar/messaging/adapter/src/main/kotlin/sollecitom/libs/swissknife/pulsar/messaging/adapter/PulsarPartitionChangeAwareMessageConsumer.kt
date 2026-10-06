@@ -2,7 +2,6 @@ package sollecitom.libs.swissknife.pulsar.messaging.adapter
 
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.runBlocking
 import org.apache.pulsar.client.api.*
 import sollecitom.libs.swissknife.core.domain.position.Index
 import sollecitom.libs.swissknife.logger.core.loggable.Loggable
@@ -31,16 +30,16 @@ private class PulsarPartitionChangeAwareMessageConsumer<out VALUE>(override val 
 
     private class EmittingConsumerEventListener : ConsumerEventListener {
 
-        val changes = MutableSharedFlow<PartitionAssignmentChange>()
+        val changes = MutableSharedFlow<PartitionAssignmentChange>(extraBufferCapacity = Int.MAX_VALUE)
 
         override fun becameActive(consumer: Consumer<*>, partitionId: Int) = emit(change = PartitionAssigned(partitionId.let(::Index), consumer.topic, consumer.consumerName))
 
         override fun becameInactive(consumer: Consumer<*>, partitionId: Int) = emit(change = PartitionUnassigned(partitionId.let(::Index), consumer.topic, consumer.consumerName))
 
-        private fun emit(change: PartitionAssignmentChange) = runBlocking {
+        private fun emit(change: PartitionAssignmentChange) {
 
             logger.debug { "Partition with index ${change.topicPartition.partition.value} on topic '${change.topicPartition.topic}' was ${if (change is PartitionAssigned) "assigned to" else "unassigned from"} consumer '${change.consumerName}'" }
-            changes.emit(change)
+            changes.tryEmit(change)
         }
 
         companion object : Loggable()

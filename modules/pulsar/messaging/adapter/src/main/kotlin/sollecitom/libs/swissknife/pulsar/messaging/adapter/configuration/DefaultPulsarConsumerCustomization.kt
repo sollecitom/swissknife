@@ -12,4 +12,5 @@ fun <VALUE> ConsumerBuilder<VALUE>.defaultConsumerCustomization(): ConsumerBuild
         .subscriptionType(SubscriptionType.Failover)
         .autoUpdatePartitions(true)
         .startPaused(true)
+        .isAckReceiptEnabled(true)
 }

@@ -17,7 +17,7 @@ test-containers = "2.0.5"
 test-containers-keycloak = "4.4.0"
 swagger-parser = "2.1.48"
 atlassian-swagger-request-validator = "3.0.0"
-# @pin Pulsar 5 relocates the client internals (impl schemas, Avro) that the Pulsar Avro/JSON serialization modules build on; upgrading needs a migration
+# @pin Pulsar 5 logs through slog 0.10.0, which picks its Log4j2 backend whenever log4j-api is present and then needs log4j-core; our services carry log4j-api (log4j-to-slf4j for Yauaa), so Pulsar 5 fails at startup. Upgrade once slog detects log4j-core
 pulsar = "4.2.4"
 avro = "1.12.2"
 yauaa = "8.2.0"
@@ -38,7 +38,7 @@ classgraph = "4.8.196"
 opentelemetry = "1.66.0"
 commons-codec = "1.22.1"
 # plugins
-sollecitom-gradle-plugins = "1.0.35"
+sollecitom-gradle-plugins = "1.0.36"
 palantir-git-plugin = "5.1.0"
 
 [libraries]
@@ -78,6 +78,7 @@ junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", vers
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-jupiter" }
 assertk = { module = "com.willowtreeapps.assertk:assertk", version.ref = "assertk" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 test-containers-junit-jupiter = { module = "org.testcontainers:testcontainers-junit-jupiter", version.ref = "test-containers" }
 test-containers-pulsar = { module = "org.testcontainers:testcontainers-pulsar", version.ref = "test-containers" }
 test-containers-postgres = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "test-containers" }

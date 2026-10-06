@@ -1,34 +1,34 @@
 package sollecitom.libs.swissknife.nats.client
 
-import io.nats.client.Dispatcher
+import io.nats.client.Connection
 import io.nats.client.Message
 import io.nats.client.Nats
 import io.nats.client.Options
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.onSubscription
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import java.time.Duration
 import java.util.concurrent.Executors
 
 private class NatsConsumerAdapter(options: Options, private val subjects: Set<String>) : NatsConsumer {
 
+    private val subscriptionConfirmationTimeout = Duration.ofSeconds(10)
+
     private val executor = Executors.newVirtualThreadPerTaskExecutor()
     private val connection by lazy { Nats.connect(Options.Builder(options).executor(executor).build()) }
-    private val _messages = MutableSharedFlow<Message>()
-    private val dispatcher: Dispatcher by lazy {
-        connection.createDispatcher().also { dispatcher ->
-            subjects.onEach {
-                dispatcher.subscribe(it) { message ->
-                    runBlocking {
-                        _messages.emit(message)
-                    }
-                }
-            }
+    override val messages: Flow<Message> = flow {
+        val received = Channel<Message>(Channel.BUFFERED)
+        val dispatcher = connection.createDispatcher { message -> received.trySendBlocking(message) }
+        subjects.forEach(dispatcher::subscribe)
+        connection.flush(subscriptionConfirmationTimeout)
+        try {
+            emitAll(received)
+        } finally {
+            if (connection.status != Connection.Status.CLOSED) connection.closeDispatcher(dispatcher)
         }
     }
-
-    override val messages: Flow<Message>
-        get() = _messages.onSubscription { dispatcher }
 
     override suspend fun stop() {
         connection.close()

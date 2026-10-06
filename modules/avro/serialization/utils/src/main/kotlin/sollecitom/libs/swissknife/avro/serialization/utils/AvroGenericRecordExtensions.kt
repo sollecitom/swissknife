@@ -6,7 +6,7 @@ import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericRecord
 import java.math.BigDecimal
 import java.math.BigInteger
-import java.time.Instant
+import kotlin.time.Instant
 import java.util.*
 
 /** Type-safe extensions for extracting fields from Avro [GenericRecord]s. Each pair provides a nullable and a non-nullable variant that throws on missing fields. */

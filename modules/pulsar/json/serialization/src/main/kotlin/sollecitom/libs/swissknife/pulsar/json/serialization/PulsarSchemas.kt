@@ -1,69 +1,24 @@
 package sollecitom.libs.swissknife.pulsar.json.serialization
 
-import sollecitom.libs.swissknife.json.utils.serde.JsonDeserializer
-import sollecitom.libs.swissknife.json.utils.serde.JsonSerde
-import sollecitom.libs.swissknife.json.utils.serde.JsonSerializer
 import org.apache.pulsar.client.api.Schema
-import org.apache.pulsar.client.api.schema.SchemaReader
-import org.apache.pulsar.client.api.schema.SchemaWriter
-import org.apache.pulsar.client.impl.schema.AbstractStructSchema
-import org.apache.pulsar.common.schema.SchemaInfo
+import org.apache.pulsar.client.api.SchemaSerializationException
 import org.json.JSONObject
-import java.io.InputStream
+import sollecitom.libs.swissknife.json.utils.serde.JsonSerde
 
-fun <VALUE : Any> JsonSerde.SchemaAware<VALUE>.asPulsarSchema(): Schema<VALUE> = PulsarSchemas.forSerde(this)
+/** A Pulsar [Schema] for this serde, carrying the JSON as a UTF-8 string. */
+fun <VALUE : Any> JsonSerde.SchemaAware<VALUE>.asPulsarSchema(): Schema<VALUE> = JsonPulsarSchema(this)
 
-private object PulsarSchemas {
+private class JsonPulsarSchema<VALUE : Any>(private val serde: JsonSerde.SchemaAware<VALUE>) : Schema<VALUE> {
 
-    fun <VALUE : Any> forSerde(serde: JsonSerde.SchemaAware<VALUE>): Schema<VALUE> = createSchema(serde)
+    override fun encode(message: VALUE): ByteArray = serde.serialize(message).toString().encodeToByteArray()
 
-    private fun <VALUE : Any> createSchema(serde: JsonSerde.SchemaAware<VALUE>): Schema<VALUE> {
-
-        return JsonSchema(serde)
+    override fun decode(bytes: ByteArray): VALUE = try {
+        serde.deserialize(JSONObject(bytes.decodeToString()))
+    } catch (error: Exception) {
+        throw SchemaSerializationException(error)
     }
 
-    private class JsonWriter<VALUE : Any>(private val serializer: JsonSerializer<VALUE>) : SchemaWriter<VALUE> {
+    override fun getSchemaInfo() = Schema.STRING.schemaInfo
 
-        override fun write(message: VALUE): ByteArray {
-
-            val json = serializer.serialize(message)
-            return json.toString().encodeToByteArray()
-        }
-    }
-
-    private class JsonReader<VALUE : Any>(private val deserializer: JsonDeserializer<VALUE>) : SchemaReader<VALUE> {
-
-        override fun read(bytes: ByteArray, offset: Int, length: Int): VALUE {
-
-            val asString = String(bytes, offset, length)
-            val json = JSONObject(asString)
-            return deserializer.deserialize(json)
-        }
-
-        override fun read(inputStream: InputStream): VALUE {
-
-            val bytes = inputStream.readAllBytes()
-            return read(bytes, 0, bytes.size)
-        }
-    }
-
-    private class JsonSchema<VALUE : Any>(private val serde: JsonSerde.SchemaAware<VALUE>) : AbstractStructSchema<VALUE>(serde.schemaInfo()) {
-
-        private val jsonReader = JsonReader(serde)
-        private val jsonWriter = JsonWriter(serde)
-
-        init {
-            setReader(jsonReader)
-            setWriter(jsonWriter)
-        }
-    }
-
-//    private fun <VALUE : Any> JsonSerde.SchemaAware<VALUE>.schemaDefinition(): SchemaDefinition<VALUE> {
-//
-//        val writer = JsonWriter(this)
-//        val reader = JsonReader(this)
-//        return SchemaDefinition.builder<VALUE>().withSchemaWriter(writer).withSchemaReader(reader).withJsonDef(schema.source.toString()).build()
-//    }
-
-    private fun <VALUE : Any> JsonSerde.SchemaAware<VALUE>.schemaInfo(): SchemaInfo = Schema.STRING.schemaInfo // SchemaUtil.parseSchemaInfo(schemaDefinition(), SchemaType.JSON)
+    override fun clone(): Schema<VALUE> = this
 }

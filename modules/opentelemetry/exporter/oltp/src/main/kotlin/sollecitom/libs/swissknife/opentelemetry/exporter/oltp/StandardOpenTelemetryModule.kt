@@ -7,7 +7,7 @@ import io.opentelemetry.context.propagation.TextMapPropagator
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter
 import io.opentelemetry.sdk.OpenTelemetrySdk
 import io.opentelemetry.sdk.trace.SdkTracerProvider
-import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor
+import io.opentelemetry.sdk.trace.export.BatchSpanProcessor
 import java.net.URI
 
 private class StandardOpenTelemetryModule(private val endpointUrl: URI) : OpenTelemetryModule {
@@ -19,7 +19,7 @@ private class StandardOpenTelemetryModule(private val endpointUrl: URI) : OpenTe
 
     private fun spanExporter(endpointUrl: URI): OtlpGrpcSpanExporter = OtlpGrpcSpanExporter.builder().setEndpoint(endpointUrl.toString()).build()
 
-    private fun sdkTracerProvider(spanExporter: OtlpGrpcSpanExporter): SdkTracerProvider = SdkTracerProvider.builder().addSpanProcessor(SimpleSpanProcessor.create(spanExporter)).build()
+    private fun sdkTracerProvider(spanExporter: OtlpGrpcSpanExporter): SdkTracerProvider = SdkTracerProvider.builder().addSpanProcessor(BatchSpanProcessor.builder(spanExporter).build()).build()
 
     private fun sdk(tracerProvider: SdkTracerProvider): OpenTelemetrySdk {
 

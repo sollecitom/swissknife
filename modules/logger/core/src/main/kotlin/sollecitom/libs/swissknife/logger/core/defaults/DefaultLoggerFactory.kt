@@ -6,7 +6,8 @@ import sollecitom.libs.swissknife.logger.core.LoggerFactory
 import sollecitom.libs.swissknife.logger.core.LoggingLevel
 import sollecitom.libs.swissknife.logger.core.implementation.FunctionalLogger
 import sollecitom.libs.swissknife.logger.core.implementation.LoggingNameResolver
-import java.time.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 class DefaultLoggerFactory(defaultLoggingFunction: Log = DefaultLogToConsole) : LoggerFactory {
 
@@ -14,7 +15,7 @@ class DefaultLoggerFactory(defaultLoggingFunction: Log = DefaultLogToConsole) : 
     override var loggingFunction: Log = defaultLoggingFunction
 
     @Volatile
-    override var timeNow: () -> Instant = Instant::now
+    override var timeNow: () -> Instant = { Clock.System.now() }
 
     @Volatile
     override var isEnabledForLoggerName: LoggingLevel.(name: String) -> Boolean = { true }

@@ -17,7 +17,7 @@ object DefaultFormatToJson : FormatLogEntry<String> {
         put(Fields.message, message)
         put(Fields.logger, loggerName)
         put(Fields.level, level.name)
-        put(Fields.timestamp, timestamp)
+        put(Fields.timestamp, timestamp.toString())
         put(Fields.thread, threadName)
         put(Fields.contextMap, context.toJson())
         error?.let { put(Fields.error, it.toJson()) }

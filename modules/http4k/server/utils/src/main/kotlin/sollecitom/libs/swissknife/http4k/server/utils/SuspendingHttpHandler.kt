@@ -1,6 +1,7 @@
 package sollecitom.libs.swissknife.http4k.server.utils
 
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.slf4j.MDCContext
 import org.http4k.core.HttpHandler
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -16,7 +17,7 @@ fun SuspendingHttpHandler.asServer(config: ServerConfig): Http4kServer = asBlock
 
 fun SuspendingHttpHandler.asBlockingHandler(): HttpHandler = object : HttpHandler {
 
-    override fun invoke(request: Request) = runBlocking { this@asBlockingHandler.invoke(request) }
+    override fun invoke(request: Request) = runBlocking(MDCContext()) { this@asBlockingHandler.invoke(request) }
 }
 
 infix fun PathMethod.toSuspending(action: SuspendingHttpHandler): RoutingHttpHandler = to(action.asBlockingHandler())

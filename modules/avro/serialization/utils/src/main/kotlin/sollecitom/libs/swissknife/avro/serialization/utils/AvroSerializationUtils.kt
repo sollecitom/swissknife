@@ -4,8 +4,8 @@ import org.apache.avro.Schema
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.io.DecoderFactory
 import org.apache.avro.io.EncoderFactory
-import org.apache.avro.specific.SpecificDatumReader
-import org.apache.avro.specific.SpecificDatumWriter
+import org.apache.avro.generic.GenericDatumReader
+import org.apache.avro.generic.GenericDatumWriter
 import java.io.ByteArrayOutputStream
 
 /** Low-level utilities for converting between Avro [GenericRecord]s and binary byte arrays. */
@@ -15,7 +15,7 @@ object AvroSerializationUtils {
     fun writeAsBytes(record: GenericRecord, schema: Schema = record.schema): ByteArray {
 
         try {
-            val writer = SpecificDatumWriter<GenericRecord>(schema)
+            val writer = GenericDatumWriter<GenericRecord>(schema)
             val output = ByteArrayOutputStream()
             val encoder = EncoderFactory.get().binaryEncoder(output, null)
             writer.write(record, encoder)
@@ -30,7 +30,7 @@ object AvroSerializationUtils {
     /** Decodes Avro binary bytes into a [GenericRecord] using the given [schema]. */
     fun readFromBytes(bytes: ByteArray, schema: Schema): GenericRecord {
 
-        val reader = SpecificDatumReader<GenericRecord>(schema)
+        val reader = GenericDatumReader<GenericRecord>(schema)
         val decoder = DecoderFactory.get().binaryDecoder(bytes, null)
         return reader.read(null, decoder)
     }

@@ -8,7 +8,7 @@ import com.atlassian.oai.validator.util.ContentTypeUtils
 import sollecitom.libs.swissknife.json.utils.JsonSchema
 import sollecitom.libs.swissknife.json.utils.asSchema
 import sollecitom.libs.swissknife.json.utils.jsonSchemaAt
-import sollecitom.libs.swissknife.kotlin.extensions.optional.asNullable
+import kotlin.jvm.optionals.getOrNull
 import sollecitom.libs.swissknife.openapi.validation.http4k.validator.model.ResponseWithHeadersAdapter
 import sollecitom.libs.swissknife.openapi.validation.http4k.validator.utils.responseFor
 import sollecitom.libs.swissknife.openapi.validation.request.validator.ValidationReportError
@@ -25,9 +25,9 @@ internal class ResponseJsonBodyValidator(val jsonSchemasDirectoryName: String = 
     override fun validate(rawResponse: Response, apiOperation: ApiOperation): ValidationReport {
 
         val response = (rawResponse as ResponseWithHeadersAdapter)
-        val bodyAsString = response.responseBody.asNullable()?.toString(Charsets.UTF_8)
+        val bodyAsString = response.responseBody.getOrNull()?.toString(Charsets.UTF_8)
         val responseContent = apiOperation.responseFor(response.status)?.content
-        val declaredMediaType = responseContent?.keys?.let { ContentTypeUtils.findMostSpecificMatch(response.mediaType(), it).asNullable() }
+        val declaredMediaType = responseContent?.keys?.let { ContentTypeUtils.findMostSpecificMatch(response.mediaType(), it).getOrNull() }
         val bodySwaggerSchema = declaredMediaType?.let { responseContent[it] }?.schema
         val bodySchema = bodySwaggerSchema?.`$ref`?.resolveAsSchemaLocation()?.let { jsonSchemaAt(it) }
         val declaresAJsonContentType = declaredMediaType != null && ContentTypeUtils.isJsonContentType(declaredMediaType)
@@ -62,7 +62,7 @@ internal class ResponseJsonBodyValidator(val jsonSchemasDirectoryName: String = 
 
     private fun JsonSchema.ValidationFailure?.toValidationReport() = this?.let { ValidationReport.singleton(CustomValidation.message(it.fullPathAsString, it.message)) } ?: ValidationReport.empty()
 
-    private fun ResponseWithHeadersAdapter.mediaType(): String = contentType.asNullable() ?: acceptHeader.withNoDirectives().toHeaderValue()
+    private fun ResponseWithHeadersAdapter.mediaType(): String = contentType.getOrNull() ?: acceptHeader.withNoDirectives().toHeaderValue()
 
     private fun invalidJson() = ValidationReport.singleton(CustomValidation.message(ValidationReportError.Response.InvalidJson.key, "Present but not valid JSON"))
 

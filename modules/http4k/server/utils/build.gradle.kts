@@ -8,6 +8,8 @@ dependencies {
     api(projects.http4kUtils)
 
     implementation(projects.kotlinExtensions)
+    implementation(platform(libs.kotlinx.coroutines.bom))
+    implementation(libs.kotlinx.coroutines.slf4j)
 
     testImplementation(libs.http4k.server.jetty)
     testImplementation(projects.testUtils)

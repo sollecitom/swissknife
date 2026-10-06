@@ -8,7 +8,6 @@ import sollecitom.libs.swissknife.messaging.domain.topic.Topic
 import kotlin.time.Instant
 import org.apache.pulsar.client.api.Consumer
 import org.apache.pulsar.client.api.Message
-import org.apache.pulsar.common.naming.TopicName
 import org.apache.pulsar.client.api.MessageIdAdv as PulsarMessageIdAdv
 
 internal class PulsarReceivedMessage<out VALUE>(private val delegate: Message<VALUE>, private val consumer: Consumer<VALUE>) : ReceivedMessage<VALUE> {
@@ -24,7 +23,11 @@ internal class PulsarReceivedMessage<out VALUE>(private val delegate: Message<VA
 
     override suspend fun acknowledge() = consumer.acknowledgeAsync(delegate).await()
 
-    private fun String.withoutPartitionId(): String = TopicName.get(this).partitionedTopicName
+    private fun String.withoutPartitionId(): String = replace(partitionSuffix, "")
+
+    private companion object {
+        val partitionSuffix = Regex("-partition-\\d+$")
+    }
 }
 
 context(consumer: Consumer<VALUE>)

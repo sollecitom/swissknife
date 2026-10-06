@@ -34,21 +34,7 @@ inline fun <KEY, reified VALUE> Assert<Map<KEY, List<VALUE>>>.containsSameMultip
     }
 }
 
-inline fun <reified ERROR : Throwable> Assert<Throwable>.ofType() = given { actual ->
-
-    assertThat(actual).isInstanceOf(ERROR::class)
-}
-
-fun Assert<Result<*>>.succeeded() = transform { actual ->
-
-    assertThat(actual.isSuccess).isTrue()
-}
-
-fun <RESULT : Any> Assert<Result<RESULT>>.succeededWithResult(expected: RESULT) = given { actual ->
-
-    assertThat(actual).succeeded()
-    assertThat(actual.getOrThrow()).isEqualTo(expected)
-}
+fun <RESULT : Any> Assert<Result<RESULT>>.succeededWithResult(expected: RESULT) = isSuccess().isEqualTo(expected)
 
 inline fun <reified ERROR : Throwable> Assert<Result<*>>.failedThrowing(): Assert<ERROR> = transform { actual ->
 

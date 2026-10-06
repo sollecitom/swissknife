@@ -11,14 +11,13 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
-import sollecitom.libs.swissknife.test.utils.execution.utils.test
 import kotlin.time.Duration.Companion.milliseconds
 
 @TestInstance(PER_CLASS)
 class FlowChunkingExtensionsTests {
 
     @Test
-    fun `chunking by size emits each chunk with its own elements`() = test {
+    suspend fun `chunking by size emits each chunk with its own elements`() {
 
         val chunks = flowOf(1, 2, 3, 4).chunk(2).toList()
 
@@ -26,7 +25,7 @@ class FlowChunkingExtensionsTests {
     }
 
     @Test
-    fun `collecting a chunked flow again does not emit into the earlier collector`() = test {
+    suspend fun `collecting a chunked flow again does not emit into the earlier collector`() {
 
         val chunked = flowOf(1, 2, 3).chunk(2)
         val firstChunks = chunked.toList()

@@ -12,7 +12,7 @@ import org.json.JSONObject
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
-import java.time.Instant
+import kotlin.time.Clock
 
 @TestInstance(PER_CLASS)
 private class JsonFormattingTest {
@@ -23,7 +23,7 @@ private class JsonFormattingTest {
         val loggerName = "my-logger"
         val message = "something urgent"
         val threadName = "whatever-thread-1"
-        val timestamp = Instant.now()
+        val timestamp = Clock.System.now()
         val error = IllegalStateException("Boom!", IllegalArgumentException("Ouch!"))
         val level = sollecitom.libs.swissknife.logger.core.LoggingLevel.WARN
         val context = LoggingContext.withEntries(mapOf("context-key-1" to "context-value-1", "context-key-2" to "context-value-2"))
@@ -41,7 +41,7 @@ private class JsonFormattingTest {
         val loggerName = "my-logger"
         val message = "something urgent"
         val threadName = "whatever-thread-1"
-        val timestamp = Instant.now()
+        val timestamp = Clock.System.now()
         val error = IllegalStateException("Boom!", IllegalArgumentException("Ouch!"))
         val level = sollecitom.libs.swissknife.logger.core.LoggingLevel.WARN
         val jsonContextValue = JSONObject().apply {

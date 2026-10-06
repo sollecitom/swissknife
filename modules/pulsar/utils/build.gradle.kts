@@ -12,6 +12,7 @@ dependencies {
         // pulsar-client-admin already depends on the plain Bouncy Castle artifacts, which the version pins do reach.
         exclude(group = "org.apache.pulsar", module = "bouncy-castle-bc")
     }
+    api(libs.apache.avro.core)
     api(projects.coreDomain)
     api(projects.messagingDomain)
     api(projects.readinessDomain)
