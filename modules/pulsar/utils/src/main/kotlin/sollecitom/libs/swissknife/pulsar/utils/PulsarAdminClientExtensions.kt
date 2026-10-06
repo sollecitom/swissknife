@@ -39,7 +39,7 @@ fun PulsarAdmin.configureNamespace(tenant: String, namespace: String, allowTopic
     val tenantNamespace = "$tenant/$namespace"
     namespaces().setAutoTopicCreation(tenantNamespace, AutoTopicCreationOverride.builder().allowAutoTopicCreation(allowTopicCreation).topicType(TopicType.PARTITIONED.name).build())
     namespaces().setAutoTopicCreation(tenantNamespace, AutoTopicCreationOverride.builder().allowAutoTopicCreation(allowTopicCreation).topicType(TopicType.NON_PARTITIONED.name).build())
-    namespaces().setIsAllowAutoUpdateSchema(tenantNamespace, isAllowAutoUpdateSchema)
+    namespaces().setIsAllowAutoUpdateSchema(tenantNamespace, isAllowAutoUpdateSchema, null)
     namespaces().setSchemaValidationEnforced(tenantNamespace, schemaValidationEnforced)
     namespaces().setSchemaCompatibilityStrategy(tenantNamespace, schemaCompatibilityStrategy)
 }

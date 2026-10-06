@@ -55,5 +55,19 @@ fun Environment.Companion.fromFiles(files: List<File>): Environment = files.map 
 /** Returns a human-readable representation of all environment keys and values. */
 fun Environment.formatted(): String = "Environment: {\n\t${keys().joinToString(separator = "\n\t", postfix = "\n}") { key -> "$key: ${get(key)}" }}"
 
-/** Extracts all configuration properties whose keys start with [root], stripping the prefix. */
-fun Environment.configurationPropertiesUnderRoot(root: String): Map<String, Any?> = keys().filter { key -> key.startsWith(root) }.map { it.removePrefix(root) }.associateWith(::get)
+/**
+ * Returns the properties under [root], keyed by the matching name in [knownNames].
+ * A key matches a name however it's spelled (`root.operationTimeoutMs`, `ROOT_OPERATION_TIMEOUT_MS`, …), and any key under [root] that matches no known name is an error.
+ */
+fun Environment.configurationPropertiesUnderRoot(root: String, knownNames: Set<String>): Map<String, String> {
+
+    val namesByNormalisedForm = knownNames.groupBy { it.normalisedPropertyName() }
+    namesByNormalisedForm.filterValues { it.size > 1 }.values.firstOrNull()?.let { colliding -> throw IllegalArgumentException("Known property names $colliding can't be told apart once normalised") }
+    val prefix = "${root.lowercase().replace('.', '-').replace('_', '-')}-"
+    val propertiesByNormalisedName = keys().filter { it.startsWith(prefix) }.associate { key -> key.removePrefix(prefix).normalisedPropertyName() to get(key)!! }
+    val unknown = propertiesByNormalisedName.keys - namesByNormalisedForm.keys
+    require(unknown.isEmpty()) { "Unknown configuration properties under '$root': $unknown. Known properties are $knownNames" }
+    return propertiesByNormalisedName.mapKeys { (normalisedName, _) -> namesByNormalisedForm.getValue(normalisedName).single() }
+}
+
+private fun String.normalisedPropertyName() = lowercase().filter(Char::isLetterOrDigit)

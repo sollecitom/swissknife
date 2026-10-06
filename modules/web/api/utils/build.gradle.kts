@@ -20,7 +20,6 @@ dependencies {
     implementation(libs.prometheus.metrics.exposition.textformats)
     implementation(projects.kotlinExtensions)
     implementation(projects.lensCorrelationExtensions)
-    implementation(projects.webClientInfoAnalyzer)
     implementation(projects.jwtJose4jProcessor)
     implementation(projects.jwtJose4jIssuer)
     implementation(projects.jwtJose4jUtils)
