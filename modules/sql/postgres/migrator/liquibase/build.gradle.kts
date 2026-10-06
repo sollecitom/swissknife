@@ -7,4 +7,8 @@ dependencies {
     api(projects.sqlMigratorLiquibase)
 
     implementation(projects.loggerCore)
+
+    testImplementation(projects.sqlPostgresContainer)
+    testImplementation(projects.testUtils)
+    testRuntimeOnly(libs.postgres)
 }

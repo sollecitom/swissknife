@@ -16,11 +16,10 @@ This problem is particularly annoying when the migration is performed from a Kub
 
 ## Solution
 
-Replace the default Liquibase lock service implementation with another one, specific to Postgres, which uses unique database session IDs to check whether the session that locked the `databasechangeloglock` table is still active.
+Replace the default Liquibase lock service with one specific to Postgres, `PostgresAdvisoryLockService`, which serialises migrations with a session-level
+[advisory lock](https://www.postgresql.org/docs/current/explicit-locking.html#ADVISORY-LOCKS) instead of the `databasechangeloglock` row.
 
-If it's still active, then the instance waits, as the migration is in progress. If the session that locked the `databasechangeloglock` table is not active anymore, but the lock is still on, it means it died, and it's safe to acquire the lock and continue the migration.
+A migrator waits until it can take the lock (up to Liquibase's lock wait time), migrates, and releases it. If the migrator dies or its connection is severed,
+Postgres releases the lock when the session ends, so there's never a stale lock to clean up and no takeover logic that two instances could race on.
 
-## Notes
-
-- This solution is heavily inspired by https://github.com/oridool/liquibase-locking.
-    - The decision to move this within swissknife was made because this project hadn't been maintained in a while, and the implementation was a bit messy.
+Advisory locks are scoped to the current database, so services sharing a Postgres server don't block each other.
