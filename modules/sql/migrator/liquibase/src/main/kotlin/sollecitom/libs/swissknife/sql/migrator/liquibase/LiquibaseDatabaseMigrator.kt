@@ -63,8 +63,8 @@ internal class LiquibaseDatabaseMigrator(private val connectionOptions: SqlConne
 
     private suspend fun withCorrectDatabaseInScope(action: (Database) -> Unit) = withContext(Dispatchers.IO) {
 
-        val jdbcConnection = DriverManager.getConnection(connectionOptions.jdbcURI.toString(), connectionOptions.user.value, connectionOptions.password.value)
-        val database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(JdbcConnection(jdbcConnection))
+        val jdbcConnection = DriverManager.getConnection(connectionOptions.jdbcURI.toString(), connectionOptions.user.value, connectionOptions.password.value).let(::JdbcConnection)
+        val database = runCatching { DatabaseFactory.getInstance().findCorrectDatabaseImplementation(jdbcConnection) }.onFailure { jdbcConnection.close() }.getOrThrow()
         database.use {
             val scopeObjects = mapOf(
                 Scope.Attr.database.name to database,

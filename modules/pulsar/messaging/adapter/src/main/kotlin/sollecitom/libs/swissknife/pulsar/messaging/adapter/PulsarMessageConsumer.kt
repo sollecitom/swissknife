@@ -29,7 +29,7 @@ internal class PulsarMessageConsumer<VALUE>(override val topics: Set<Topic>, pri
     }
 
     override suspend fun stop() {
-        consumer?.closeAsync()?.await()
+        subscription.withLock { consumer?.closeAsync()?.await() }
     }
 
     override fun close() = stopBlocking()

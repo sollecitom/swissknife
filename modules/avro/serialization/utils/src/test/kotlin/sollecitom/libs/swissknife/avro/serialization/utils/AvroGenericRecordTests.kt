@@ -1,14 +1,18 @@
 package sollecitom.libs.swissknife.avro.serialization.utils
 
 import assertk.assertThat
+import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
 import org.apache.avro.Schema
+import org.apache.avro.generic.GenericData
 import sollecitom.libs.swissknife.avro.serialization.test.utils.serializeAndDeserializeWith
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.nio.ByteBuffer
+import sollecitom.libs.swissknife.test.utils.assertions.failedThrowing
 
 @TestInstance(PER_CLASS)
 class AvroGenericRecordTests {
@@ -85,5 +89,24 @@ class AvroGenericRecordTests {
 
         assertThat(roundTripped.getBigInteger("units")).isEqualTo(units)
         assertThat(roundTripped.getBigDecimal("price")).isEqualTo(BigDecimal("1.50"))
+    }
+
+    @Test
+    fun `reading a big number from a bytes field that is not a decimal fails`() {
+
+        val bytesSchema = Schema.Parser().parse("""{"type":"record","name":"Blob","fields":[{"name":"blob","type":"bytes"}]}""")
+        val record = GenericData.Record(bytesSchema).apply { put("blob", ByteBuffer.wrap(byteArrayOf(1))) }
+
+        val result = runCatching { record.getBigInteger("blob") }
+
+        assertThat(result).failedThrowing<IllegalArgumentException>().hasMessage("Field 'blob' of Blob holds bytes but is not a decimal")
+    }
+
+    @Test
+    fun `setting a big number on a field the schema does not declare fails`() {
+
+        val result = runCatching { buildGenericRecord(schema) { set("missing", BigInteger("1")) } }
+
+        assertThat(result).failedThrowing<IllegalArgumentException>().hasMessage("Not a valid schema field: missing")
     }
 }

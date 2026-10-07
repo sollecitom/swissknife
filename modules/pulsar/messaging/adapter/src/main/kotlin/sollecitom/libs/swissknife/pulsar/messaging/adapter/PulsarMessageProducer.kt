@@ -26,7 +26,7 @@ private class PulsarMessageProducer<in VALUE>(override val name: Name, override 
     }
 
     override suspend fun stop() {
-        producer?.closeAsync()?.await()
+        creation.withLock { producer?.closeAsync()?.await() }
     }
 
     override fun close() = stopBlocking()

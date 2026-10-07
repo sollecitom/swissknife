@@ -35,10 +35,8 @@ interface AvroRecordBuilder {
     fun setLongs(fieldName: String, value: List<Long>?): AvroRecordBuilder
     fun setBooleans(fieldName: String, value: List<Boolean>?): AvroRecordBuilder
     fun setEnum(fieldName: String, value: Any?): AvroRecordBuilder
-    /** Sets the `envelope` union field of an envelope record: the branch is identified by [record]'s schema. */
-    fun setRecordInUnion(record: GenericRecord?): AvroRecordBuilder
-    /** Sets the `envelope` union field to the branch whose record schema is named [branchName], building it via the DSL. */
-    fun setRecordInUnion(branchName: String, customizeRecord: AvroRecordBuilder.() -> Unit): AvroRecordBuilder
+    fun setEnvelope(record: GenericRecord?): AvroRecordBuilder
+    fun setEnvelope(branchName: String, customizeRecord: AvroRecordBuilder.() -> Unit): AvroRecordBuilder
     fun setInstants(fieldName: String, value: List<Instant>?): AvroRecordBuilder
 
     fun setRecords(fieldName: String, value: List<GenericRecord>?): AvroRecordBuilder

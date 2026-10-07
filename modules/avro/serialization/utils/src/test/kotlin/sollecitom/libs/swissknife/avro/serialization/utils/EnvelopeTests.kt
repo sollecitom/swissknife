@@ -3,6 +3,7 @@ package sollecitom.libs.swissknife.avro.serialization.utils
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import org.apache.avro.Schema
+import sollecitom.libs.swissknife.avro.serialization.test.utils.serializeAndDeserializeWith
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
@@ -24,10 +25,10 @@ class EnvelopeTests {
     @Test
     fun `the union branch is identified by the record name`() {
 
-        val record = buildGenericRecord(schema) { setRecordInUnion("OnBehalf") { set("user", "a"); set("onBehalfOf", "b") } }
+        val record = buildGenericRecord(schema) { setEnvelope("OnBehalf") { set("user", "a"); set("onBehalfOf", "b") } }
 
-        val roundTripped = record.getRecordFromUnion { branchName, envelope -> branchName to envelope.getString("onBehalfOf") }
+        val branchAndValue = record.serializeAndDeserializeWith(schema).getEnvelope { branchName, envelope -> branchName to envelope.getString("onBehalfOf") }
 
-        assertThat(roundTripped).isEqualTo("OnBehalf" to "b")
+        assertThat(branchAndValue).isEqualTo("OnBehalf" to "b")
     }
 }
