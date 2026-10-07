@@ -30,7 +30,7 @@ class NestedJsonSchemaRulesTests {
 
         assertThat(result).isNotCompliantWithOnlyViolation<WhitelistedAlphabetFieldNameRule.Violation, JsonSchema> { violation ->
             assertThat(violation.property.name).isEqualTo("bad_name")
-            assertThat(violation.path).isEqualTo(listOf("outer"))
+            assertThat(violation.path).isEqualTo(listOf("outer", "bad_name"))
         }
     }
 
@@ -41,7 +41,7 @@ class NestedJsonSchemaRulesTests {
 
         val result = schema.checkAgainstRules(MandatoryAdditionalPropertiesRule(affectPureUnionTypes = false))
 
-        assertThat(result).isNotCompliantWithOnlyViolation(MandatoryAdditionalPropertiesRule.NestedViolation(listOf("outer")))
+        assertThat(result).isNotCompliantWithOnlyViolation(MandatoryAdditionalPropertiesRule.Violation(listOf("outer")))
     }
 
     @Test
@@ -61,7 +61,7 @@ class NestedJsonSchemaRulesTests {
 
         val result = schema.checkAgainstRules(DisallowConstKeywordRule)
 
-        assertThat(result).isNotCompliantWithOnlyViolation(DisallowConstKeywordRule.Violation(setOf("outer.kind")))
+        assertThat(result).isNotCompliantWithOnlyViolation(DisallowConstKeywordRule.Violation(listOf("outer", "kind")))
     }
 
     @Test
@@ -71,7 +71,27 @@ class NestedJsonSchemaRulesTests {
 
         val result = schema.checkAgainstRules(DisallowRequiringUndeclaredPropertiesRule)
 
-        assertThat(result).isNotCompliantWithOnlyViolation(DisallowRequiringUndeclaredPropertiesRule.Violation(setOf("outer.missing")))
+        assertThat(result).isNotCompliantWithOnlyViolation(DisallowRequiringUndeclaredPropertiesRule.Violation(listOf("outer", "missing")))
+    }
+
+    @Test
+    fun `a nested object without properties and without additionalProperties is reported with its path`() {
+
+        val schema = objectWithNested(nested = """{"type": "object"}""")
+
+        val result = schema.checkAgainstRules(MandatoryAdditionalPropertiesRule(affectPureUnionTypes = false))
+
+        assertThat(result).isNotCompliantWithOnlyViolation(MandatoryAdditionalPropertiesRule.Violation(listOf("outer")))
+    }
+
+    @Test
+    fun `a nested map declaring an additionalProperties schema is compliant`() {
+
+        val schema = objectWithNested(nested = """{"type": "object", "additionalProperties": {"type": "string"}}""")
+
+        val result = schema.checkAgainstRules(MandatoryAdditionalPropertiesRule(affectPureUnionTypes = false))
+
+        assertThat(result).isCompliant()
     }
 
     @Test
@@ -81,7 +101,7 @@ class NestedJsonSchemaRulesTests {
 
         val result = schema.checkAgainstRules(MandatoryAdditionalPropertiesRule(affectPureUnionTypes = false))
 
-        assertThat(result).isNotCompliantWithOnlyViolation(MandatoryAdditionalPropertiesRule.NestedViolation(listOf("list", JsonSchema.ITEMS_PATH_SEGMENT)))
+        assertThat(result).isNotCompliantWithOnlyViolation(MandatoryAdditionalPropertiesRule.Violation(listOf("list", JsonSchema.ITEMS_PATH_SEGMENT)))
     }
 
     @Test

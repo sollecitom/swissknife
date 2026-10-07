@@ -27,25 +27,28 @@ data class JsonSchema(internal val value: Schema, private val source: JSONObject
         schema.propertySchemas.map { (fieldName, fieldSchema) -> Property(fieldName, JsonSchema(fieldSchema)) }.toSet()
     }
 
+    val declaresAdditionalProperties: Boolean by lazy { value.subschemas().any { it is AdditionalPropertiesSchema } }
+
     val allowsAdditionalProperties: Boolean? by lazy {
         value.subschemas().filterIsInstance<AdditionalPropertiesSchema>().singleOrNull()?.subschema?.let { if (it is TrueSchema) true else if (it is FalseSchema) false else null }
     }
 
-    /** This schema and every inline object schema nested in its properties or array items, each with its path. Referenced schemas are not followed: they are checked on their own. */
     val objectSchemas: List<Pair<List<String>, JsonSchema>> by lazy { listOf(emptyList<String>() to this) + nestedObjectSchemas(emptyList()) }
 
     private fun nestedObjectSchemas(path: List<String>): List<Pair<List<String>, JsonSchema>> = buildList {
         properties.forEach { property ->
             val propertyPath = path + property.name
-            if (property.schema.properties.isNotEmpty()) add(propertyPath to property.schema)
+            if (property.schema.isObject) add(propertyPath to property.schema)
             addAll(property.schema.nestedObjectSchemas(propertyPath))
         }
         items?.let { items ->
             val itemsPath = path + ITEMS_PATH_SEGMENT
-            if (items.properties.isNotEmpty()) add(itemsPath to items)
+            if (items.isObject) add(itemsPath to items)
             addAll(items.nestedObjectSchemas(itemsPath))
         }
     }
+
+    private val isObject: Boolean get() = properties.isNotEmpty() || value.subschemas().filterIsInstance<TypeSchema>().any { it.type.value == OBJECT_TYPE }
 
     private val items: JsonSchema? get() = value.subschemas().filterIsInstance<ItemsSchema>().singleOrNull()?.itemsSchema?.let(::JsonSchema)
 
@@ -76,5 +79,6 @@ data class JsonSchema(internal val value: Schema, private val source: JSONObject
 
     companion object {
         const val ITEMS_PATH_SEGMENT = "[]"
+        private const val OBJECT_TYPE = "object"
     }
 }

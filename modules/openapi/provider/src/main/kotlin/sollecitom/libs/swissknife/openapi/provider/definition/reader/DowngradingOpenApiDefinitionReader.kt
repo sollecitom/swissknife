@@ -30,14 +30,14 @@ internal object StandardOpenApiDefinitionReader : OpenApiDefinitionReader {
 internal object DowngradingOpenApiDefinitionReader : OpenApiDefinitionReader {
 
     private val maximumVersion = Version.Semantic(3, 0, 0)
-    private val versionLine = Regex("""^(openapi:\s*)(["']?)([0-9]+\.[0-9]+\.[0-9]+)(["']?)\s*$""", RegexOption.MULTILINE)
+    private val versionField = Regex("""((?:^|[{,])\s*["']?openapi["']?\s*:\s*)(["']?)([0-9]+\.[0-9]+\.[0-9]+)(["']?)""", RegexOption.MULTILINE)
 
     override fun read(openApiLocation: String): OpenApiDefinition {
 
         val rawContent = LocationBasedOpenApiProvider(openApiLocation).rawOpenApi
-        val version = versionLine.find(rawContent)?.groupValues?.get(3)?.let(Version.Semantic::parse) ?: return StandardOpenApiDefinitionReader.read(openApiLocation)
+        val version = versionField.find(rawContent)?.groupValues?.get(3)?.let(Version.Semantic::parse) ?: return StandardOpenApiDefinitionReader.read(openApiLocation)
         if (version <= maximumVersion) return StandardOpenApiDefinitionReader.read(openApiLocation)
-        val downgradedContent = rawContent.replaceFirst(versionLine, "$1$2${maximumVersion.value.value}$4")
+        val downgradedContent = rawContent.replaceFirst(versionField, "$1$2${maximumVersion.value.value}$4")
         val parsedOpenApi = OpenApiReader.parseContent(openApi = downgradedContent, baseLocation = openApiLocation, options = parseOptions)
         return ResolvedOpenApiDefinition(api = parsedOpenApi)
     }

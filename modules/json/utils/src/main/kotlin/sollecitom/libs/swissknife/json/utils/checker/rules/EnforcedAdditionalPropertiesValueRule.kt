@@ -1,8 +1,6 @@
 package sollecitom.libs.swissknife.json.utils.checker.rules
 
 import sollecitom.libs.swissknife.compliance.checker.domain.ComplianceRule
-import sollecitom.libs.swissknife.compliance.checker.domain.ComplianceRule.Result.Compliant
-import sollecitom.libs.swissknife.compliance.checker.domain.ComplianceRule.Result.NonCompliant
 import sollecitom.libs.swissknife.json.utils.JsonSchema
 
 data class EnforcedAdditionalPropertiesValueRule(val enforcedValue: Boolean, val affectPureUnionTypes: Boolean) : ComplianceRule<JsonSchema> {
@@ -15,9 +13,9 @@ data class EnforcedAdditionalPropertiesValueRule(val enforcedValue: Boolean, val
 
     private fun JsonSchema.isAffected(): Boolean = affectPureUnionTypes || !isAPureUnionType
 
-    data class Violation(val value: Boolean, val path: List<String> = emptyList()) : ComplianceRule.Result.Violation<JsonSchema> {
+    data class Violation(val value: Boolean, val path: List<String>) : ComplianceRule.Result.Violation<JsonSchema> {
 
-        override val message = "JSON schema${if (path.isEmpty()) "" else " at ${path.joinToString(".")}"} should declare \"additionalProperties: $value\" but doesn't"
+        override val message = "JSON schema${path.location()} should declare \"additionalProperties: $value\" but doesn't"
     }
 
     companion object

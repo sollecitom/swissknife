@@ -46,6 +46,28 @@ class DowngradingOpenApiDefinitionReaderTests {
         assertThat(definition.asYaml).contains("thingName")
     }
 
+    @Test
+    fun `a 3_1 JSON definition is downgraded to 3_0_0`() {
+
+        val location = jsonApi(version = "3.1.0")
+
+        val definition = OpenApiDefinitionReader.downgrading.read(location.toString())
+
+        assertThat(definition.asYaml).contains("openapi: 3.0.0")
+    }
+
+    private fun jsonApi(version: String): Path {
+
+        val directory = Files.createTempDirectory("openapi-downgrading").apply { toFile().deleteOnExit() }
+        return directory.resolve("api.json").apply {
+            writeText(
+                """
+                {"openapi": "$version", "info": {"title": "Things", "version": "1.0.0"}, "paths": {}}
+                """.trimIndent()
+            )
+        }
+    }
+
     private fun apiWithRelativeReference(versionLine: String): Path {
 
         val directory = Files.createTempDirectory("openapi-downgrading").apply { toFile().deleteOnExit() }

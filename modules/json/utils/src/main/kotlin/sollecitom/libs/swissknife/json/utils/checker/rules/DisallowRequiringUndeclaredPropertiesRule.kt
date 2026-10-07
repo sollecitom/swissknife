@@ -1,23 +1,18 @@
 package sollecitom.libs.swissknife.json.utils.checker.rules
 
 import sollecitom.libs.swissknife.compliance.checker.domain.ComplianceRule
-import sollecitom.libs.swissknife.compliance.checker.domain.ComplianceRule.Result.Compliant
-import sollecitom.libs.swissknife.compliance.checker.domain.ComplianceRule.Result.NonCompliant
 import sollecitom.libs.swissknife.json.utils.JsonSchema
 
 data object DisallowRequiringUndeclaredPropertiesRule : ComplianceRule<JsonSchema> {
 
     override fun invoke(target: JsonSchema): ComplianceRule.Result<JsonSchema> {
 
-        val requiredUndeclaredProperties = target.objectSchemas.flatMap { (path, schema) -> schema.requiredPropertyNames.filter { it !in schema.propertyNames }.map { (path + it).joinToString(".") } }.toSet()
-        if (requiredUndeclaredProperties.isNotEmpty()) return requiredUndeclaredProperties.nonCompliant()
-        return Compliant()
+        val violations = target.objectSchemas.flatMap { (path, schema) -> schema.requiredPropertyNames.filter { it !in schema.propertyNames }.map { Violation(path + it) } }.toSet()
+        return ComplianceRule.Result.withViolations(violations)
     }
 
-    private fun Set<String>.nonCompliant() = NonCompliant(Violation(this))
+    data class Violation(val path: List<String>) : ComplianceRule.Result.Violation<JsonSchema> {
 
-    data class Violation(val offendingProperties: Set<String>) : ComplianceRule.Result.Violation<JsonSchema> {
-
-        override val message = "JSON schema shouldn't require any properties it doesn't declare but does. The offending required properties are $offendingProperties"
+        override val message = "JSON schema shouldn't require a property it doesn't declare, but requires ${path.joinToString(".")}"
     }
 }
