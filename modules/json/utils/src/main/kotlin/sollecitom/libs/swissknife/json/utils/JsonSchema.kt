@@ -48,7 +48,15 @@ data class JsonSchema(internal val value: Schema, private val source: JSONObject
         }
     }
 
-    private val isObject: Boolean get() = properties.isNotEmpty() || value.subschemas().filterIsInstance<TypeSchema>().any { it.type.value == OBJECT_TYPE }
+    private val isObject: Boolean get() = properties.isNotEmpty() || declaredTypes.contains(OBJECT_TYPE)
+
+    private val declaredTypes: Set<String> get() = value.subschemas().flatMap { subschema ->
+        when (subschema) {
+            is TypeSchema -> listOf(subschema.type.value)
+            is MultiTypeSchema -> subschema.types.elements.filterIsInstance<IJsonString>().map { it.value }
+            else -> emptyList()
+        }
+    }.toSet()
 
     private val items: JsonSchema? get() = value.subschemas().filterIsInstance<ItemsSchema>().singleOrNull()?.itemsSchema?.let(::JsonSchema)
 

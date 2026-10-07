@@ -57,6 +57,19 @@ class AvroGenericRecordTests {
     }
 
     @Test
+    fun `reading with an evolved schema fills a newly added field with its default`() {
+
+        val writerSchema = Schema.Parser().parse("""{"type":"record","name":"Person","fields":[{"name":"name","type":"string"}]}""")
+        val readerSchema = Schema.Parser().parse("""{"type":"record","name":"Person","fields":[{"name":"name","type":"string"},{"name":"age","type":"int","default":7}]}""")
+        val record = buildGenericRecord(writerSchema) { set("name", "Bruce") }
+
+        val evolved = record.serializeAndDeserializeWith(readerSchema)
+
+        assertThat(evolved.getString("name")).isEqualTo("Bruce")
+        assertThat(evolved.getInt("age")).isEqualTo(7)
+    }
+
+    @Test
     fun `reading big numbers from a record that was not serialized`() {
 
         val record = buildGenericRecord(schema) {

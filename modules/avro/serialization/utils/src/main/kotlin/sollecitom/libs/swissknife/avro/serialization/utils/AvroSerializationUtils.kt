@@ -28,9 +28,9 @@ object AvroSerializationUtils {
     }
 
     /** Decodes Avro binary bytes into a [GenericRecord] using the given [schema]. */
-    fun readFromBytes(bytes: ByteArray, schema: Schema, writerSchema: Schema = schema): GenericRecord {
+    fun readFromBytes(bytes: ByteArray, readerSchema: Schema, writerSchema: Schema = readerSchema): GenericRecord {
 
-        val reader = GenericDatumReader<GenericRecord>(writerSchema, schema)
+        val reader = GenericDatumReader<GenericRecord>(writerSchema, readerSchema)
         val decoder = DecoderFactory.get().binaryDecoder(bytes, null)
         return reader.read(null, decoder)
     }

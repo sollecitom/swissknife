@@ -28,10 +28,7 @@ class NestedJsonSchemaRulesTests {
 
         val result = schema.checkAgainstRules(rule)
 
-        assertThat(result).isNotCompliantWithOnlyViolation<WhitelistedAlphabetFieldNameRule.Violation, JsonSchema> { violation ->
-            assertThat(violation.property.name).isEqualTo("bad_name")
-            assertThat(violation.path).isEqualTo(listOf("outer", "bad_name"))
-        }
+        assertThat(result).isNotCompliantWithOnlyViolation(WhitelistedAlphabetFieldNameRule.Violation(alphabet = ('a'..'z').toSet() + '-', path = listOf("outer", "bad_name")))
     }
 
     @Test
@@ -82,6 +79,26 @@ class NestedJsonSchemaRulesTests {
         val result = schema.checkAgainstRules(MandatoryAdditionalPropertiesRule(affectPureUnionTypes = false))
 
         assertThat(result).isNotCompliantWithOnlyViolation(MandatoryAdditionalPropertiesRule.Violation(listOf("outer")))
+    }
+
+    @Test
+    fun `a nested nullable object without additionalProperties is reported with its path`() {
+
+        val schema = objectWithNested(nested = """{"type": ["object", "null"]}""")
+
+        val result = schema.checkAgainstRules(MandatoryAdditionalPropertiesRule(affectPureUnionTypes = false))
+
+        assertThat(result).isNotCompliantWithOnlyViolation(MandatoryAdditionalPropertiesRule.Violation(listOf("outer")))
+    }
+
+    @Test
+    fun `a nested object without properties allowing additional properties is reported with its path`() {
+
+        val schema = objectWithNested(nested = """{"type": "object", "additionalProperties": true}""")
+
+        val result = schema.checkAgainstRules(EnforcedAdditionalPropertiesValueRule(enforcedValue = false, affectPureUnionTypes = false))
+
+        assertThat(result).isNotCompliantWithOnlyViolation(EnforcedAdditionalPropertiesValueRule.Violation(value = false, path = listOf("outer")))
     }
 
     @Test

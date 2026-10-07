@@ -17,9 +17,9 @@ data class WhitelistedAlphabetFieldNameRule(val alphabet: Set<Char>) : Complianc
         return null
     }
 
-    private fun JsonSchema.Property.violation(path: List<String>) = Violation(property = this, alphabet = alphabet, path = path + name)
+    private fun JsonSchema.Property.violation(path: List<String>) = Violation(alphabet = alphabet, path = path + name)
 
-    data class Violation(val property: JsonSchema.Property, val alphabet: Set<Char>, val path: List<String>) : ComplianceRule.Result.Violation<JsonSchema> {
+    data class Violation(val alphabet: Set<Char>, val path: List<String>) : ComplianceRule.Result.Violation<JsonSchema> {
 
         override val message = "Field ${path.joinToString(".")} should only contain characters in $alphabet but doesn't"
     }
