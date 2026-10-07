@@ -13,8 +13,8 @@ class Slf4jMDCAdapter : MDCAdapter {
 
     private val map: MutableMap<String, String> get() = maps.getOrSet(::mutableMapOf)
 
-    override fun put(key: String, value: String) {
-        map[key] = value
+    override fun put(key: String, value: String?) {
+        if (value == null) map.remove(key) else map[key] = value
     }
 
     override fun get(key: String): String? = map[key]
@@ -39,7 +39,7 @@ class Slf4jMDCAdapter : MDCAdapter {
         threadLocalMapOfDequeues.pushByKey(key, value)
     }
 
-    override fun popByKey(key: String): String = threadLocalMapOfDequeues.popByKey(key)
+    override fun popByKey(key: String): String? = threadLocalMapOfDequeues.popByKey(key)
 
     override fun getCopyOfDequeByKey(key: String): Deque<String> = threadLocalMapOfDequeues.getCopyOfDequeByKey(key)
 
