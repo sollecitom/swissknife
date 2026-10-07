@@ -52,7 +52,7 @@ interface MessagingTestSpecification : CoreDataGenerator {
         }
     }
 
-    fun newTopic(tenant: Name = Name.random(), namespaceName: Name = Name.random(), namespace: Topic.Namespace? = Topic.Namespace(tenant = tenant, name = namespaceName), name: Name = Name.random(), persistent: Boolean = true): Topic
+    fun newTopic(tenant: Name = Name.random(), namespaceName: Name = Name.random(), namespace: Topic.Namespace = Topic.Namespace(tenant = tenant, name = namespaceName), name: Name = Name.random(), persistent: Boolean = true): Topic
 
     fun newMessageProducer(topic: Topic, name: String = newId().stringValue): MessageProducer<String>
 

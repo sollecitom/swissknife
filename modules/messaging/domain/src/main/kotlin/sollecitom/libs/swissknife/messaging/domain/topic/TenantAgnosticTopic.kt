@@ -14,8 +14,6 @@ data class TenantAgnosticTopic(val name: Name, val namespaceName: Name, val pers
         false -> Topic.NonPersistent(Topic.Namespace(tenant, namespaceName), name)
     }
 
-    fun withoutTenant() = Topic.of(persistent = persistent, namespace = null, name = name)
-
     companion object {
 
         private const val EXPECTED_PARTS_COUNT = 4

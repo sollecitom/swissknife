@@ -3,22 +3,22 @@ package sollecitom.libs.swissknife.messaging.domain.topic
 import sollecitom.libs.swissknife.core.domain.text.Name
 import java.util.regex.Pattern
 
-/** A messaging topic with protocol (persistent/non-persistent), optional namespace, and name. Use [Topic.parse] or factory methods to create. */
-sealed class Topic(val persistent: Boolean, val namespace: Namespace?, val name: Name) {
+/** A messaging topic with protocol (persistent/non-persistent), namespace, and name. Topics created without a namespace get [Namespace.default] (`public/default`), as in Pulsar. Use [Topic.parse] or factory methods to create. */
+sealed class Topic(val persistent: Boolean, val namespace: Namespace, val name: Name) {
 
     val protocol: Name get() = if (persistent) Persistent.protocol else NonPersistent.protocol
     val fullName: Name = fullRawName(protocol, namespace, name)
 
     override fun toString() = fullName.value
 
-    class Persistent(namespace: Namespace?, name: Name) : Topic(true, namespace, name) {
+    class Persistent(namespace: Namespace = Namespace.default, name: Name) : Topic(true, namespace, name) {
 
         companion object {
             val protocol = "persistent".let(::Name)
         }
     }
 
-    class NonPersistent(namespace: Namespace?, name: Name) : Topic(false, namespace, name) {
+    class NonPersistent(namespace: Namespace = Namespace.default, name: Name) : Topic(false, namespace, name) {
 
         companion object {
             val protocol = "non-persistent".let(::Name)
@@ -29,7 +29,9 @@ sealed class Topic(val persistent: Boolean, val namespace: Namespace?, val name:
 
         companion object {
 
-            fun parse(namespace: String): Namespace = Topic.parse("$namespace/some-topic").namespace!!
+            val default = Namespace(tenant = Name("public"), name = Name("default"))
+
+            fun parse(namespace: String): Namespace = Topic.parse("$namespace/some-topic").namespace
         }
     }
 
@@ -68,34 +70,27 @@ sealed class Topic(val persistent: Boolean, val namespace: Namespace?, val name:
                 error("Topic format '$rawTopic' does not match the expected pattern $PATTERN")
             }
             val protocol = matcher.group(1)?.let(::Name) ?: Persistent.protocol
-            val tenant = matcher.group(2)?.let(::Name)
-            val namespaceName = matcher.group(3)?.let(::Name)
-            require(tenant != null && namespaceName != null || tenant == null && namespaceName == null) { "Tenant and namespace must be both null or specified" }
+            val namespace = Namespace(tenant = matcher.group(2).let(::Name), name = matcher.group(3).let(::Name))
             val topicName = matcher.group(4).let(::Name)
-            val namespace = namespaceName?.let { Namespace(tenant!!, it) }
             return of(protocol, namespace, topicName)
         }
 
-        fun of(protocol: Name, namespace: Namespace?, name: Name): Topic = when (protocol) {
+        fun of(protocol: Name, namespace: Namespace = Namespace.default, name: Name): Topic = when (protocol) {
             Persistent.protocol -> of(true, namespace, name)
             NonPersistent.protocol -> of(false, namespace, name)
             else -> error("Unknown topic protocol ${protocol.value}")
         }
 
-        fun of(persistent: Boolean, namespace: Namespace?, name: Name): Topic = when (persistent) {
+        fun of(persistent: Boolean, namespace: Namespace = Namespace.default, name: Name): Topic = when (persistent) {
             true -> persistent(name, namespace)
             false -> nonPersistent(name, namespace)
         }
 
-        fun fullRawName(protocol: Name, namespace: Namespace?, name: Name): Name = buildString {
-            append(protocol.value).append("://")
-            namespace?.let { append(it.tenant.value).append("/").append(it.name.value).append("/") }
-            append(name.value)
-        }.let(::Name)
+        fun fullRawName(protocol: Name, namespace: Namespace, name: Name): Name = Name("${protocol.value}://${namespace.tenant.value}/${namespace.name.value}/${name.value}")
 
-        fun persistent(name: Name, namespace: Namespace? = null): Topic = Persistent(namespace, name)
+        fun persistent(name: Name, namespace: Namespace = Namespace.default): Topic = Persistent(namespace, name)
 
-        fun nonPersistent(name: Name, namespace: Namespace? = null): Topic = NonPersistent(namespace, name)
+        fun nonPersistent(name: Name, namespace: Namespace = Namespace.default): Topic = NonPersistent(namespace, name)
     }
 
     @JvmInline

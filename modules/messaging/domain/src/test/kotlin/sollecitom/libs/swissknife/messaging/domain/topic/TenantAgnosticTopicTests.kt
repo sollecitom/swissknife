@@ -70,8 +70,8 @@ class TenantAgnosticTopicTests {
             assertThat(topic.persistent).isTrue()
             assertThat(topic.name).isEqualTo(Name("orders"))
             assertThat(topic.namespace).isNotNull()
-            assertThat(topic.namespace?.tenant).isEqualTo(tenant)
-            assertThat(topic.namespace?.name).isEqualTo(Name("ns1"))
+            assertThat(topic.namespace.tenant).isEqualTo(tenant)
+            assertThat(topic.namespace.name).isEqualTo(Name("ns1"))
         }
 
         @Test

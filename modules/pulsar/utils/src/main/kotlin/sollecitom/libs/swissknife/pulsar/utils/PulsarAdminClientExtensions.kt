@@ -33,19 +33,27 @@ fun PulsarAdmin.createTenant(tenant: String) = tenants().createTenant(tenant, Te
 
 fun PulsarAdmin.createNamespace(tenant: String, namespace: String) = namespaces().createNamespace("$tenant/$namespace")
 
-/** Configures a Pulsar namespace with topic creation, schema update, and compatibility policies. */
-fun PulsarAdmin.configureNamespace(tenant: String, namespace: String, allowTopicCreation: Boolean = false, isAllowAutoUpdateSchema: Boolean = false, schemaValidationEnforced: Boolean = true, schemaCompatibilityStrategy: SchemaCompatibilityStrategy = SchemaCompatibilityStrategy.FULL_TRANSITIVE) {
+/**
+ * Configures a Pulsar namespace with topic creation, schema update, and compatibility policies. The default compatibility is
+ * BACKWARD_TRANSITIVE: new readers read every older schema, and a topic's event union can gain new event types (FULL_TRANSITIVE rejects that).
+ */
+fun PulsarAdmin.configureNamespace(tenant: String, namespace: String, allowTopicCreation: Boolean = false, isAllowAutoUpdateSchema: Boolean = false, schemaValidationEnforced: Boolean = true, schemaCompatibilityStrategy: SchemaCompatibilityStrategy = SchemaCompatibilityStrategy.BACKWARD_TRANSITIVE) {
 
     val tenantNamespace = "$tenant/$namespace"
-    namespaces().setAutoTopicCreation(tenantNamespace, AutoTopicCreationOverride.builder().allowAutoTopicCreation(allowTopicCreation).topicType(TopicType.PARTITIONED.name).build())
-    namespaces().setAutoTopicCreation(tenantNamespace, AutoTopicCreationOverride.builder().allowAutoTopicCreation(allowTopicCreation).topicType(TopicType.NON_PARTITIONED.name).build())
+    namespaces().setAutoTopicCreation(tenantNamespace, autoTopicCreation(allowTopicCreation))
     namespaces().setIsAllowAutoUpdateSchema(tenantNamespace, isAllowAutoUpdateSchema, null)
     namespaces().setSchemaValidationEnforced(tenantNamespace, schemaValidationEnforced)
     namespaces().setSchemaCompatibilityStrategy(tenantNamespace, schemaCompatibilityStrategy)
 }
 
+/** Auto-created topics are partitioned with one partition, like [createTopic]'s default. The broker expects the lowercase topic type. */
+private fun autoTopicCreation(allowTopicCreation: Boolean): AutoTopicCreationOverride = AutoTopicCreationOverride.builder()
+    .allowAutoTopicCreation(allowTopicCreation)
+    .apply { if (allowTopicCreation) topicType(TopicType.PARTITIONED.toString()).defaultNumPartitions(1) }
+    .build()
+
 /** Creates a tenant, namespace, and configures namespace policies in a single call. */
-fun PulsarAdmin.createTenantAndNamespace(tenantId: String, namespace: String, allowTopicCreation: Boolean = false, isAllowAutoUpdateSchema: Boolean = false, schemaValidationEnforced: Boolean = true, schemaCompatibilityStrategy: SchemaCompatibilityStrategy = SchemaCompatibilityStrategy.FULL_TRANSITIVE) {
+fun PulsarAdmin.createTenantAndNamespace(tenantId: String, namespace: String, allowTopicCreation: Boolean = false, isAllowAutoUpdateSchema: Boolean = false, schemaValidationEnforced: Boolean = true, schemaCompatibilityStrategy: SchemaCompatibilityStrategy = SchemaCompatibilityStrategy.BACKWARD_TRANSITIVE) {
 
     createTenant(tenantId)
     createNamespace(tenantId, namespace)
@@ -53,7 +61,7 @@ fun PulsarAdmin.createTenantAndNamespace(tenantId: String, namespace: String, al
 }
 
 /** Idempotently ensures a tenant and namespace exist, configuring the namespace if newly created. */
-fun PulsarAdmin.ensureTenantAndNamespaceExist(tenant: String, namespace: String, allowTopicCreation: Boolean = false, isAllowAutoUpdateSchema: Boolean = false, schemaValidationEnforced: Boolean = true, schemaCompatibilityStrategy: SchemaCompatibilityStrategy = SchemaCompatibilityStrategy.FULL_TRANSITIVE) {
+fun PulsarAdmin.ensureTenantAndNamespaceExist(tenant: String, namespace: String, allowTopicCreation: Boolean = false, isAllowAutoUpdateSchema: Boolean = false, schemaValidationEnforced: Boolean = true, schemaCompatibilityStrategy: SchemaCompatibilityStrategy = SchemaCompatibilityStrategy.BACKWARD_TRANSITIVE) {
 
     ensureTenantExists(tenant)
     val newNamespaceWasCreated = ensureNamespaceExists(tenant, namespace)

@@ -8,4 +8,8 @@ dependencies {
     api(projects.coreTestUtils)
 
     implementation(projects.pulsarUtils)
+
+    testImplementation(projects.pulsarTestUtils)
+    testImplementation(projects.messagingTestUtils)
+    testImplementation(projects.testUtils)
 }

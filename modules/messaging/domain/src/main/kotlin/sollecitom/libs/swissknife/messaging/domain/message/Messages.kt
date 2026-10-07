@@ -42,8 +42,9 @@ class MessagesImplementation<out OUT : Event, IN : Event>(private val consumer: 
     companion object
 }
 
+/** Produces [event] and returns the first message of [successorType] it caused. Messages received before it that don't match are skipped (consumed without being returned). */
 context(_: MessagePropertyNames)
-suspend fun <OUT : Event, IN : Event> Messages<OUT, IN>.produceAndAwaitSuccessor(event: IN, successorType: Happening.Type): Pair<Message.Id, ReceivedMessage<OUT>> {
+suspend fun <OUT : Event, IN : Event> Messages<OUT, IN>.produceAndSkipToSuccessor(event: IN, successorType: Happening.Type): Pair<Message.Id, ReceivedMessage<OUT>> {
 
     val messageId = produce(event)
     val successor = values.first { it.hasType(successorType) && it.wasCausedBy(event) }.apply { acknowledge() }

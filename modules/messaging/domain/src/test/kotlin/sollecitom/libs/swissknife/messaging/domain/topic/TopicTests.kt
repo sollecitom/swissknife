@@ -6,7 +6,6 @@ import assertk.assertions.isFalse
 import assertk.assertions.isFailure
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
-import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import sollecitom.libs.swissknife.core.domain.text.Name
 import org.junit.jupiter.api.Nested
@@ -29,7 +28,7 @@ class TopicTests {
 
             assertThat(topic.persistent).isTrue()
             assertThat(topic.name).isEqualTo(name)
-            assertThat(topic.namespace).isNull()
+            assertThat(topic.namespace).isEqualTo(Topic.Namespace.default)
         }
 
         @Test
@@ -44,11 +43,21 @@ class TopicTests {
         }
 
         @Test
-        fun `persistent topic full name without namespace`() {
+        fun `a persistent topic without namespace is in public default`() {
 
             val topic = Topic.persistent(Name("orders"))
 
-            assertThat(topic.fullName.value).isEqualTo("persistent://orders")
+            assertThat(topic.fullName.value).isEqualTo("persistent://public/default/orders")
+        }
+
+        @Test
+        fun `a topic without namespace round-trips through its full name`() {
+
+            val topic = Topic.persistent(Name("orders"))
+
+            val parsed = Topic.parse(topic.fullName.value)
+
+            assertThat(parsed).isEqualTo(topic)
         }
 
         @Test
@@ -80,7 +89,7 @@ class TopicTests {
 
             val topic = Topic.nonPersistent(Name("events"))
 
-            assertThat(topic.fullName.value).isEqualTo("non-persistent://events")
+            assertThat(topic.fullName.value).isEqualTo("non-persistent://public/default/events")
         }
     }
 
@@ -98,8 +107,8 @@ class TopicTests {
             assertThat(topic.persistent).isTrue()
             assertThat(topic.name).isEqualTo(Name("my-topic"))
             assertThat(topic.namespace).isNotNull()
-            assertThat(topic.namespace?.tenant).isEqualTo(Name("my-tenant"))
-            assertThat(topic.namespace?.name).isEqualTo(Name("my-namespace"))
+            assertThat(topic.namespace.tenant).isEqualTo(Name("my-tenant"))
+            assertThat(topic.namespace.name).isEqualTo(Name("my-namespace"))
         }
 
         @Test
@@ -173,7 +182,7 @@ class TopicTests {
         @Test
         fun `creating a topic with persistent protocol name`() {
 
-            val topic = Topic.of(Topic.Persistent.protocol, null, Name("test"))
+            val topic = Topic.of(Topic.Persistent.protocol, name = Name("test"))
 
             assertThat(topic.persistent).isTrue()
         }
@@ -181,7 +190,7 @@ class TopicTests {
         @Test
         fun `creating a topic with non-persistent protocol name`() {
 
-            val topic = Topic.of(Topic.NonPersistent.protocol, null, Name("test"))
+            val topic = Topic.of(Topic.NonPersistent.protocol, name = Name("test"))
 
             assertThat(topic.persistent).isFalse()
         }
@@ -189,7 +198,7 @@ class TopicTests {
         @Test
         fun `creating a topic with unknown protocol`() {
 
-            val result = runCatching { Topic.of(Name("unknown"), null, Name("test")) }
+            val result = runCatching { Topic.of(Name("unknown"), name = Name("test")) }
 
             assertThat(result).isFailure().isInstanceOf<IllegalStateException>()
         }
