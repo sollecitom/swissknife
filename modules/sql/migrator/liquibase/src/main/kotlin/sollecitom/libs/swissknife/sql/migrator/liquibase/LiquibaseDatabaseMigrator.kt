@@ -21,12 +21,9 @@ import liquibase.database.jvm.JdbcConnection
 import liquibase.parser.core.yaml.YamlChangeLogParser
 import liquibase.resource.ClassLoaderResourceAccessor
 import java.io.OutputStream
-import java.sql.Connection
 import java.sql.DriverManager
 
 internal class LiquibaseDatabaseMigrator(private val connectionOptions: SqlConnectionOptions, private val changelogFilePath: String = defaultChangelogFilePath) : SqlDatabaseMigrator {
-
-    private val jdbcConnection by lazy { DriverManager.getConnection(connectionOptions.jdbcURI.toString(), connectionOptions.user.value, connectionOptions.password.value) }
 
     init {
         initializeYamlParser()
@@ -35,14 +32,14 @@ internal class LiquibaseDatabaseMigrator(private val connectionOptions: SqlConne
     override suspend fun applyMigrations() {
 
         logger.info { "Started running migrations from $changelogFilePath against ${connectionOptions.jdbcURI}" }
-        withCorrectDatabaseInScope(jdbcConnection) { database ->
+        withCorrectDatabaseInScope { database ->
             val updateCommand = updateCommand(database, changelogFilePath)
             updateCommand.execute()
         }
         logger.info { "Finished running migrations from $changelogFilePath against ${connectionOptions.jdbcURI}" }
     }
 
-    override suspend fun stop() = jdbcConnection.close()
+    override suspend fun stop() {}
 
     private fun updateCommand(database: Database, changelogFilePath: String): CommandScope {
 
@@ -64,8 +61,9 @@ internal class LiquibaseDatabaseMigrator(private val connectionOptions: SqlConne
         YamlChangeLogParser() // initializes the Yaml parser
     }
 
-    private suspend fun withCorrectDatabaseInScope(jdbcConnection: Connection, action: (Database) -> Unit) = withContext(Dispatchers.IO) {
+    private suspend fun withCorrectDatabaseInScope(action: (Database) -> Unit) = withContext(Dispatchers.IO) {
 
+        val jdbcConnection = DriverManager.getConnection(connectionOptions.jdbcURI.toString(), connectionOptions.user.value, connectionOptions.password.value)
         val database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(JdbcConnection(jdbcConnection))
         database.use {
             val scopeObjects = mapOf(

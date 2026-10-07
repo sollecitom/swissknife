@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-greetings
+      author: tests
+      changes:
+        - createTable:
+            tableName: greetings
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: text
+                  type: varchar(100)

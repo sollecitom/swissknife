@@ -11,7 +11,6 @@ import org.testcontainers.utility.DockerImageName
 import java.net.URI
 
 private const val POSTGRES_NETWORK_ALIAS = "postgres"
-private const val ROOT_USER = "root"
 
 fun newPostgresContainer(databaseName: String = "db", username: String = "user", password: String = "password", network: Network? = null, postgresVersion: String = defaultImageVersion): PostgresDockerContainer {
 
@@ -53,6 +52,29 @@ class PostgresDockerContainer(imageName: DockerImageName = DockerImageName.parse
 
     fun getMappedPort(port: Int): Int = container.getMappedPort(port)
 
+    /**
+     * Creates a login that can connect and read and write data in the `public` schema, but cannot change the schema.
+     * Tables created later by the container's own user are covered too. Use it for tests that need a non-superuser.
+     */
+    fun createUser(name: Name, password: Password): SqlConnectionOptions {
+
+        require(name.value.matches(SQL_IDENTIFIER)) { "User name '${name.value}' must be a plain lowercase SQL identifier" }
+        val quotedPassword = password.value.replace("'", "''")
+        val statements = """
+            CREATE ROLE ${name.value} LOGIN PASSWORD '$quotedPassword';
+            GRANT CONNECT ON DATABASE $databaseName TO ${name.value};
+            GRANT USAGE ON SCHEMA public TO ${name.value};
+            REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+            GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO ${name.value};
+            GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO ${name.value};
+            ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO ${name.value};
+            ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO ${name.value};
+        """.trimIndent()
+        val result = container.execInContainer("psql", "-v", "ON_ERROR_STOP=1", "-U", username, "-d", databaseName, "-c", statements)
+        check(result.exitCode == 0) { "Failed to create user ${name.value}: ${result.stderr}" }
+        return connectionOptions(name, password)
+    }
+
     fun connectionOptions(username: Name = this.username.let(::Name), password: Password = this.password.let(::Password)): SqlConnectionOptions {
 
         val schemeLessURI = "postgresql://$host:${getMappedPort(POSTGRESQL_PORT)}/${databaseName}".let(URI::create)
@@ -60,14 +82,10 @@ class PostgresDockerContainer(imageName: DockerImageName = DockerImageName.parse
     }
 
     companion object {
+        private val SQL_IDENTIFIER = Regex("[a-z_][a-z0-9_]*")
         const val defaultImageName = "postgres"
         const val defaultImageVersion = "18"
     }
-}
-
-fun PostgresDockerContainer.connectionOptions(rootUser: Boolean = false): SqlConnectionOptions {
-
-    return connectionOptions(username.let(::Name).takeUnless { rootUser } ?: ROOT_USER.let(::Name), password.let(::Password))
 }
 
 fun PostgresDockerContainer.withNetworkAndAliases(network: Network, vararg aliases: String = arrayOf(POSTGRES_NETWORK_ALIAS)) = withNetwork(network).withNetworkAliases(*aliases)

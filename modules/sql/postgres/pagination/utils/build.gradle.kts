@@ -6,4 +6,7 @@ plugins {
 dependencies {
     api(projects.sqlPostgresUtils)
     api(projects.paginationDomain)
+
+    testImplementation(projects.sqlPostgresContainer)
+    testImplementation(projects.testUtils)
 }

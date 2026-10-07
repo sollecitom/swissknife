@@ -40,12 +40,26 @@ fun ReactiveTransactionManager.newTransactionalOperator(transactionDefinition: T
 
 fun DatabaseClient.newTransactionManager(): ReactiveTransactionManager = R2dbcTransactionManager(connectionFactory)
 
-operator fun DatabaseClient.GenericExecuteSpec.plus(binding: Pair<String, Any?>): DatabaseClient.GenericExecuteSpec = binding.let { (key, value) -> bindValueOrNull(key, value) }
+/** A null SQL parameter of the column's [type]: Postgres rejects a null whose type doesn't match the column. Create with [nullOf]. */
+data class TypedNull(val type: Class<*>)
 
-fun DatabaseClient.GenericExecuteSpec.bindValueOrNull(key: String, value: Any?): DatabaseClient.GenericExecuteSpec = when (value) {
-    null -> bindNull(key, String::class.java)
+inline fun <reified T : Any> nullOf() = TypedNull(T::class.javaObjectType)
+
+/** Binds [binding]; a null value must be a [TypedNull], since a bare `null` carries no column type. */
+operator fun DatabaseClient.GenericExecuteSpec.plus(binding: Pair<String, Any?>): DatabaseClient.GenericExecuteSpec = binding.let { (key, value) ->
+    when (value) {
+        null -> throw IllegalArgumentException("Parameter '$key' is a bare null: bind nullOf<ColumnType>() instead, so the null carries the column type")
+        is TypedNull -> bindNull(key, value.type)
+        else -> bind(key, value)
+    }
+}
+
+fun DatabaseClient.GenericExecuteSpec.bindValueOrNull(key: String, value: Any?, nullType: Class<*>): DatabaseClient.GenericExecuteSpec = when (value) {
+    null -> bindNull(key, nullType)
     else -> bind(key, value)
 }
+
+inline fun <reified T : Any> DatabaseClient.GenericExecuteSpec.bindValueOrNull(key: String, value: T?): DatabaseClient.GenericExecuteSpec = bindValueOrNull(key, value, T::class.javaObjectType)
 
 fun Readable.debugPrintRowContent(): Readable {
     val row = (this as Row)
