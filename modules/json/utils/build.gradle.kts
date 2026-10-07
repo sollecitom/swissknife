@@ -15,4 +15,5 @@ dependencies {
     implementation(projects.resourceUtils)
 
     testImplementation(projects.testUtils)
+    testImplementation(projects.complianceCheckerTestUtils)
 }

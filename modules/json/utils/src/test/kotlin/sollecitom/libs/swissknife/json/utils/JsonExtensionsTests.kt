@@ -6,6 +6,7 @@ import assertk.assertions.isFalse
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
+import sollecitom.libs.swissknife.test.utils.assertions.failedThrowing
 import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.jupiter.api.Nested
@@ -438,6 +439,41 @@ class JsonExtensionsTests {
             val result = json.getBytesFromHexStringOrNull("missing")
 
             assertThat(result).isNull()
+        }
+    }
+
+    @Nested
+    @TestInstance(PER_CLASS)
+    inner class StrictNumbers {
+
+        @Test
+        fun `an int with a fraction is rejected`() {
+
+            val json = JSONObject().put("count", 1.5)
+
+            val result = runCatching { json.getIntOrNull("count") }
+
+            assertThat(result).failedThrowing<ArithmeticException>()
+        }
+
+        @Test
+        fun `an int that overflows is rejected`() {
+
+            val json = JSONObject().put("count", Int.MAX_VALUE.toLong() + 1)
+
+            val result = runCatching { json.getIntOrNull("count") }
+
+            assertThat(result).failedThrowing<ArithmeticException>()
+        }
+
+        @Test
+        fun `a long that overflows is rejected`() {
+
+            val json = JSONObject("""{"count": 92233720368547758070}""")
+
+            val result = runCatching { json.getLongOrNull("count") }
+
+            assertThat(result).failedThrowing<ArithmeticException>()
         }
     }
 }

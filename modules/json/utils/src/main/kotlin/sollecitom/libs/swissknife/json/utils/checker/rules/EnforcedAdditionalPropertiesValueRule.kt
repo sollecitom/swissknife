@@ -9,17 +9,15 @@ data class EnforcedAdditionalPropertiesValueRule(val enforcedValue: Boolean, val
 
     override fun invoke(target: JsonSchema): ComplianceRule.Result<JsonSchema> {
 
-        if (target.isAffected() && target.allowsAdditionalProperties != null && target.allowsAdditionalProperties != enforcedValue) return NonCompliant(violation = target.violation())
-        return Compliant()
+        val violations = target.objectSchemas.filter { (_, schema) -> schema.isAffected() && schema.allowsAdditionalProperties != null && schema.allowsAdditionalProperties != enforcedValue }.map { (path, _) -> Violation(value = enforcedValue, path = path) }.toSet()
+        return ComplianceRule.Result.withViolations(violations)
     }
 
     private fun JsonSchema.isAffected(): Boolean = affectPureUnionTypes || !isAPureUnionType
 
-    private fun JsonSchema.violation() = Violation(value = enforcedValue)
+    data class Violation(val value: Boolean, val path: List<String> = emptyList()) : ComplianceRule.Result.Violation<JsonSchema> {
 
-    data class Violation(val value: Boolean) : ComplianceRule.Result.Violation<JsonSchema> {
-
-        override val message = "JSON schema should declare \"additionalProperties: $value\" but doesn't"
+        override val message = "JSON schema${if (path.isEmpty()) "" else " at ${path.joinToString(".")}"} should declare \"additionalProperties: $value\" but doesn't"
     }
 
     companion object

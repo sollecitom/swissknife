@@ -7,21 +7,21 @@ data class WhitelistedAlphabetFieldNameRule(val alphabet: Set<Char>) : Complianc
 
     override fun invoke(target: JsonSchema): ComplianceRule.Result<JsonSchema> {
 
-        val violations = target.properties.mapNotNull(::check).toSet()
+        val violations = target.objectSchemas.flatMap { (path, schema) -> schema.properties.mapNotNull { check(it, path) } }.toSet()
         return ComplianceRule.Result.withViolations(violations)
     }
 
-    private fun check(property: JsonSchema.Property): Violation? {
+    private fun check(property: JsonSchema.Property, path: List<String>): Violation? {
 
-        if (property.name.any { character -> character !in alphabet }) return property.violation()
+        if (property.name.any { character -> character !in alphabet }) return property.violation(path)
         return null
     }
 
-    private fun JsonSchema.Property.violation() = Violation(property = this, alphabet = alphabet)
+    private fun JsonSchema.Property.violation(path: List<String>) = Violation(property = this, alphabet = alphabet, path = path)
 
-    data class Violation(val property: JsonSchema.Property, val alphabet: Set<Char>) : ComplianceRule.Result.Violation<JsonSchema> {
+    data class Violation(val property: JsonSchema.Property, val alphabet: Set<Char>, val path: List<String> = emptyList()) : ComplianceRule.Result.Violation<JsonSchema> {
 
-        override val message = "Field ${property.name} should only contain characters in $alphabet but doesn't"
+        override val message = "Field ${(path + property.name).joinToString(".")} should only contain characters in $alphabet but doesn't"
     }
 
     companion object

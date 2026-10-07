@@ -9,7 +9,7 @@ data object DisallowRequiringUndeclaredPropertiesRule : ComplianceRule<JsonSchem
 
     override fun invoke(target: JsonSchema): ComplianceRule.Result<JsonSchema> {
 
-        val requiredUndeclaredProperties = target.requiredPropertyNames.filter { it !in target.propertyNames }.toSet()
+        val requiredUndeclaredProperties = target.objectSchemas.flatMap { (path, schema) -> schema.requiredPropertyNames.filter { it !in schema.propertyNames }.map { (path + it).joinToString(".") } }.toSet()
         if (requiredUndeclaredProperties.isNotEmpty()) return requiredUndeclaredProperties.nonCompliant()
         return Compliant()
     }

@@ -10,7 +10,7 @@ data object DisallowConstKeywordRule : ComplianceRule<JsonSchema> {
 
     override fun invoke(target: JsonSchema): ComplianceRule.Result<JsonSchema> {
 
-        val propertiesWithConst = target.properties.mapNotNull { property -> property.schema.value.subschemas().filterIsInstance<ConstSchema>().singleOrNull()?.let { property.name } }.toSet()
+        val propertiesWithConst = target.objectSchemas.flatMap { (path, schema) -> schema.properties.mapNotNull { property -> property.schema.value.subschemas().filterIsInstance<ConstSchema>().singleOrNull()?.let { (path + property.name).joinToString(".") } } }.toSet()
         if (propertiesWithConst.isNotEmpty()) return propertiesWithConst.nonCompliant()
         return Compliant()
     }

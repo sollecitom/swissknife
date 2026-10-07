@@ -7,7 +7,8 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
 
-fun JSONObject.getLongOrNull(field: String): Long? = runCatching { getLong(field) }.getOrNull()
+/** Null if the field is missing or not a number; throws [ArithmeticException] if it has a fraction or doesn't fit a Long. */
+fun JSONObject.getLongOrNull(field: String): Long? = optBigDecimal(field, null)?.longValueExact()
 fun JSONObject.getRequiredLong(field: String): Long = getLongOrNull(field) ?: missingField(field)
 
 fun JSONObject.getBigIntegerOrNull(field: String): BigInteger? = runCatching { getBigInteger(field) }.getOrNull()
@@ -23,7 +24,8 @@ fun JSONObject.getJSONObjectOrNull(field: String): JSONObject? = runCatching { g
 fun JSONObject.getDoubleOrNull(field: String): Double? = runCatching { getDouble(field) }.getOrNull()
 fun JSONObject.getRequiredDouble(field: String): Double = getDoubleOrNull(field) ?: missingField(field)
 
-fun JSONObject.getIntOrNull(field: String): Int? = runCatching { getInt(field) }.getOrNull()
+/** Null if the field is missing or not a number; throws [ArithmeticException] if it has a fraction or doesn't fit an Int. */
+fun JSONObject.getIntOrNull(field: String): Int? = optBigDecimal(field, null)?.intValueExact()
 fun JSONObject.getRequiredInt(field: String): Int = getIntOrNull(field) ?: missingField(field)
 
 fun JSONObject.getArrayOrNull(field: String): JSONArray? = runCatching { getJSONArray(field) }.getOrNull()
@@ -55,7 +57,7 @@ fun JSONObject.getRequiredInstant(key: String) = getInstantOrNull(key) ?: missin
 fun JSONObject.getStringArrayOrNull(key: String): List<String>? = getArrayOrNull(key)?.map { it.toString() }
 fun JSONObject.getRequiredStringArray(key: String): List<String> = getStringArrayOrNull(key) ?: missingField(key)
 
-fun JSONObject.getIntArrayOrNull(key: String): List<Int>? = getArrayOrNull(key)?.map { (it as Number).toInt() }
+fun JSONObject.getIntArrayOrNull(key: String): List<Int>? = getArrayOrNull(key)?.map { BigDecimal(it.toString()).intValueExact() }
 fun JSONObject.getRequiredIntArray(key: String): List<Int> = getIntArrayOrNull(key) ?: missingField(key)
 
 fun JSONObject.putBytesAsHexString(fieldName: String, bytes: ByteArray?): JSONObject = put(fieldName, bytes?.let(HexFormat.of()::formatHex))
