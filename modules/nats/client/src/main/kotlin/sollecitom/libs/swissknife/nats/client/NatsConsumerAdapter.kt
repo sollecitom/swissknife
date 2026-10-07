@@ -9,12 +9,12 @@ import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import java.time.Duration
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.toJavaDuration
 import java.util.concurrent.Executors
 
-private class NatsConsumerAdapter(options: Options, private val subjects: Set<String>) : NatsConsumer {
-
-    private val subscriptionConfirmationTimeout = Duration.ofSeconds(10)
+private class NatsConsumerAdapter(options: Options, private val subjects: Set<String>, private val subscriptionConfirmationTimeout: Duration) : NatsConsumer {
 
     private val executor = Executors.newVirtualThreadPerTaskExecutor()
     private val connection by lazy { Nats.connect(Options.Builder(options).executor(executor).build()) }
@@ -22,7 +22,7 @@ private class NatsConsumerAdapter(options: Options, private val subjects: Set<St
         val received = Channel<Message>(Channel.BUFFERED)
         val dispatcher = connection.createDispatcher { message -> received.trySendBlocking(message) }
         subjects.forEach(dispatcher::subscribe)
-        connection.flush(subscriptionConfirmationTimeout)
+        connection.flush(subscriptionConfirmationTimeout.toJavaDuration())
         try {
             emitAll(received)
         } finally {
@@ -36,5 +36,5 @@ private class NatsConsumerAdapter(options: Options, private val subjects: Set<St
     }
 }
 
-/** Creates a [NatsConsumer] that subscribes to the given [subjects] using the given [options]. */
-fun NatsConsumer.Companion.create(options: Options, subjects: Set<String>): NatsConsumer = NatsConsumerAdapter(options, subjects)
+/** Creates a [NatsConsumer] that subscribes to the given [subjects] using the given [options]. Collecting fails if the server doesn't confirm the subscriptions within [subscriptionConfirmationTimeout]. */
+fun NatsConsumer.Companion.create(options: Options, subjects: Set<String>, subscriptionConfirmationTimeout: Duration = 10.seconds): NatsConsumer = NatsConsumerAdapter(options, subjects, subscriptionConfirmationTimeout)
