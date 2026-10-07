@@ -41,15 +41,21 @@ object StandardLoggingConfiguration {
     ): LoggingCustomizer {
 
         val minimumLoggingLevelValue = defaultMinimumLoggingLevelFromEnvironment(minimumLoggingLevelEnvironmentVariableName, readConfigurationValue) ?: defaultMinimumLoggingLevel
-        val minimumLoggingLevelOverridesValue = minimumLoggingLevelOverridesFromEnvironment(minimumLoggingLevelOverridesEnvironmentVariableName, readConfigurationValue) ?: defaultMinimumLoggingLevelOverrides
+        val minimumLoggingLevelOverridesValue = defaultMinimumLoggingLevelOverrides + minimumLoggingLevelOverridesFromEnvironment(minimumLoggingLevelOverridesEnvironmentVariableName, readConfigurationValue).orEmpty()
         val logFormatValue = logFormatFromEnvironment(logFormatEnvironmentVariableName, readConfigurationValue) ?: defaultLogFormat
 
         return CombinedLoggingCustomizer(minimumLoggingLevelValue, minimumLoggingLevelOverridesValue, logFormatValue.asFormattingFunction())
     }
 
-    private fun defaultMinimumLoggingLevelFromEnvironment(key: String, readConfigurationValue: (String) -> String?): LoggingLevel? = readConfigurationValue(key)?.uppercase()?.let(LoggingLevel::valueOf)
+    private fun defaultMinimumLoggingLevelFromEnvironment(key: String, readConfigurationValue: (String) -> String?): LoggingLevel? = readConfigurationValue(key)?.trim()?.takeIf(String::isNotEmpty)?.let(::parseLoggingLevel)
 
-    private fun minimumLoggingLevelOverridesFromEnvironment(key: String, readConfigurationValue: (String) -> String?): Map<String, LoggingLevel>? = readConfigurationValue(key)?.split(",")?.map { it.split("=") }?.associate { it.first() to LoggingLevel.valueOf(it.last()) }
+    /** Overrides like `com.foo=debug, org.bar=WARN`, merged over the defaults, the configuration winning. */
+    private fun minimumLoggingLevelOverridesFromEnvironment(key: String, readConfigurationValue: (String) -> String?): Map<String, LoggingLevel>? = readConfigurationValue(key)?.split(",")?.map(String::trim)?.filter(String::isNotEmpty)?.associate { override ->
+        val (name, level) = override.split("=").map(String::trim).also { require(it.size == 2) { "Logging level override '$override' must be in the form '<logger-name>=<level>'" } }
+        name to parseLoggingLevel(level)
+    }
+
+    private fun parseLoggingLevel(value: String): LoggingLevel = LoggingLevel.valueOf(value.trim().uppercase(ROOT))
 
     private fun logFormatFromEnvironment(key: String, readConfigurationValue: (String) -> String?): LogFormat? = readConfigurationValue(key)?.lowercase()?.let(::parseLogFormat)
 

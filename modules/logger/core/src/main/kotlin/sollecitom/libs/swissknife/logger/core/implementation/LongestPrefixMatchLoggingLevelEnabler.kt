@@ -1,13 +1,17 @@
 package sollecitom.libs.swissknife.logger.core.implementation
 
-internal class LongestPrefixMatchLoggingLevelEnabler(private val prefixMap: Map<String, sollecitom.libs.swissknife.logger.core.LoggingLevel>, private val defaultMinimumLoggingLevel: sollecitom.libs.swissknife.logger.core.LoggingLevel) : (sollecitom.libs.swissknife.logger.core.LoggingLevel, String) -> Boolean {
+import sollecitom.libs.swissknife.logger.core.LoggingLevel
 
-    private val trie: sollecitom.libs.swissknife.logger.core.implementation.datastructure.Trie = sollecitom.libs.swissknife.logger.core.implementation.datastructure.mutableTrieOf(prefixMap.keys)
+/** Uses the level of the longest configured name that matches whole package segments of the logger name: `com.foo` covers `com.foo.Bar`, not `com.foobar`. */
+internal class LongestPrefixMatchLoggingLevelEnabler(private val prefixMap: Map<String, LoggingLevel>, private val defaultMinimumLoggingLevel: LoggingLevel) : (LoggingLevel, String) -> Boolean {
 
-    override fun invoke(level: sollecitom.libs.swissknife.logger.core.LoggingLevel, loggerName: String): Boolean {
+    override fun invoke(level: LoggingLevel, loggerName: String): Boolean {
 
-        val longestPrefixMatch = trie.searchLongestPrefixWord(loggerName)
-        val minimumLevel = prefixMap[longestPrefixMatch] ?: defaultMinimumLoggingLevel
+        val minimumLevel = generateSequence(loggerName) { name -> name.substringBeforeLast(SEGMENT_SEPARATOR, missingDelimiterValue = "").ifEmpty { null } }.firstNotNullOfOrNull(prefixMap::get) ?: defaultMinimumLoggingLevel
         return level >= minimumLevel
+    }
+
+    private companion object {
+        const val SEGMENT_SEPARATOR = '.'
     }
 }

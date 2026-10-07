@@ -36,6 +36,16 @@ private class JsonFormattingTest {
     }
 
     @Test
+    fun `an error without a message still complies with the log entry schema`() = runBlocking {
+
+        val entry = LogEntry("my-logger", "something urgent", "whatever-thread-1", Clock.System.now(), IllegalStateException(), sollecitom.libs.swissknife.logger.core.LoggingLevel.ERROR, LoggingContext.withEntries(emptyMap()))
+
+        val entryAsJsonObject = JSONObject(DefaultFormatToJson(entry))
+
+        assertThat(entryAsJsonObject).compliesWith(LogEntry.jsonSchema)
+    }
+
+    @Test
     fun `the context can contain JSON objects`() = runBlocking {
 
         val loggerName = "my-logger"

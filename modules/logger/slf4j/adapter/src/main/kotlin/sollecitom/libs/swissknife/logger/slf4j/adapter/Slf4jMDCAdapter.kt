@@ -2,15 +2,12 @@ package sollecitom.libs.swissknife.logger.slf4j.adapter
 
 import org.slf4j.helpers.ThreadLocalMapOfStacks
 import org.slf4j.spi.MDCAdapter
-import java.util.*
+import java.util.Deque
 import kotlin.concurrent.getOrSet
 
 class Slf4jMDCAdapter : MDCAdapter {
 
-    private val maps: InheritableThreadLocal<MutableMap<String, String>> = object : InheritableThreadLocal<MutableMap<String, String>>() {
-
-        override fun childValue(parentValue: MutableMap<String, String>?) = parentValue?.let { HashMap(it) }
-    }
+    private val maps = ThreadLocal<MutableMap<String, String>>()
 
     private val threadLocalMapOfDequeues = ThreadLocalMapOfStacks()
 

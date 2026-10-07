@@ -28,7 +28,7 @@ object DefaultFormatToJson : FormatLogEntry<String> {
     private fun jsonValue(value: String): Any = runCatching { JSONObject(value) }.getOrElse { value }
 
     private fun Throwable.toJson(): JSONObject = JSONObject().apply {
-        put(Fields.errorMessage, message)
+        put(Fields.errorMessage, message ?: "")
         put(Fields.errorStackTrace, stackTraceToString())
     }
 

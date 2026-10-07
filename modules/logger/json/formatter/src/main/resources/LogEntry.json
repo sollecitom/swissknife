@@ -27,7 +27,7 @@
         "message": {
           "type": "string"
         },
-        "stack_trace": {
+        "stack-trace": {
           "type": "string"
         }
       },
@@ -39,17 +39,14 @@
     "thread": {
       "type": "string"
     },
-    "context_map": {
+    "context": {
       "type": "object",
       "properties": {},
       "additionalProperties": {
-        "type": "string"
-      }
-    },
-    "context_stack": {
-      "type": "array",
-      "items": {
-        "type": "string"
+        "type": [
+          "string",
+          "object"
+        ]
       }
     }
   },
