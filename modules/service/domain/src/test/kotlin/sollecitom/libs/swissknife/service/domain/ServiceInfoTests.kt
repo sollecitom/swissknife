@@ -4,6 +4,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import sollecitom.libs.swissknife.core.domain.identity.StringId
 import sollecitom.libs.swissknife.core.domain.text.Name
+import org.http4k.config.Environment
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -26,6 +27,16 @@ class ServiceInfoTests {
 
             assertThat(info.instanceId).isEqualTo(instanceId)
             assertThat(info.name).isEqualTo(name)
+        }
+
+        @Test
+        fun `creating service info from the environment uses the instance node name`() {
+
+            val environment = Environment.from("instance.node.name" to "node-1")
+
+            val info = ServiceInfo.fromEnvironment(environment, Name("my-service"))
+
+            assertThat(info).isEqualTo(ServiceInfo(StringId("node-1"), Name("my-service")))
         }
     }
 

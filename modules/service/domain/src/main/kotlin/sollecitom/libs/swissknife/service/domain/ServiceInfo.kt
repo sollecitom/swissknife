@@ -1,7 +1,11 @@
 package sollecitom.libs.swissknife.service.domain
 
+import org.http4k.config.Environment
+import org.http4k.config.EnvironmentKey
+import sollecitom.libs.swissknife.configuration.utils.instanceNodeName
 import sollecitom.libs.swissknife.core.domain.identity.Id
 import sollecitom.libs.swissknife.core.domain.identity.InstanceInfo
+import sollecitom.libs.swissknife.core.domain.identity.fromString
 import sollecitom.libs.swissknife.core.domain.identity.factory.invoke
 import sollecitom.libs.swissknife.core.domain.text.Name
 import sollecitom.libs.swissknife.core.utils.UniqueIdGenerator
@@ -22,3 +26,4 @@ data class ServiceInfo(val instanceId: Id, val name: Name) {
 
 context(ids: UniqueIdGenerator)
 fun ServiceInfo.Companion.withName(name: Name) = ServiceInfo(name = name, instanceId = ids.newId())
+fun ServiceInfo.Companion.fromEnvironment(environment: Environment, name: Name) = EnvironmentKey.instanceNodeName(environment).value.let { Id.fromString(it) }.let { ServiceInfo(instanceId = it, name = name) }
