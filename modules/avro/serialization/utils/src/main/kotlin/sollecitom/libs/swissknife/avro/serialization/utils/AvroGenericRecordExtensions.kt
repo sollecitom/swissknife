@@ -2,10 +2,14 @@
 
 package sollecitom.libs.swissknife.avro.serialization.utils
 
+import org.apache.avro.Conversions
+import org.apache.avro.LogicalTypes
+import org.apache.avro.Schema
 import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericRecord
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.nio.ByteBuffer
 import kotlin.time.Instant
 import java.util.*
 
@@ -19,13 +23,13 @@ fun GenericRecord.getString(key: String) = getStringOrNull(key) ?: missingField(
 fun GenericRecord.getIntOrNull(key: String): Int? = get(key)?.let { it as Int }
 fun GenericRecord.getInt(key: String) = getIntOrNull(key) ?: missingField(key)
 
-fun GenericRecord.getBigIntegerOrNull(key: String): BigInteger? = get(key)?.let { it as? BigInteger ?: BigInteger(it.asString()) }
+fun GenericRecord.getBigIntegerOrNull(key: String): BigInteger? = get(key)?.let { it as? BigInteger ?: (it as? ByteBuffer)?.let { bytes -> decimal(key, bytes).toBigIntegerExact() } ?: BigInteger(it.asString()) }
 fun GenericRecord.getBigInteger(key: String) = getBigIntegerOrNull(key) ?: missingField(key)
 
 fun GenericRecord.getBooleanOrNull(key: String): Boolean? = get(key)?.let { it as Boolean }
 fun GenericRecord.getBoolean(key: String) = getBooleanOrNull(key) ?: missingField(key)
 
-fun GenericRecord.getBigDecimalOrNull(key: String): BigDecimal? = get(key)?.let { it as? BigDecimal ?: BigDecimal(it.asString()) }
+fun GenericRecord.getBigDecimalOrNull(key: String): BigDecimal? = get(key)?.let { it as? BigDecimal ?: (it as? ByteBuffer)?.let { bytes -> decimal(key, bytes) } ?: BigDecimal(it.asString()) }
 fun GenericRecord.getBigDecimal(key: String) = getBigDecimalOrNull(key) ?: missingField(key)
 
 fun GenericRecord.getLongOrNull(key: String): Long? = get(key)?.let { it as Long }
@@ -69,3 +73,12 @@ fun <T : Any> GenericRecord.getValuesOrNull(key: String, deserializer: AvroDeser
 fun <T : Any> GenericRecord.getValues(key: String, deserializer: AvroDeserializer<T>): List<T> = getValuesOrNull(key, deserializer) ?: missingField(key)
 
 private fun missingField(key: String): Nothing = error("Required Avro field '$key' is missing or null")
+
+private fun GenericRecord.decimal(key: String, bytes: ByteBuffer): BigDecimal {
+
+    val fieldSchema = schema.getField(key).schema().nonNullBranch()
+    val decimal = fieldSchema.logicalType as? LogicalTypes.Decimal ?: throw IllegalArgumentException("Field '$key' of ${schema.fullName} holds bytes but is not a decimal")
+    return Conversions.DecimalConversion().fromBytes(bytes.duplicate(), fieldSchema, decimal)
+}
+
+internal fun Schema.nonNullBranch(): Schema = if (type == Schema.Type.UNION) types.single { it.type != Schema.Type.NULL } else this

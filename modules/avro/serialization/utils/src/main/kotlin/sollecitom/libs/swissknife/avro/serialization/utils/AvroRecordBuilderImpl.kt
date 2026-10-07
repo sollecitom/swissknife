@@ -1,5 +1,7 @@
 package sollecitom.libs.swissknife.avro.serialization.utils
 
+import org.apache.avro.Conversions
+import org.apache.avro.LogicalTypes
 import org.apache.avro.Schema
 import java.util.HexFormat
 import org.apache.avro.generic.GenericData
@@ -7,6 +9,7 @@ import org.apache.avro.generic.GenericRecord
 import org.apache.avro.generic.GenericRecordBuilder
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.nio.ByteBuffer
 import kotlin.time.Instant
 
 internal class AvroRecordBuilderImpl(schema: Schema) : GenericRecordBuilder(schema), AvroRecordBuilder {
@@ -22,8 +25,8 @@ internal class AvroRecordBuilderImpl(schema: Schema) : GenericRecordBuilder(sche
 
     override fun set(fieldName: String, value: Double?): AvroRecordBuilder = setValueAndReturnSelf(fieldName, value)
     override fun set(fieldName: String, value: Int?): AvroRecordBuilder = setValueAndReturnSelf(fieldName, value)
-    override fun set(fieldName: String, value: BigInteger?): AvroRecordBuilder = setValueAndReturnSelf(fieldName, value?.toString())
-    override fun set(fieldName: String, value: BigDecimal?): AvroRecordBuilder = setValueAndReturnSelf(fieldName, value?.toString())
+    override fun set(fieldName: String, value: BigInteger?): AvroRecordBuilder = setValueAndReturnSelf(fieldName, value?.let { decimalBytesOrNull(fieldName, it.toBigDecimal()) ?: it.toString() })
+    override fun set(fieldName: String, value: BigDecimal?): AvroRecordBuilder = setValueAndReturnSelf(fieldName, value?.let { decimalBytesOrNull(fieldName, it) ?: it.toString() })
     override fun set(fieldName: String, value: Long?): AvroRecordBuilder = setValueAndReturnSelf(fieldName, value)
     override fun set(fieldName: String, value: Boolean?): AvroRecordBuilder = setValueAndReturnSelf(fieldName, value)
     override fun set(fieldName: String, value: GenericRecord?): AvroRecordBuilder = setValueAndReturnSelf(fieldName, value)
@@ -80,6 +83,13 @@ internal class AvroRecordBuilderImpl(schema: Schema) : GenericRecordBuilder(sche
             Schema.Type.UNION -> return fieldSchema.types.first { it.type == Schema.Type.ENUM }
             else -> fieldSchema
         }
+    }
+
+    private fun decimalBytesOrNull(fieldName: String, value: BigDecimal): ByteBuffer? {
+
+        val fieldSchema = schema.getField(fieldName).schema().nonNullBranch().takeIf { it.type == Schema.Type.BYTES } ?: return null
+        val decimal = fieldSchema.logicalType as? LogicalTypes.Decimal ?: return null
+        return Conversions.DecimalConversion().toBytes(value.setScale(decimal.scale), fieldSchema, decimal)
     }
 
     private fun Schema.arraySchema(): Schema = if (type == Schema.Type.UNION) types.first { it.type == Schema.Type.ARRAY } else this
