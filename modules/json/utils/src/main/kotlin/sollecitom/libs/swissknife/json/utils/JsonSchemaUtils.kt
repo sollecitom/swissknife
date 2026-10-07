@@ -2,6 +2,7 @@ package sollecitom.libs.swissknife.json.utils
 
 import sollecitom.libs.swissknife.resource.utils.ResourceLoader.openAsStream
 import com.github.erosb.jsonsKema.JsonParser
+import com.github.erosb.jsonsKema.PrepopulatedSchemaClient
 import com.github.erosb.jsonsKema.SchemaClient
 import com.github.erosb.jsonsKema.SchemaLoader
 import com.github.erosb.jsonsKema.SchemaLoaderConfig
@@ -13,7 +14,7 @@ import java.net.URI
 import java.util.concurrent.ConcurrentHashMap
 
 private val initialBaseURI = URI("mem://input")
-private val schemaClient: SchemaClient by lazy { CachedSchemaClient(CustomSchemaClient(initialBaseURI.toString())) }
+private val schemaClient: SchemaClient by lazy { CustomSchemaClient(initialBaseURI.toString()).let(::PrepopulatedSchemaClient).let(::CachedSchemaClient) }
 
 /** Loads and parses a JSON Schema from a classpath resource at the given [location]. */
 fun jsonSchemaAt(location: String): JsonSchema = openAsStream(location).use {
