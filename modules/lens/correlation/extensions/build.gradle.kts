@@ -12,4 +12,5 @@ dependencies {
     implementation(projects.kotlinExtensions)
 
     testImplementation(projects.correlationCoreTestUtils)
+    testImplementation(projects.testUtils)
 }

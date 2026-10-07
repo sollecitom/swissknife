@@ -2,7 +2,7 @@ package sollecitom.libs.swissknife.core.domain.networking
 
 /** A port request: either a specific ephemeral port or [RANDOM_AVAILABLE] (0) to let the OS choose. */
 @JvmInline
-value class RequestedPort(val value: Int) : Comparable<Int> {
+value class RequestedPort(val value: Int) : Comparable<RequestedPort> {
 
     init {
         require(value == RANDOM_AVAILABLE || value in EphemeralPort.range) { "Requested port value must be $RANDOM_AVAILABLE or within range ${Port.ephemeralRange}" }
@@ -10,7 +10,7 @@ value class RequestedPort(val value: Int) : Comparable<Int> {
 
     fun isSpecified(): Boolean = value != RANDOM_AVAILABLE
 
-    override fun compareTo(other: Int) = value.compareTo(other)
+    override fun compareTo(other: RequestedPort) = value.compareTo(other.value)
 
     companion object {
 

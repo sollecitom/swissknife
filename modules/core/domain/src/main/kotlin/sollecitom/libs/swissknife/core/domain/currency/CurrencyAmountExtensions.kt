@@ -2,6 +2,7 @@ package sollecitom.libs.swissknife.core.domain.currency
 
 import sollecitom.libs.swissknife.kotlin.extensions.number.withPrecision
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 @Suppress("UNCHECKED_CAST")
 operator fun <CURRENCY_AMOUNT : CurrencyAmount> CURRENCY_AMOUNT.times(value: Long): CURRENCY_AMOUNT = times(value.toBigInteger()) as CURRENCY_AMOUNT
@@ -24,7 +25,7 @@ fun <CURRENCY_AMOUNT : CurrencyAmount> CURRENCY_AMOUNT.divAndRemainder(value: In
 operator fun <CURRENCY_AMOUNT : CurrencyAmount> CURRENCY_AMOUNT.times(value: BigDecimal) = withNewValue(units.toBigDecimal().movePointLeft(currency.fractionalDigits.value) * value)
 operator fun <CURRENCY_AMOUNT : CurrencyAmount> CURRENCY_AMOUNT.times(value: Double) = times(value.toBigDecimal())
 
-operator fun <CURRENCY_AMOUNT : CurrencyAmount> CURRENCY_AMOUNT.div(value: BigDecimal) = withNewValue(units.toBigDecimal().movePointLeft(currency.fractionalDigits.value) / value)
+operator fun <CURRENCY_AMOUNT : CurrencyAmount> CURRENCY_AMOUNT.div(value: BigDecimal) = withNewValue(units.toBigDecimal().movePointLeft(currency.fractionalDigits.value).divide(value, currency.fractionalDigits.value, RoundingMode.DOWN))
 operator fun <CURRENCY_AMOUNT : CurrencyAmount> CURRENCY_AMOUNT.div(value: Double) = div(value.toBigDecimal())
 
 @Suppress("UNCHECKED_CAST")

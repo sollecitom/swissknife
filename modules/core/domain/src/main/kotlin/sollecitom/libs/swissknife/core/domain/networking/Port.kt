@@ -14,6 +14,7 @@ value class Port(val value: Int) : Comparable<Port> {
 
     companion object {
 
+        /** Non-privileged ports (1024-65535); wider than the IANA dynamic/ephemeral range (49152-65535). */
         val ephemeralRange = 1024..65535
         val admissibleRange = 1..65535
     }

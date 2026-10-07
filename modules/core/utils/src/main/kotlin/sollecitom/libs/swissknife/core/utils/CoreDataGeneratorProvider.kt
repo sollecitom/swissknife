@@ -17,19 +17,24 @@ import java.time.Clock as JavaClock
 
 internal class CoreDataGeneratorProvider(private val environment: Environment, initialisedClock: Clock? = null, randomSeed: ByteArray? = null) : Loggable(), CoreDataGenerator {
 
-    override val secureRandom: SecureRandom = SecureRandom.getInstance(SECURE_RANDOM_ALGORITHM).apply { setSeed(randomSeed ?: initialiseSecureRandomSeed()) }
-    override val random: Random = secureRandom.asKotlinRandom()
+    private val configuredSeed: ByteArray? = randomSeed ?: readConfiguredSeed()
+    private val seed: ByteArray = configuredSeed ?: SecureRandom().nextLong().also { logger.info { "Initialised random from seed: $it" } }.toByteArray()
+
+    override val secureRandom: SecureRandom = configuredSeed?.let { seededSecureRandom(it).also { logger.warn { "secureRandom is seeded from configuration: key material is predictable, use only in tests" } } } ?: SecureRandom()
+    override val random: Random = seededSecureRandom(seed).asKotlinRandom()
     override val clock: Clock = initialisedClock ?: initialiseClock()
     override val javaClock: JavaClock by lazy { clock.toJavaClock() }
     override val newId: UniqueIdFactory by lazy { UniqueIdFactory.invoke(random = random, clock = clock) }
 
-    private fun SecureRandom.initialiseSecureRandomSeed(): ByteArray {
+    private fun readConfiguredSeed(): ByteArray? {
 
         logger.info { "Reading random seed from property ${EnvironmentKey.randomSeed.meta.name}" }
-        val seed = EnvironmentKey.randomSeed(environment) ?: nextLong()
-        logger.info { "Initialised random from seed: $seed" }
+        val seed = EnvironmentKey.randomSeed(environment) ?: return null
+        logger.info { "Initialised random from configured seed: $seed" }
         return seed.toByteArray()
     }
+
+    private fun seededSecureRandom(seed: ByteArray) = SecureRandom.getInstance(SECURE_RANDOM_ALGORITHM).apply { setSeed(seed) }
 
     private fun initialiseClock(): Clock {
 

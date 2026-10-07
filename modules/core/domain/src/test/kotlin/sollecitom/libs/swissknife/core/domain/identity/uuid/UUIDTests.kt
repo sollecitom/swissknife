@@ -7,14 +7,18 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isLessThan
 import assertk.assertions.isInstanceOf
+import assertk.assertions.containsExactly
 import sollecitom.libs.swissknife.core.domain.identity.Id
 import sollecitom.libs.swissknife.core.domain.identity.UUID
 import sollecitom.libs.swissknife.core.domain.identity.UUIDv7
-import sollecitom.libs.swissknife.core.domain.identity.fromString
+import sollecitom.libs.swissknife.core.domain.identity.fromTypedString
+import sollecitom.libs.swissknife.core.domain.identity.toTypedString
 import sollecitom.libs.swissknife.core.domain.identity.factory.Factory
 import sollecitom.libs.swissknife.core.domain.identity.utils.invoke
 import sollecitom.libs.swissknife.kotlin.extensions.time.truncatedToMilliseconds
+import kotlin.random.Random
 import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlin.time.Duration.Companion.days
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -130,13 +134,48 @@ class UUIDTests {
     }
 
     @Test
-    fun `fromString round-trips a v7 UUID to the sortable UUIDv7 type`() {
+    fun `the typed string form round-trips a v7 UUID to the sortable UUIDv7 type`() {
 
-        val text = factory.uuid.v7().stringValue
+        val original = factory.uuid.v7()
 
-        val id = Id.fromString(text)
+        val id = Id.fromTypedString(original.toTypedString())
 
-        assertThat(id).isInstanceOf(UUIDv7::class)
+        assertThat(id).isEqualTo(original)
+    }
+
+    @Test
+    fun `v7 UUIDs honour the injected random and clock`() {
+
+        val now = Instant.parse("2026-01-01T00:00:00Z")
+        val clock = object : Clock { override fun now() = now }
+
+        val first = Id.Factory.invoke(random = Random(42), clock = clock).uuid.v7()
+        val second = Id.Factory.invoke(random = Random(42), clock = clock).uuid.v7()
+
+        assertThat(first).isEqualTo(second)
+        assertThat(first.timestamp).isEqualTo(now)
+    }
+
+    @Test
+    fun `v7 UUIDs stay monotonic when the clock does not move`() {
+
+        val now = Instant.parse("2026-01-01T00:00:00Z")
+        val factory = Id.Factory.invoke(clock = object : Clock { override fun now() = now })
+
+        val ids = (1..1000).map { factory.uuid.v7() }
+
+        assertThat(ids).containsExactly(*ids.sorted().toTypedArray())
+        assertThat(ids.toSet().size).isEqualTo(ids.size)
+    }
+
+    @Test
+    fun `v4 UUIDs honour the injected random`() {
+
+        val first = Id.Factory.invoke(random = Random(42)).uuid.v4()
+        val second = Id.Factory.invoke(random = Random(42)).uuid.v4()
+
+        assertThat(first).isEqualTo(second)
+        assertThat(JavaUUID.fromString(first.stringValue).version()).isEqualTo(4)
     }
 
     @Test

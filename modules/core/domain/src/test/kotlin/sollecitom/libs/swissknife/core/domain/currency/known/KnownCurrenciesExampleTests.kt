@@ -96,7 +96,18 @@ class KnownCurrenciesExampleTests {
 
         val result = amount / factor
 
-        assertThat(result).isEqualTo(11.32.dollars)
+        assertThat(result).isEqualTo(11.31.dollars)
+    }
+
+    @Test
+    fun `dividing truncates rather than rounds`() {
+
+        val amount = 2.dollars
+        val factor = 3.0
+
+        val result = amount / factor
+
+        assertThat(result).isEqualTo(0.66.dollars)
     }
 
     @Test
