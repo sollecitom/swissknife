@@ -9,4 +9,6 @@ dependencies {
     api(projects.readinessDomain)
     api(libs.http4k.platform.k8s)
     api(projects.serviceDomain)
+
+    testImplementation(projects.testUtils)
 }
