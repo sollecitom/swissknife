@@ -10,24 +10,22 @@ import sollecitom.libs.swissknife.protected_value.domain.ProtectedValueFactory
 
 private class GcmAes256ProtectedValueFactory(private val lookupKeyForOwner: suspend (Id) -> SymmetricKey?) : ProtectedValueFactory<Id, EncryptionMode.GCM.Metadata> {
 
-    override suspend fun <VALUE : Any> protectValue(value: VALUE, valueName: Name, owner: Id, serialize: (VALUE) -> ByteArray, iv: ByteArray?): ProtectedValue<VALUE, EncryptionMode.GCM.Metadata> {
+    override suspend fun <VALUE : Any> protectValue(value: VALUE, valueName: Name, owner: Id, serialize: (VALUE) -> ByteArray): ProtectedValue<VALUE, EncryptionMode.GCM.Metadata> {
 
         val key = lookupKeyForOwner(owner) ?: error("No encryption key found for owner $owner")
         val clearText = serialize(value)
-        val encrypted = iv?.let { key.gcm.encrypt(clearText, iv) } ?: key.gcm.encryptWithRandomIV(clearText)
+        val encrypted = key.gcm.encryptWithRandomIV(clearText, associatedData = owner.associatedData)
         return ProtectedValueData(encrypted.content, valueName, owner, encrypted.metadata)
     }
 
-    class Accessible<ACCESS_CONTEXT : Any>(private val factory: ProtectedValueFactory<ACCESS_CONTEXT, EncryptionMode.GCM.Metadata>, private val lookupKeyForProtectedValue: suspend (ProtectedValue<*, EncryptionMode.GCM.Metadata>) -> SymmetricKey?) : ProtectedValueFactory<ACCESS_CONTEXT, EncryptionMode.GCM.Metadata> by factory, ProtectedValueFactory.Accessible<ACCESS_CONTEXT, EncryptionMode.GCM.Metadata> {
+    class Accessible<ACCESS_CONTEXT : Any>(private val factory: ProtectedValueFactory<ACCESS_CONTEXT, EncryptionMode.GCM.Metadata>, private val lookupKeyForProtectedValue: suspend (ProtectedValue<*, EncryptionMode.GCM.Metadata>) -> SymmetricKey?, private val accessHook: ProtectedValue.AccessHook<ACCESS_CONTEXT, EncryptionMode.GCM.Metadata>) : ProtectedValueFactory<ACCESS_CONTEXT, EncryptionMode.GCM.Metadata> by factory, ProtectedValueFactory.Accessible<ACCESS_CONTEXT, EncryptionMode.GCM.Metadata> {
 
-        override fun <VALUE : Any> makeAccessible(protectedValue: ProtectedValue<VALUE, EncryptionMode.GCM.Metadata>, deserialize: (ByteArray) -> VALUE): ProtectedValue.Accessible<VALUE, EncryptionMode.GCM.Metadata, ACCESS_CONTEXT> = ProtectedValueData.Accessible(protectedValue, deserialize, ::unprotect)
+        override fun <VALUE : Any> makeAccessible(protectedValue: ProtectedValue<VALUE, EncryptionMode.GCM.Metadata>, deserialize: (ByteArray) -> VALUE): ProtectedValue.Accessible<VALUE, EncryptionMode.GCM.Metadata, ACCESS_CONTEXT> = ProtectedValueData.Accessible(protectedValue, deserialize, accessHook, ::unprotect)
 
         private suspend fun unprotect(protectedValue: ProtectedValue<*, EncryptionMode.GCM.Metadata>): ByteArray {
 
             val key = lookupKeyForProtectedValue(protectedValue)?.apply { enforceCompatibleWith(protectedValue) } ?: error("No encryption key found for owner ${protectedValue.owner} and metadata ${protectedValue.metadata}")
-            val metadata = protectedValue.metadata
-            // The associated data is authenticated, not encrypted, so it must be replayed here or the tag will not match.
-            return key.gcm.decrypt(protectedValue.value, metadata.iv, metadata.associatedData)
+            return key.gcm.decrypt(protectedValue.value, protectedValue.metadata.iv, protectedValue.owner.associatedData)
         }
 
         private fun SymmetricKey.enforceCompatibleWith(protectedValue: ProtectedValue<*, EncryptionMode.GCM.Metadata>) {
@@ -39,6 +37,9 @@ private class GcmAes256ProtectedValueFactory(private val lookupKeyForOwner: susp
     }
 }
 
+private val Id.associatedData: ByteArray get() = stringValue.toByteArray()
+
 fun ProtectedValueFactory.Companion.aes256WithGCM(lookupKeyForOwner: suspend (Id) -> SymmetricKey?): ProtectedValueFactory<Id, EncryptionMode.GCM.Metadata> = GcmAes256ProtectedValueFactory(lookupKeyForOwner)
 
-fun ProtectedValueFactory<Id, EncryptionMode.GCM.Metadata>.accessible(lookupKeyForProtectedValue: suspend (ProtectedValue<*, EncryptionMode.GCM.Metadata>) -> SymmetricKey?): ProtectedValueFactory.Accessible<Id, EncryptionMode.GCM.Metadata> = GcmAes256ProtectedValueFactory.Accessible(this, lookupKeyForProtectedValue)
+/** The owner is bound to the ciphertext as associated data; [accessHook] runs before every decryption. */
+fun ProtectedValueFactory<Id, EncryptionMode.GCM.Metadata>.accessible(accessHook: ProtectedValue.AccessHook<Id, EncryptionMode.GCM.Metadata>, lookupKeyForProtectedValue: suspend (ProtectedValue<*, EncryptionMode.GCM.Metadata>) -> SymmetricKey?): ProtectedValueFactory.Accessible<Id, EncryptionMode.GCM.Metadata> = GcmAes256ProtectedValueFactory.Accessible(this, lookupKeyForProtectedValue, accessHook)

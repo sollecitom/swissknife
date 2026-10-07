@@ -2,23 +2,20 @@ package sollecitom.libs.swissknife.protected_value.domain
 
 import sollecitom.libs.swissknife.core.domain.identity.Id
 import sollecitom.libs.swissknife.core.domain.text.Name
-import sollecitom.libs.swissknife.logger.core.loggable.Loggable
 
 /** Default implementation of [ProtectedValue] backed by a byte array. */
 class ProtectedValueData<out VALUE : Any, out METADATA>(override val value: ByteArray, override val name: Name, override val owner: Id, override val metadata: METADATA) : ProtectedValue<VALUE, METADATA> {
 
-    class Accessible<out VALUE : Any, out METADATA, in ACCESS_CONTEXT : Any>(private val protected: ProtectedValue<VALUE, METADATA>, private val deserialize: (ByteArray) -> VALUE, private val unprotect: suspend (ProtectedValue<VALUE, METADATA>) -> ByteArray) : ProtectedValue.Accessible<VALUE, METADATA, ACCESS_CONTEXT>, ProtectedValue<VALUE, METADATA> by protected {
+    class Accessible<out VALUE : Any, out METADATA, in ACCESS_CONTEXT : Any>(private val protected: ProtectedValue<VALUE, METADATA>, private val deserialize: (ByteArray) -> VALUE, private val accessHook: ProtectedValue.AccessHook<ACCESS_CONTEXT, METADATA>, private val unprotect: suspend (ProtectedValue<VALUE, METADATA>) -> ByteArray) : ProtectedValue.Accessible<VALUE, METADATA, ACCESS_CONTEXT>, ProtectedValue<VALUE, METADATA> by protected {
 
         override suspend fun access(context: ACCESS_CONTEXT): VALUE {
-            logger.info { "Accessed protected value with name '${name.value}' and owner with ID '${owner.stringValue}'" }
+            accessHook.beforeAccess(context, this)
             val decoded = unprotect(this)
             return deserialize(decoded)
         }
 
         override fun toString(): String = "ProtectedValueData.Accessible(value=${value.contentToString()}, name=$name, owner=$owner, metadata=$metadata)"
     }
-
-    private companion object : Loggable()
 
     override fun toString(): String = "ProtectedValueData(value=${value.contentToString()}, name=${name.value}, owner=${owner.stringValue}, metadata=$metadata)"
 
@@ -44,4 +41,4 @@ class ProtectedValueData<out VALUE : Any, out METADATA>(override val value: Byte
     }
 }
 
-fun <VALUE : Any, METADATA, ACCESS_CONTEXT : Any> ProtectedValue<VALUE, METADATA>.accessible(deserialize: (ByteArray) -> VALUE, unprotect: suspend (ProtectedValue<VALUE, METADATA>) -> ByteArray): ProtectedValue.Accessible<VALUE, METADATA, ACCESS_CONTEXT> = ProtectedValueData.Accessible(this, deserialize, unprotect)
+fun <VALUE : Any, METADATA, ACCESS_CONTEXT : Any> ProtectedValue<VALUE, METADATA>.accessible(deserialize: (ByteArray) -> VALUE, accessHook: ProtectedValue.AccessHook<ACCESS_CONTEXT, METADATA>, unprotect: suspend (ProtectedValue<VALUE, METADATA>) -> ByteArray): ProtectedValue.Accessible<VALUE, METADATA, ACCESS_CONTEXT> = ProtectedValueData.Accessible(this, deserialize, accessHook, unprotect)
