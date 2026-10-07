@@ -36,5 +36,5 @@ private class NatsConsumerAdapter(options: Options, private val subjects: Set<St
     }
 }
 
-/** Creates a [NatsConsumer] that subscribes to the given [subjects] using the given [options]. Collecting fails if the server doesn't confirm the subscriptions within [subscriptionConfirmationTimeout]. */
+/** Creates a [NatsConsumer] that subscribes to the given [subjects] using the given [options]. */
 fun NatsConsumer.Companion.create(options: Options, subjects: Set<String>, subscriptionConfirmationTimeout: Duration = 10.seconds): NatsConsumer = NatsConsumerAdapter(options, subjects, subscriptionConfirmationTimeout)

@@ -1,12 +1,9 @@
 package sollecitom.libs.swissknife.core.domain.identity
 
-/** Wraps [stringValue] in a [StringId], keeping the exact text. Use [fromTypedString] to round-trip the [Id] type. */
 fun Id.Companion.fromString(stringValue: String): Id = StringId(stringValue)
 
-/** Encodes this [Id] as `<type>:<value>` (e.g. `ulid:01ARZ3NDEKTSV4RRFFQ69G5FAV`), so that [fromTypedString] restores both type and value. */
 fun Id.toTypedString(): String = "$typeName$TYPE_SEPARATOR$stringValue"
 
-/** Parses the `<type>:<value>` form produced by [toTypedString]. */
 fun Id.Companion.fromTypedString(typedValue: String): Id {
 
     val type = typedValue.substringBefore(TYPE_SEPARATOR, missingDelimiterValue = "")

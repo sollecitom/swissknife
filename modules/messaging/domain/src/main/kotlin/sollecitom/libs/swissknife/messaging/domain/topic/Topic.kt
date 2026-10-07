@@ -3,7 +3,6 @@ package sollecitom.libs.swissknife.messaging.domain.topic
 import sollecitom.libs.swissknife.core.domain.text.Name
 import java.util.regex.Pattern
 
-/** A messaging topic with protocol (persistent/non-persistent), namespace, and name. Topics created without a namespace get [Namespace.default] (`public/default`), as in Pulsar. Use [Topic.parse] or factory methods to create. */
 sealed class Topic(val persistent: Boolean, val namespace: Namespace, val name: Name) {
 
     val protocol: Name get() = if (persistent) Persistent.protocol else NonPersistent.protocol

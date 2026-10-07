@@ -5,8 +5,7 @@ import sollecitom.libs.swissknife.core.domain.traits.Identifiable
 /** A feature toggle that can extract and serialize values. Identified by a unique [Id]. */
 interface Toggle<VALUE : Any, out SERIALIZED_VALUE : Any> : Identifiable, ToggleValueSerializer<VALUE, SERIALIZED_VALUE>, ToggleValueExtractor<VALUE> {
 
-    /** Whether [value] is a legal value for this toggle, i.e. extracting it would not fail. */
-    fun accepts(value: ToggleValue<*>): Boolean = value.id == id && runCatching { invoke(Toggles(setOf(value))) }.isSuccess
+    fun accepts(value: ToggleValue<*>): Boolean = value.id == id && runCatching { setOf(value).let(::Toggles).let(::invoke) }.isSuccess
 
     companion object
 }

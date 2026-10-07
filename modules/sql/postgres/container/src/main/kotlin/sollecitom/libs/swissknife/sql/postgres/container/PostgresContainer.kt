@@ -52,10 +52,6 @@ class PostgresDockerContainer(imageName: DockerImageName = DockerImageName.parse
 
     fun getMappedPort(port: Int): Int = container.getMappedPort(port)
 
-    /**
-     * Creates a login that can connect and read and write data in the `public` schema, but cannot change the schema.
-     * Tables created later by the container's own user are covered too. Use it for tests that need a non-superuser.
-     */
     fun createUser(name: Name, password: Password): SqlConnectionOptions {
 
         require(name.value.matches(SQL_IDENTIFIER)) { "User name '${name.value}' must be a plain lowercase SQL identifier" }

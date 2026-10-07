@@ -6,9 +6,9 @@ import sollecitom.libs.swissknife.openapi.provider.definition.OpenApiDefinition
 import sollecitom.libs.swissknife.openapi.provider.provider.LocationBasedOpenApiProvider
 import io.swagger.v3.parser.core.models.ParseOptions
 
+// TODO remove this whole thing
 val OpenApiDefinitionReader.Companion.standard: OpenApiDefinitionReader get() = StandardOpenApiDefinitionReader
 
-/** Reads definitions above OpenAPI 3.0.0 as 3.0.0, since some SDK generators lose type information otherwise. Relative `$ref`s still resolve against the original location. */
 val OpenApiDefinitionReader.Companion.downgrading: OpenApiDefinitionReader get() = DowngradingOpenApiDefinitionReader
 
 private val parseOptions = ParseOptions().apply {
@@ -27,6 +27,7 @@ internal object StandardOpenApiDefinitionReader : OpenApiDefinitionReader {
     }
 }
 
+// TODO remove this and read the normal 3.1 API
 internal object DowngradingOpenApiDefinitionReader : OpenApiDefinitionReader {
 
     private val maximumVersion = Version.Semantic(3, 0, 0)

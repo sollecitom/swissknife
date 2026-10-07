@@ -2,11 +2,11 @@ package sollecitom.libs.swissknife.core.domain.email
 
 import sollecitom.libs.swissknife.kotlin.extensions.text.withoutWhitespace
 
-/** A validated email address. Enforces basic format rules: no whitespace, exactly one '@' with a non-empty local part, and a dotted domain without empty labels. */
 @JvmInline
 value class EmailAddress(val value: String) : Comparable<EmailAddress> {
 
     init {
+        // TODO improve email validation
         require(value.isNotBlank()) { "email address cannot be blank" }
         require(value.withoutWhitespace() == value) { "email address cannot contain whitespace" }
         require(value.count { it == PREFIX_FROM_DOMAIN_SEPARATOR } == 1) { "email address must contain exactly one '$PREFIX_FROM_DOMAIN_SEPARATOR'" }

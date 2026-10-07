@@ -1,8 +1,10 @@
 package sollecitom.libs.swissknife.logging.standard.configuration
 
 import assertk.assertThat
+import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
 import sollecitom.libs.swissknife.logger.core.LoggingLevel
+import sollecitom.libs.swissknife.test.utils.assertions.failedThrowing
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
@@ -29,5 +31,15 @@ class LoggingLevelConfigurationTests {
         val customizer = StandardLoggingConfiguration(readConfigurationValue = configuration::get)
 
         assertThat(customizer.minimumLoggingLevel).isEqualTo(LoggingLevel.WARN)
+    }
+
+    @Test
+    fun `an override without a level is rejected`() {
+
+        val configuration = mapOf(StandardLoggingConfiguration.Properties.LOGGING_LEVEL_OVERRIDES_ENV_VARIABLE to "com.foo")
+
+        val result = runCatching { StandardLoggingConfiguration(readConfigurationValue = configuration::get) }
+
+        assertThat(result).failedThrowing<IllegalArgumentException>().hasMessage("Logging level override 'com.foo' must be in the form '<logger-name>=<level>'")
     }
 }

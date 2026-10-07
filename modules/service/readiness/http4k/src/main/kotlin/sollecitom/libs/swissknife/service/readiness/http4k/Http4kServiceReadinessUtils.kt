@@ -16,7 +16,6 @@ fun ReadinessAware.http4kReadinessCheckWithModuleName(moduleName: Name, timeout:
 
 val ReadinessAware.http4kReadinessCheck: Http4kReadinessCheck get() = Http4kReadinessCheckAdapter(adapter = this)
 
-/** A check that doesn't answer within this time reports not ready, so a hung dependency can't hang the readiness endpoint. */
 val defaultReadinessTimeout: Duration = 5.seconds
 
 private class Http4kReadinessCheckAdapter(private val adapter: ReadinessAware, moduleName: Name? = null, private val timeout: Duration = defaultReadinessTimeout) : Http4kReadinessCheck {

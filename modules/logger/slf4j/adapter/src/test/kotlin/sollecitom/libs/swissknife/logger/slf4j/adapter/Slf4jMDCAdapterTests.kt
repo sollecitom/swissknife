@@ -31,4 +31,16 @@ class Slf4jMDCAdapterTests {
 
         assertThat(adapter.copyOfContextMap).isEmpty()
     }
+
+    @Test
+    fun `a child thread doesn't inherit the parent's context`() {
+
+        val adapter = Slf4jMDCAdapter()
+        adapter.put("key", "value")
+        var valueSeenByChild: String? = "unset"
+
+        Thread { valueSeenByChild = adapter.get("key") }.apply { start(); join() }
+
+        assertThat(valueSeenByChild).isNull()
+    }
 }

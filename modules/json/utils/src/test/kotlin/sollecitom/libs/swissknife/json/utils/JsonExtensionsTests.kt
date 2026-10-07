@@ -467,6 +467,16 @@ class JsonExtensionsTests {
         }
 
         @Test
+        fun `an int array with a fraction is rejected`() {
+
+            val json = JSONObject().put("numbers", JSONArray().put(1).put(2.5))
+
+            val result = runCatching { json.getIntArrayOrNull("numbers") }
+
+            assertThat(result).failedThrowing<ArithmeticException>()
+        }
+
+        @Test
         fun `a long that overflows is rejected`() {
 
             val json = JSONObject("""{"count": 92233720368547758070}""")

@@ -3,10 +3,6 @@ package sollecitom.libs.swissknife.avro.schema.checker
 import org.apache.avro.Schema
 import sollecitom.libs.swissknife.compliance.checker.domain.ComplianceRule
 
-/**
- * Compliance rule for a topic's value schema: following the record fields in [eventsFieldPath] must reach a union whose branches are all records (one per event type).
- * New event types can then be added as union branches, which a BACKWARD_TRANSITIVE registry accepts.
- */
 data class TopicEventUnionRule(val eventsFieldPath: List<String> = listOf("data", "envelope")) : ComplianceRule<Schema> {
 
     init {

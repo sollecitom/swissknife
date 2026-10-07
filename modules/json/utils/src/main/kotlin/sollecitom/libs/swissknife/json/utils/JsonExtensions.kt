@@ -7,7 +7,6 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
 
-/** Null if the field is missing or not a number; throws [ArithmeticException] if it has a fraction or doesn't fit a Long. */
 fun JSONObject.getLongOrNull(field: String): Long? = optBigDecimal(field, null)?.longValueExact()
 fun JSONObject.getRequiredLong(field: String): Long = getLongOrNull(field) ?: missingField(field)
 
@@ -24,7 +23,6 @@ fun JSONObject.getJSONObjectOrNull(field: String): JSONObject? = runCatching { g
 fun JSONObject.getDoubleOrNull(field: String): Double? = runCatching { getDouble(field) }.getOrNull()
 fun JSONObject.getRequiredDouble(field: String): Double = getDoubleOrNull(field) ?: missingField(field)
 
-/** Null if the field is missing or not a number; throws [ArithmeticException] if it has a fraction or doesn't fit an Int. */
 fun JSONObject.getIntOrNull(field: String): Int? = optBigDecimal(field, null)?.intValueExact()
 fun JSONObject.getRequiredInt(field: String): Int = getIntOrNull(field) ?: missingField(field)
 

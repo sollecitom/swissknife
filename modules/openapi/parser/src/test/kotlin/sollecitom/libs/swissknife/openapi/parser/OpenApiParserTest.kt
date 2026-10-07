@@ -1,6 +1,7 @@
 package sollecitom.libs.swissknife.openapi.parser
 
 import assertk.assertThat
+import assertk.assertions.contains
 import assertk.assertions.isSuccess
 import sollecitom.libs.swissknife.test.utils.assertions.failedThrowing
 import org.junit.jupiter.api.Test
@@ -11,6 +12,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.util.jar.JarEntry
 import java.util.jar.JarOutputStream
+import kotlin.io.path.writeText
 
 @TestInstance(PER_CLASS)
 private class OpenApiParserTest {
@@ -60,6 +62,19 @@ private class OpenApiParserTest {
         assertThat(result).failedThrowing<OpenApiParser.ParseException>()
     }
 
+    @Test
+    fun `parsed content resolves relative references against its base location`() {
+
+        val parser = newOpenApiParser()
+        val directory = Files.createTempDirectory("openapi-content").apply { toFile().deleteOnExit() }
+        directory.resolve("Thing.yaml").writeText("type: object\nproperties:\n  thingName:\n    type: string\n")
+        val baseLocation = directory.resolve("api.yaml").apply { writeText(apiReferencingThing) }.toString()
+
+        val api = parser.parseContent(openApi = apiReferencingThing, baseLocation = baseLocation)
+
+        assertThat(api.components.schemas.keys).contains("Thing")
+    }
+
     private fun newOpenApiParser(): OpenApiParser = OpenApiReader
 
     private fun jarWithEntry(name: String, content: String): Path {
@@ -72,6 +87,23 @@ private class OpenApiParserTest {
         }
         return jar
     }
+
+    private val apiReferencingThing = """
+        openapi: 3.0.0
+        info:
+          title: Things
+          version: 1.0.0
+        paths:
+          /things:
+            get:
+              responses:
+                "200":
+                  description: Found
+                  content:
+                    application/json:
+                      schema:
+                        ${'$'}ref: "./Thing.yaml"
+    """.trimIndent()
 
     private val selfContainedOpenApi = """
         openapi: 3.1.0

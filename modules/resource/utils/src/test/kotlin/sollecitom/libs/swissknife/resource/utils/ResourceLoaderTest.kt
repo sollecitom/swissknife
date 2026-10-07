@@ -1,10 +1,10 @@
 package sollecitom.libs.swissknife.resource.utils
 
 import assertk.assertThat
+import sollecitom.libs.swissknife.test.utils.assertions.failedThrowing
 import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFailure
-import assertk.assertions.isInstanceOf
 import assertk.assertions.isSuccess
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -72,7 +72,7 @@ private class ResourceLoaderTest {
 
         val result = runCatching { ResourceLoader.resolvePath(JAR_RESOURCE) }
 
-        assertThat(result).isFailure().isInstanceOf(IllegalArgumentException::class)
+        assertThat(result).failedThrowing<IllegalArgumentException>()
     }
 
     private companion object {

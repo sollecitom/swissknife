@@ -33,10 +33,7 @@ fun PulsarAdmin.createTenant(tenant: String) = tenants().createTenant(tenant, Te
 
 fun PulsarAdmin.createNamespace(tenant: String, namespace: String) = namespaces().createNamespace("$tenant/$namespace")
 
-/**
- * Configures a Pulsar namespace with topic creation, schema update, and compatibility policies. The default compatibility is
- * BACKWARD_TRANSITIVE: new readers read every older schema, and a topic's event union can gain new event types (FULL_TRANSITIVE rejects that).
- */
+/** Configures a Pulsar namespace with topic creation, schema update, and compatibility policies. */
 fun PulsarAdmin.configureNamespace(tenant: String, namespace: String, allowTopicCreation: Boolean = false, isAllowAutoUpdateSchema: Boolean = false, schemaValidationEnforced: Boolean = true, schemaCompatibilityStrategy: SchemaCompatibilityStrategy = SchemaCompatibilityStrategy.BACKWARD_TRANSITIVE) {
 
     val tenantNamespace = "$tenant/$namespace"
@@ -46,7 +43,6 @@ fun PulsarAdmin.configureNamespace(tenant: String, namespace: String, allowTopic
     namespaces().setSchemaCompatibilityStrategy(tenantNamespace, schemaCompatibilityStrategy)
 }
 
-/** Auto-created topics are partitioned with one partition, like [createTopic]'s default. The broker expects the lowercase topic type. */
 private fun autoTopicCreation(allowTopicCreation: Boolean): AutoTopicCreationOverride = AutoTopicCreationOverride.builder()
     .allowAutoTopicCreation(allowTopicCreation)
     .apply { if (allowTopicCreation) topicType(TopicType.PARTITIONED.toString()).defaultNumPartitions(1) }

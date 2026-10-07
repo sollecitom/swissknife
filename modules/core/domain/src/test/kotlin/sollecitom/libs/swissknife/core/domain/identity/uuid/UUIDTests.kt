@@ -138,7 +138,7 @@ class UUIDTests {
 
         val original = factory.uuid.v7()
 
-        val id = Id.fromTypedString(original.toTypedString())
+        val id = original.toTypedString().let(Id::fromTypedString)
 
         assertThat(id).isEqualTo(original)
     }

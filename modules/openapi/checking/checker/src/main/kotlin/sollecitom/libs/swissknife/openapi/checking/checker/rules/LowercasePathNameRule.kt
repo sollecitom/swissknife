@@ -3,7 +3,6 @@ package sollecitom.libs.swissknife.openapi.checking.checker.rules
 import sollecitom.libs.swissknife.compliance.checker.domain.ComplianceRule
 import io.swagger.v3.oas.models.OpenAPI
 
-/** Paths must be lowercase; path template variables (e.g. `{customerId}`) are left to the parameter naming rules. */
 object LowercasePathNameRule : ComplianceRule<OpenAPI> {
 
     override fun invoke(target: OpenAPI): ComplianceRule.Result<OpenAPI> {

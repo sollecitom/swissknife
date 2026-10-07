@@ -37,7 +37,9 @@ class ToggleValueLensTests {
 
         val value = lens(request)
 
-        assertThat(Toggles.InvocationVisibility(Toggles(setOf(value)))).isEqualTo(InvocationVisibility.HIGH)
+        val visibility = setOf(value).let(::Toggles).let(Toggles.InvocationVisibility::invoke)
+
+        assertThat(visibility).isEqualTo(InvocationVisibility.HIGH)
     }
 
     @Test

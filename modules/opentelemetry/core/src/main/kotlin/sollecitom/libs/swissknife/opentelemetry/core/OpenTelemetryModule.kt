@@ -11,8 +11,5 @@ interface OpenTelemetryModule : Stoppable {
     val tracerProvider: TracerProvider
     val spanExporter: SpanExporter
 
-    /** Flushes pending spans and shuts the SDK down. */
-    override suspend fun stop()
-
     companion object
 }

@@ -15,6 +15,7 @@ import sollecitom.libs.swissknife.http4k.utils.lens.jsonObject
 import sollecitom.libs.swissknife.http4k.utils.lens.map
 import sollecitom.libs.swissknife.json.utils.JsonSchema
 import sollecitom.libs.swissknife.json.utils.asSchema
+import sollecitom.libs.swissknife.json.utils.serde.JsonDeserializer
 import sollecitom.libs.swissknife.json.utils.serde.JsonSerde
 import sollecitom.libs.swissknife.test.utils.assertions.failedThrowing
 
@@ -42,6 +43,19 @@ class BodyLensExtensionsTests {
 
         assertThat(result).failedThrowing<LensFailure>()
     }
+
+    @Test
+    fun `a read-only lens also rejects a body that doesn't match the deserializer's schema`() {
+
+        val readOnlyLens = Body.jsonObject().map(nameDeserializer).toLens()
+        val request = """{"name":""}""".asJsonRequest()
+
+        val result = runCatching { readOnlyLens(request) }
+
+        assertThat(result).failedThrowing<LensFailure>()
+    }
+
+    private val nameDeserializer: JsonDeserializer<String> = NameSerde
 
     private fun String.asJsonRequest() = Request(Method.POST, "/names").header("Content-Type", ContentType.APPLICATION_JSON.value).body(this)
 

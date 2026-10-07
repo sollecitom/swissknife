@@ -39,7 +39,7 @@ class IdStringFormTests {
 
         val ids = listOf(factory.ulid.monotonic(), factory.ksuid.monotonic(), factory.uuid.v7(), factory.uuid.v4(), StringId("some:text"))
 
-        val roundTripped = ids.map { Id.fromTypedString(it.toTypedString()) }
+        val roundTripped = ids.map { it.toTypedString().let(Id::fromTypedString) }
 
         assertThat(roundTripped).isEqualTo(ids)
     }

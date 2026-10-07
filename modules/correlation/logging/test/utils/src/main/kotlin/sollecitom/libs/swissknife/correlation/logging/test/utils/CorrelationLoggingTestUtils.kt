@@ -12,7 +12,6 @@ import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-/** Like [testWithInvocationContext], with the invocation context also in the logging context, converted by [convert]. */
 context(_: TimeGenerator, _: UniqueIdGenerator)
 fun testWithInvocationLoggingContext(
     context: CoroutineContext = EmptyCoroutineContext,

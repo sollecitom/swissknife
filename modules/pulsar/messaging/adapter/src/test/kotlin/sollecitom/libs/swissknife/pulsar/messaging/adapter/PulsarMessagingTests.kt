@@ -26,6 +26,7 @@ import sollecitom.libs.swissknife.pulsar.test.utils.newPulsarContainer
 import sollecitom.libs.swissknife.pulsar.utils.configureNamespace
 import sollecitom.libs.swissknife.pulsar.utils.createNamespace
 import sollecitom.libs.swissknife.pulsar.utils.createTenant
+import sollecitom.libs.swissknife.pulsar.utils.ensureTopicExists
 import sollecitom.libs.swissknife.test.utils.execution.utils.test
 import kotlin.time.Duration.Companion.seconds
 

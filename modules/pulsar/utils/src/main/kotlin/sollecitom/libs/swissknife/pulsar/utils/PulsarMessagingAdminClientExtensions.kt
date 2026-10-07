@@ -11,13 +11,16 @@ fun PulsarAdmin.ensureTenantAndNamespaceExistForTopic(topic: Topic, allowTopicCr
     ensureTenantAndNamespaceExist(tenant = topic.namespace.tenant.value, namespace = topic.namespace.name.value, allowTopicCreation = allowTopicCreation, isAllowAutoUpdateSchema = isAllowAutoUpdateSchema, schemaValidationEnforced = schemaValidationEnforced, schemaCompatibilityStrategy = schemaCompatibilityStrategy)
 }
 
-fun PulsarAdmin.ensureTopicExists(topic: Topic, partitionsCount: Int = 1) = ensureTopicExists(fullyQualifiedTopic = topic.fullName.value, partitionsCount = partitionsCount)
+fun PulsarAdmin.ensureTopicExists(topic: Topic, partitionsCount: Int = 1, allowTopicCreation: Boolean = false, isAllowAutoUpdateSchema: Boolean = false, schemaValidationEnforced: Boolean = true, schemaCompatibilityStrategy: SchemaCompatibilityStrategy = SchemaCompatibilityStrategy.BACKWARD_TRANSITIVE) {
+
+    ensureTenantAndNamespaceExistForTopic(topic = topic, allowTopicCreation = allowTopicCreation, isAllowAutoUpdateSchema = isAllowAutoUpdateSchema, schemaValidationEnforced = schemaValidationEnforced, schemaCompatibilityStrategy = schemaCompatibilityStrategy)
+    ensureTopicExists(fullyQualifiedTopic = topic.fullName.value, partitionsCount = partitionsCount)
+}
 
 /** Ensures a topic exists with its tenant, namespace, and Avro schema all provisioned. */
 fun PulsarAdmin.ensureTopicExistsWithSchema(topic: Topic, schema: Schema, partitionsCount: Int = 1, allowTopicCreation: Boolean = false, isAllowAutoUpdateSchema: Boolean = false, schemaValidationEnforced: Boolean = true, schemaCompatibilityStrategy: SchemaCompatibilityStrategy = SchemaCompatibilityStrategy.BACKWARD_TRANSITIVE) {
 
-    ensureTenantAndNamespaceExistForTopic(topic = topic, allowTopicCreation = allowTopicCreation, isAllowAutoUpdateSchema = isAllowAutoUpdateSchema, schemaValidationEnforced = schemaValidationEnforced, schemaCompatibilityStrategy = schemaCompatibilityStrategy)
-    ensureTopicExists(topic = topic, partitionsCount = partitionsCount)
+    ensureTopicExists(topic = topic, partitionsCount = partitionsCount, allowTopicCreation = allowTopicCreation, isAllowAutoUpdateSchema = isAllowAutoUpdateSchema, schemaValidationEnforced = schemaValidationEnforced, schemaCompatibilityStrategy = schemaCompatibilityStrategy)
     registerSchema(fullyQualifiedTopic = topic.fullName.value, schema = schema)
 }
 

@@ -41,5 +41,4 @@ private val Id.associatedData: ByteArray get() = stringValue.toByteArray()
 
 fun ProtectedValueFactory.Companion.aes256WithGCM(lookupKeyForOwner: suspend (Id) -> SymmetricKey?): ProtectedValueFactory<Id, EncryptionMode.GCM.Metadata> = GcmAes256ProtectedValueFactory(lookupKeyForOwner)
 
-/** The owner is bound to the ciphertext as associated data; [accessHook] runs before every decryption. */
 fun ProtectedValueFactory<Id, EncryptionMode.GCM.Metadata>.accessible(accessHook: ProtectedValue.AccessHook<Id, EncryptionMode.GCM.Metadata>, lookupKeyForProtectedValue: suspend (ProtectedValue<*, EncryptionMode.GCM.Metadata>) -> SymmetricKey?): ProtectedValueFactory.Accessible<Id, EncryptionMode.GCM.Metadata> = GcmAes256ProtectedValueFactory.Accessible(this, lookupKeyForProtectedValue, accessHook)

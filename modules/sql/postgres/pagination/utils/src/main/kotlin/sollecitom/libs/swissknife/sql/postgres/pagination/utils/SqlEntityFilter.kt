@@ -28,7 +28,6 @@ interface SqlEntityFilter<ENTITY : Any> {
     fun List<Entity<ENTITY>>.continuationToken(count: Long, pagination: Pagination.Arguments): Name?
 }
 
-/** Reads the count and the page in one read-only, repeatable-read transaction, so both see the same snapshot. */
 context(filter: SqlEntityFilter<T>, connected: WithSqlConnectivity)
 suspend fun <T : Any> String.selectPage(pagination: Pagination.Arguments, sortOrder: SortOrder?, bindings: Set<Pair<String, Any?>>, fields: String = "*", mapRow: (Row, RowMetadata) -> Entity<T>): Page<T> = with(filter) {
     with(connected) {

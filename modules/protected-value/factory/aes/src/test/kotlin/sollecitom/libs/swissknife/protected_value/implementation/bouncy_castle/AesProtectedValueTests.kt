@@ -11,6 +11,7 @@ import sollecitom.libs.swissknife.core.utils.provider
 import sollecitom.libs.swissknife.cryptography.domain.factory.CryptographicOperations
 import sollecitom.libs.swissknife.cryptography.domain.key.generator.CryptographicKeyGenerator
 import sollecitom.libs.swissknife.cryptography.domain.key.generator.newAesKey
+import sollecitom.libs.swissknife.cryptography.domain.symmetric.EncryptionMode
 import sollecitom.libs.swissknife.cryptography.domain.symmetric.encryption.aes.AES.Variant.AES_256
 import sollecitom.libs.swissknife.cryptography.implementation.bouncycastle.bouncyCastle
 import sollecitom.libs.swissknife.protected_value.domain.ProtectedValue
@@ -89,21 +90,21 @@ private class AesProtectedValueTests : CoreDataGenerator by CoreDataGenerator.pr
 
         val result = runCatching { factory.makeAccessible(moved, ::String).access(otherOwner) }
 
-        assertThat(result).failedThrowing<Exception>()
+        assertThat(result).failedThrowing<EncryptionMode.GCM.AuthenticationTagMismatch>()
     }
 
     @Test
     suspend fun `the access hook sees every access before decryption`() {
 
         val key = newAesKey(variant = AES_256)
-        val accesses = mutableListOf<Pair<Any, Name>>()
-        val factory = ProtectedValueFactory.aes256WithGCM { key }.accessible({ context, value -> accesses += context to value.name }) { key }
+        val events = mutableListOf<String>()
+        val factory = ProtectedValueFactory.aes256WithGCM { key }.accessible({ context, value -> events += "accessed ${value.name.value} by $context" }) { events += "decryption key looked up"; key }
         val owner = newId.external()
         val protectedValue = factory.protectValue("jo.blogs@jp.com", "email".let(::Name), owner, String::toByteArray)
 
         factory.makeAccessible(protectedValue, ::String).access(owner)
 
-        assertThat(accesses).containsExactly(owner to "email".let(::Name))
+        assertThat(events).containsExactly("accessed email by $owner", "decryption key looked up")
     }
 
     @Test

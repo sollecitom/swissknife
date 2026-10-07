@@ -2,7 +2,6 @@ package sollecitom.libs.swissknife.logger.core.implementation
 
 import sollecitom.libs.swissknife.logger.core.LoggingLevel
 
-/** Uses the level of the longest configured name that matches whole package segments of the logger name: `com.foo` covers `com.foo.Bar`, not `com.foobar`. */
 internal class LongestPrefixMatchLoggingLevelEnabler(private val prefixMap: Map<String, LoggingLevel>, private val defaultMinimumLoggingLevel: LoggingLevel) : (LoggingLevel, String) -> Boolean {
 
     override fun invoke(level: LoggingLevel, loggerName: String): Boolean {

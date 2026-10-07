@@ -49,10 +49,8 @@ private class PulsarPartitionChangeAwareMessageConsumer<out VALUE>(override val 
     companion object
 }
 
-/** A consumer that uses the subscription type configured by [initializeConsumer]. */
 fun <VALUE> PulsarClient.newMessageConsumer(topics: Set<Topic>, initializeConsumer: (Set<Topic>) -> ConsumerBuilder<VALUE>): MessageConsumer<VALUE> = PulsarMessageConsumer(topics, initializeConsumer)
 
 fun <VALUE> PulsarClient.newMessageConsumer(topic: Topic, initializeConsumer: (Set<Topic>) -> ConsumerBuilder<VALUE>) = newMessageConsumer(topics = setOf(topic), initializeConsumer)
 
-/** A consumer that reports partition assignment changes, which only a Failover subscription has: the subscription type is forced to Failover. */
 fun <VALUE> PulsarClient.newPartitionAssignmentAwareMessageConsumer(topics: Set<Topic>, initializeConsumer: (Set<Topic>) -> ConsumerBuilder<VALUE>): PartitionAssignmentChangesAwareMessageConsumer<VALUE> = PulsarPartitionChangeAwareMessageConsumer(topics, initializeConsumer)

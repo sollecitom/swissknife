@@ -1,9 +1,8 @@
 package sollecitom.libs.swissknife.cryptography.implementation.bouncycastle.symmetric.encryption.xts
 
 import assertk.assertThat
+import sollecitom.libs.swissknife.test.utils.assertions.failedThrowing
 import assertk.assertions.isEqualTo
-import assertk.assertions.isFailure
-import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotEqualTo
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -37,7 +36,7 @@ class XtsAesTests {
 
             val result = runCatching { XtsAes.encrypt(key = key, tweak = XtsAes.tweakOf(0), data = plaintext) }
 
-            assertThat(result).isFailure().isInstanceOf(IllegalArgumentException::class)
+            assertThat(result).failedThrowing<IllegalArgumentException>()
         }
 
         @Test

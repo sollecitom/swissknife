@@ -5,7 +5,6 @@ import org.http4k.lens.RequestLens
 import sollecitom.libs.swissknife.correlation.core.domain.access.Access
 import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationContext
 
-/** The request keys under which filters store the parsed [InvocationContext] for handlers. */
 object InvocationContextKeys {
 
     val key: Key by lazy { Key(mandatory = RequestKey.required("invocation.context"), optional = RequestKey.optional("invocation.context")) }
