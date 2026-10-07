@@ -10,4 +10,5 @@ dependencies {
     implementation(projects.resourceUtils)
 
     testImplementation(projects.coreTestUtils)
+    testImplementation(projects.avroSerializationTestUtils)
 }

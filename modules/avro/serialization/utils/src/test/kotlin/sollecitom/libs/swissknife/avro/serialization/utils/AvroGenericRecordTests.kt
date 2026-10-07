@@ -3,7 +3,7 @@ package sollecitom.libs.swissknife.avro.serialization.utils
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import org.apache.avro.Schema
-import org.apache.avro.generic.GenericRecord
+import sollecitom.libs.swissknife.avro.serialization.test.utils.serializeAndDeserializeWith
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
@@ -86,6 +86,4 @@ class AvroGenericRecordTests {
         assertThat(roundTripped.getBigInteger("units")).isEqualTo(units)
         assertThat(roundTripped.getBigDecimal("price")).isEqualTo(BigDecimal("1.50"))
     }
-
-    private fun GenericRecord.serializeAndDeserializeWith(schema: Schema): GenericRecord = AvroSerializationUtils.writeAsBytes(this).let { AvroSerializationUtils.readFromBytes(it, schema) }
 }
