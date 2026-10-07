@@ -1,27 +1,24 @@
 package sollecitom.libs.swissknife.openapi.provider.definition.reader
 
 import sollecitom.libs.swissknife.core.domain.version.Version
-import sollecitom.libs.swissknife.logger.core.loggable.Loggable
 import sollecitom.libs.swissknife.openapi.parser.OpenApiReader
 import sollecitom.libs.swissknife.openapi.provider.definition.OpenApiDefinition
 import sollecitom.libs.swissknife.openapi.provider.provider.LocationBasedOpenApiProvider
-import sollecitom.libs.swissknife.openapi.provider.provider.OpenApiProvider
 import io.swagger.v3.parser.core.models.ParseOptions
-import java.nio.file.Files
-import java.nio.file.Path
-import kotlin.io.path.writeText
 
-// TODO remove this whole thing
 val OpenApiDefinitionReader.Companion.standard: OpenApiDefinitionReader get() = StandardOpenApiDefinitionReader
 
-internal object StandardOpenApiDefinitionReader : OpenApiDefinitionReader, Loggable() {
+/** Reads definitions above OpenAPI 3.0.0 as 3.0.0, since some SDK generators lose type information otherwise. Relative `$ref`s still resolve against the original location. */
+val OpenApiDefinitionReader.Companion.downgrading: OpenApiDefinitionReader get() = DowngradingOpenApiDefinitionReader
 
-    private val parseOptions = ParseOptions().apply {
-        isResolve = true
-        isResolveFully = false
-        isResolveRequestBody = false
-        isResolveCombinators = false
-    }
+private val parseOptions = ParseOptions().apply {
+    isResolve = true
+    isResolveFully = false
+    isResolveRequestBody = false
+    isResolveCombinators = false
+}
+
+internal object StandardOpenApiDefinitionReader : OpenApiDefinitionReader {
 
     override fun read(openApiLocation: String): OpenApiDefinition {
 
@@ -30,44 +27,18 @@ internal object StandardOpenApiDefinitionReader : OpenApiDefinitionReader, Logga
     }
 }
 
-// TODO remove this and read the normal 3.1 API
-internal object DowngradingOpenApiDefinitionReader : OpenApiDefinitionReader, Loggable() {
+internal object DowngradingOpenApiDefinitionReader : OpenApiDefinitionReader {
 
-    private val temporaryDirectory: Path by lazy { Files.createTempDirectory("open-api").apply { toFile().deleteOnExit() } }
     private val maximumVersion = Version.Semantic(3, 0, 0)
-    private val parseOptions = ParseOptions().apply {
-        isResolve = true
-        isResolveFully = false
-        isResolveRequestBody = false
-        isResolveCombinators = false
-    }
+    private val versionLine = Regex("""^(openapi:\s*)(["']?)([0-9]+\.[0-9]+\.[0-9]+)(["']?)\s*$""", RegexOption.MULTILINE)
 
     override fun read(openApiLocation: String): OpenApiDefinition {
 
-        val provider = LocationBasedOpenApiProvider(openApiLocation)
-        val (rawContent, version) = provider.rawContentAndVersion()
-        val definitionLocation = when {
-            version > maximumVersion -> downgradedOpenApiDefinitionPath(rawContent = rawContent, version = version, downgradedVersion = maximumVersion).toString()
-            else -> openApiLocation
-        }
-        val parsedOpenApi = OpenApiReader.parse(openApiLocation = definitionLocation, options = parseOptions)
+        val rawContent = LocationBasedOpenApiProvider(openApiLocation).rawOpenApi
+        val version = versionLine.find(rawContent)?.groupValues?.get(3)?.let(Version.Semantic::parse) ?: return StandardOpenApiDefinitionReader.read(openApiLocation)
+        if (version <= maximumVersion) return StandardOpenApiDefinitionReader.read(openApiLocation)
+        val downgradedContent = rawContent.replaceFirst(versionLine, "$1$2${maximumVersion.value.value}$4")
+        val parsedOpenApi = OpenApiReader.parseContent(openApi = downgradedContent, baseLocation = openApiLocation, options = parseOptions)
         return ResolvedOpenApiDefinition(api = parsedOpenApi)
-    }
-
-    private fun downgradedOpenApiDefinitionPath(rawContent: String, version: Version.Semantic, downgradedVersion: Version.Semantic): Path {
-
-        // It downgrades the OpenAPI version from 3.1.0 or above to 3.0.0, as somehow the type information is lost otherwise, so the clients cannot generate an SDK.
-        val contentWithDowngradedVersion = rawContent.replace("openapi: ${version.value.value}", "openapi: ${downgradedVersion.value.value}")
-        val temporaryDowngradedApiFile = Files.createTempFile(temporaryDirectory, "downgraded-api", ".yaml").apply { toFile().deleteOnExit() }
-        temporaryDowngradedApiFile.writeText(contentWithDowngradedVersion)
-        logger.info { "Saved downgraded OpenAPI definition in a temporary file with path '${temporaryDowngradedApiFile.toAbsolutePath()}'. This file and its parent directory will be deleted when the process exits." }
-        return temporaryDowngradedApiFile.toAbsolutePath()
-    }
-
-    private fun OpenApiProvider.rawContentAndVersion(): Pair<String, Version.Semantic> {
-
-        val rawVersion = openApi.openapi
-        val version = Version.Semantic.parse(rawVersion)
-        return rawOpenApi to version
     }
 }

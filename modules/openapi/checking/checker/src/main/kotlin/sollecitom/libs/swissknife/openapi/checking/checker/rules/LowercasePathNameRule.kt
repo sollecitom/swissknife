@@ -3,6 +3,7 @@ package sollecitom.libs.swissknife.openapi.checking.checker.rules
 import sollecitom.libs.swissknife.compliance.checker.domain.ComplianceRule
 import io.swagger.v3.oas.models.OpenAPI
 
+/** Paths must be lowercase; path template variables (e.g. `{customerId}`) are left to the parameter naming rules. */
 object LowercasePathNameRule : ComplianceRule<OpenAPI> {
 
     override fun invoke(target: OpenAPI): ComplianceRule.Result<OpenAPI> {
@@ -11,7 +12,11 @@ object LowercasePathNameRule : ComplianceRule<OpenAPI> {
         return ComplianceRule.Result.withViolations(violations)
     }
 
-    private fun check(pathName: String): Violation? = pathName.takeIf { it.lowercase() != it }?.let { Violation(it) }
+    private fun check(pathName: String): Violation? = pathName.takeIf { it.withoutTemplateVariables().let { path -> path.lowercase() != path } }?.let { Violation(it) }
+
+    private fun String.withoutTemplateVariables() = replace(templateVariable, "")
+
+    private val templateVariable = Regex("\\{[^}]*}")
 
     data class Violation(val path: String) : ComplianceRule.Result.Violation<OpenAPI> {
 

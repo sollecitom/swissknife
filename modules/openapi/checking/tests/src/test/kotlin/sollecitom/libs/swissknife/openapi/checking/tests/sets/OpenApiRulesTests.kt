@@ -12,7 +12,7 @@ import sollecitom.libs.swissknife.compliance.checker.domain.checkAgainstRules
 import sollecitom.libs.swissknife.compliance.checker.test.utils.isCompliant
 import sollecitom.libs.swissknife.compliance.checker.test.utils.isNotCompliantWithOnlyViolation
 import sollecitom.libs.swissknife.openapi.builder.*
-import sollecitom.libs.swissknife.openapi.checking.checker.rules.DisallowReservedCharactersInParameterNameRule
+import sollecitom.libs.swissknife.openapi.checking.checker.rules.DisallowReservedCharactersInParameterValuesRule
 import sollecitom.libs.swissknife.openapi.checking.checker.rules.ExamplesSchemaComplianceRule
 import sollecitom.libs.swissknife.openapi.checking.checker.rules.MandatoryRequestBodyContentMediaTypesRule
 import sollecitom.libs.swissknife.openapi.checking.checker.rules.MandatoryVersioningPathPrefixRule
@@ -45,9 +45,9 @@ class OpenApiRulesTests {
                 }
             }
 
-            val result = api.checkAgainstRules(DisallowReservedCharactersInParameterNameRule)
+            val result = api.checkAgainstRules(DisallowReservedCharactersInParameterValuesRule)
 
-            assertThat(result).isNotCompliantWithOnlyViolation<DisallowReservedCharactersInParameterNameRule.Violation, OpenAPI> { violation ->
+            assertThat(result).isNotCompliantWithOnlyViolation<DisallowReservedCharactersInParameterValuesRule.Violation, OpenAPI> { violation ->
                 assertThat(violation.parameter.name).isEqualTo("filter")
             }
         }

@@ -6,7 +6,7 @@ import sollecitom.libs.swissknife.openapi.checking.checker.model.ParameterWithLo
 import sollecitom.libs.swissknife.openapi.checking.checker.model.allParameters
 import io.swagger.v3.oas.models.OpenAPI
 
-object DisallowReservedCharactersInParameterNameRule : ComplianceRule<OpenAPI> {
+object DisallowReservedCharactersInParameterValuesRule : ComplianceRule<OpenAPI> {
 
     override fun invoke(target: OpenAPI): ComplianceRule.Result<OpenAPI> {
 

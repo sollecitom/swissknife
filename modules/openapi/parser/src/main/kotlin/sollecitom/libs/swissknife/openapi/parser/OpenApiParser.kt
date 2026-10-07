@@ -8,13 +8,19 @@ import java.nio.file.Path
 
 interface OpenApiParser {
 
-    fun parseContent(openApi: String): OpenAPI
+    /**
+     * Parses [openApi] content. Relative `$ref`s are resolved against [baseLocation] (the file or URL the content came from);
+     * without it, content has no location, so only absolute or in-document references resolve.
+     */
+    fun parseContent(openApi: String, baseLocation: String? = null, options: ParseOptions = referenceResolvingParseOptions()): OpenAPI
 
     fun parse(openApiLocation: String, options: ParseOptions = fullyResolvedParseOptions()): OpenAPI
 
     class ParseException(val messages: List<String>) : RuntimeException(messages.joinToString(System.lineSeparator()))
 
     companion object {
+        fun referenceResolvingParseOptions() = ParseOptions().apply { isResolve = true }
+
         fun fullyResolvedParseOptions() = ParseOptions().apply {
             isResolve = true
             isResolveFully = true
