@@ -8,7 +8,11 @@ import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter
 import io.opentelemetry.sdk.OpenTelemetrySdk
 import io.opentelemetry.sdk.trace.SdkTracerProvider
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessor
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.net.URI
+import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.seconds
 
 private class StandardOpenTelemetryModule(private val endpointUrl: URI) : OpenTelemetryModule {
 
@@ -16,6 +20,10 @@ private class StandardOpenTelemetryModule(private val endpointUrl: URI) : OpenTe
     private val sdkTracerProvider = sdkTracerProvider(spanExporter)
     override val tracerProvider get() = sdkTracerProvider
     override val sdk = sdk(sdkTracerProvider)
+
+    override suspend fun stop() {
+        withContext(Dispatchers.IO) { sdk.shutdown().join(SHUTDOWN_TIMEOUT.inWholeMilliseconds, TimeUnit.MILLISECONDS) }
+    }
 
     private fun spanExporter(endpointUrl: URI): OtlpGrpcSpanExporter = OtlpGrpcSpanExporter.builder().setEndpoint(endpointUrl.toString()).build()
 
@@ -25,6 +33,10 @@ private class StandardOpenTelemetryModule(private val endpointUrl: URI) : OpenTe
 
         val propagator: TextMapPropagator = W3CTraceContextPropagator.getInstance()
         return OpenTelemetrySdk.builder().setPropagators(ContextPropagators.create(propagator)).setTracerProvider(tracerProvider).buildAndRegisterGlobal()
+    }
+
+    private companion object {
+        val SHUTDOWN_TIMEOUT = 10.seconds
     }
 }
 
