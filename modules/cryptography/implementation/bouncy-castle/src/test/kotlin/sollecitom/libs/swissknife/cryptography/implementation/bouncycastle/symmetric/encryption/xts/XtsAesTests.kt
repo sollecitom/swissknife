@@ -2,6 +2,8 @@ package sollecitom.libs.swissknife.cryptography.implementation.bouncycastle.symm
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFailure
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotEqualTo
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -28,16 +30,14 @@ class XtsAesTests {
     inner class Ieee1619Vectors {
 
         @Test
-        fun `vector 1 - XTS-AES-128 with zero keys and zero data`() {
+        fun `vector 1 - equal data and tweak keys are rejected`() {
 
             val key = ("00000000000000000000000000000000" + "00000000000000000000000000000000").decodeHex()
             val plaintext = "0000000000000000000000000000000000000000000000000000000000000000".decodeHex()
-            val expected = "917cf69ebd68b2ec9b9fe9a3eadda692cd43d2f59598ed858c02c2652fbf922e"
 
-            val encrypted = XtsAes.encrypt(key = key, tweak = XtsAes.tweakOf(0), data = plaintext)
+            val result = runCatching { XtsAes.encrypt(key = key, tweak = XtsAes.tweakOf(0), data = plaintext) }
 
-            assertThat(encrypted.encodeHex()).isEqualTo(expected)
-            assertThat(XtsAes.decrypt(key = key, tweak = XtsAes.tweakOf(0), data = encrypted)).isEqualTo(plaintext)
+            assertThat(result).isFailure().isInstanceOf(IllegalArgumentException::class)
         }
 
         @Test

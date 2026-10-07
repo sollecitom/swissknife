@@ -7,14 +7,18 @@ import sollecitom.libs.swissknife.cryptography.implementation.bouncycastle.BC_PR
 import sollecitom.libs.swissknife.cryptography.implementation.bouncycastle.key.CryptographicKeyAdapter
 import sollecitom.libs.swissknife.cryptography.implementation.bouncycastle.utils.BouncyCastleUtils
 import java.security.SecureRandom
+import org.bouncycastle.jcajce.interfaces.MLDSAPrivateKey
 import java.security.PrivateKey as JavaPrivateKey
+import java.security.PublicKey as JavaPublicKey
 
-internal data class JavaSigningKeyAdapter(private val key: JavaPrivateKey, private val random: SecureRandom) : SigningPrivateKey, CryptographicKey by CryptographicKeyAdapter(key) {
+internal data class JavaSigningKeyAdapter(private val key: JavaPrivateKey, private val publicKey: JavaPublicKey, private val random: SecureRandom) : SigningPrivateKey, CryptographicKey by CryptographicKeyAdapter(key) {
+
+    private val publicKeyHash by lazy { CryptographicKeyAdapter(publicKey).hash }
 
     override fun sign(input: ByteArray): Signature {
 
         val bytes = BouncyCastleUtils.sign(privateKey = key, message = input, signatureAlgorithm = key.algorithm, provider = BC_PROVIDER, random = random)
-        return Signature(bytes = bytes, metadata = Signature.Metadata(hash, key.algorithm))
+        return Signature(bytes = bytes, metadata = Signature.Metadata(publicKeyHash, key.algorithm))
     }
 
     override fun equals(other: Any?): Boolean {
@@ -30,6 +34,11 @@ internal data class JavaSigningKeyAdapter(private val key: JavaPrivateKey, priva
 
     companion object {
 
-        fun from(bytes: ByteArray, random: SecureRandom, algorithm: String): JavaSigningKeyAdapter = BouncyCastleUtils.getPrivateKeyFromEncoded(bytes, algorithm).let { JavaSigningKeyAdapter(it, random) }
+        fun from(bytes: ByteArray, random: SecureRandom, algorithm: String): JavaSigningKeyAdapter = BouncyCastleUtils.getPrivateKeyFromEncoded(bytes, algorithm).let { JavaSigningKeyAdapter(it, it.derivePublicKey(), random) }
+
+        private fun JavaPrivateKey.derivePublicKey(): JavaPublicKey = when (this) {
+            is MLDSAPrivateKey -> publicKey
+            else -> throw IllegalArgumentException("Cannot derive the public key of a $algorithm private key")
+        }
     }
 }

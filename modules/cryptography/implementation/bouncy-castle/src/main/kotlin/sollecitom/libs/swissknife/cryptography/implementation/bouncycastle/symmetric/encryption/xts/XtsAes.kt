@@ -103,6 +103,9 @@ internal object XtsAes {
         val validLengths = listOf(AES.Variant.AES_128_XTS, AES.Variant.AES_256_XTS).map { it.keyLength / 8 }
         require(size in validLengths) { "an XTS key must hold two AES keys, so it must be ${validLengths.joinToString(" or ")} bytes, but was $size: generate it with AES.Variant.AES_128_XTS or AES.Variant.AES_256_XTS" }
         val half = size / 2
-        return SecretKeySpec(copyOfRange(0, half), AES.name) to SecretKeySpec(copyOfRange(half, size), AES.name)
+        val dataKey = copyOfRange(0, half)
+        val tweakKey = copyOfRange(half, size)
+        require(!dataKey.contentEquals(tweakKey)) { "the XTS data key and tweak key must differ (IEEE 1619-2018, FIPS)" }
+        return SecretKeySpec(dataKey, AES.name) to SecretKeySpec(tweakKey, AES.name)
     }
 }

@@ -10,9 +10,9 @@ import java.security.SecureRandom
 
 internal data class JavaVerifyingPublicKeyAdapter(private val key: PublicKey, private val random: SecureRandom) : VerifyingPublicKey, CryptographicKey by CryptographicKeyAdapter(key) {
 
-    override fun verify(input: ByteArray, signatureBytes: ByteArray, signatureAlgorithm: String): Boolean {
+    override fun verify(input: ByteArray, signatureBytes: ByteArray): Boolean {
 
-        return BouncyCastleUtils.verifySignature(publicKey = key, message = input, signature = signatureBytes, signatureAlgorithm = signatureAlgorithm, provider = BC_PROVIDER)
+        return BouncyCastleUtils.verifySignature(publicKey = key, message = input, signature = signatureBytes, signatureAlgorithm = key.algorithm, provider = BC_PROVIDER)
     }
 
     override fun equals(other: Any?): Boolean {

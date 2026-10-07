@@ -113,12 +113,36 @@ interface CryptographyTestSpecification {
         val verifies = keyPair.public.verify(message, signature)
 
         assertThat(verifies).isTrue()
-        assertThat(signature.metadata.keyHash.bytes).isEqualTo(keyPair.private.hash.bytes)
+        assertThat(signature.metadata.keyHash.bytes).isEqualTo(keyPair.public.hash.bytes)
         assertThat(signature.metadata::algorithmName).isEqualTo(keyPair.private.algorithm)
 
         val notTheOriginalSigner = mlDsa.keyPair(variant = ML_DSA_87).public
 
         assertThat(notTheOriginalSigner.verify(message, signature)).isFalse()
+    }
+
+    @Test
+    fun `a signature naming another algorithm is rejected`() {
+
+        val keyPair = mlDsa.keyPair(variant = ML_DSA_87)
+        val message = "something to attest".toByteArray()
+        val signature = keyPair.private.sign(message)
+        val tampered = signature.copy(metadata = signature.metadata.copy(algorithmName = "SHA256withRSA"))
+
+        val verifies = keyPair.public.verify(message, tampered)
+
+        assertThat(verifies).isFalse()
+    }
+
+    @Test
+    fun `a decoded private key signs with the public key hash`() {
+
+        val keyPair = mlDsa.keyPair(variant = ML_DSA_87)
+        val decodedPrivateKey = mlDsa.privateKey.from(keyPair.private.encoded)
+
+        val signature = decodedPrivateKey.sign("something to attest".toByteArray())
+
+        assertThat(signature.metadata.keyHash.bytes).isEqualTo(keyPair.public.hash.bytes)
     }
 
     @Test

@@ -6,7 +6,6 @@ import sollecitom.libs.swissknife.cryptography.domain.asymmetric.factory.KeyPair
 import sollecitom.libs.swissknife.cryptography.domain.asymmetric.signing.SigningPrivateKey
 import sollecitom.libs.swissknife.cryptography.domain.asymmetric.signing.VerifyingPublicKey
 import sollecitom.libs.swissknife.cryptography.implementation.bouncycastle.utils.BouncyCastleUtils
-import java.security.PrivateKey
 import java.security.PublicKey
 import java.security.SecureRandom
 import java.security.spec.AlgorithmParameterSpec
@@ -25,9 +24,7 @@ internal class SigningKeyPairFactory<ARGUMENTS>(private val algorithm: String, p
 
     private fun ARGUMENTS.generateRawKeyPair(): JavaKeyPair = BouncyCastleUtils.generateKeyPair(algorithm, spec(), random)
 
-    private fun JavaKeyPair.asSigningAndVerifyingPrivateKey(random: SecureRandom) = KeyPair(private = private.asSigningPrivateKey(random), public = public.asVerifyingPublicKey(random))
-
-    private fun PrivateKey.asSigningPrivateKey(random: SecureRandom): SigningPrivateKey = JavaSigningKeyAdapter(this, random)
+    private fun JavaKeyPair.asSigningAndVerifyingPrivateKey(random: SecureRandom) = KeyPair(private = JavaSigningKeyAdapter(private, public, random), public = public.asVerifyingPublicKey(random))
 
     private fun PublicKey.asVerifyingPublicKey(random: SecureRandom): VerifyingPublicKey = JavaVerifyingPublicKeyAdapter(this, random)
 }
