@@ -90,7 +90,7 @@ object TrivyImageScanner {
         val container = newContainer(trivyImage, command, cacheDirectory, trivyIgnoreContent, outputConsumer)
         return try {
             container.start()
-            Attempt.Succeeded(parseReport(reportOutput(container, outputConsumer), imageName, trivyImage))
+            reportOutput(container, outputConsumer).let { parseReport(it, imageName, trivyImage) }.let { Attempt.Succeeded(it) }
         } catch (failure: Exception) {
             Attempt.Failed(cause = failure, output = capturedOutput(container, outputConsumer))
         } finally {
@@ -112,7 +112,7 @@ object TrivyImageScanner {
         withStartupCheckStrategy(OneShotStartupCheckStrategy().withTimeout(Duration.ofMinutes(5)))
         withLogConsumer(outputConsumer)
         if (trivyIgnoreContent != null) {
-            withCopyToContainer(Transferable.of(trivyIgnoreContent.toByteArray()), "/tmp/.trivyignore")
+            trivyIgnoreContent.toByteArray().let { Transferable.of(it) }.let { withCopyToContainer(it, "/tmp/.trivyignore") }
         }
     }
 

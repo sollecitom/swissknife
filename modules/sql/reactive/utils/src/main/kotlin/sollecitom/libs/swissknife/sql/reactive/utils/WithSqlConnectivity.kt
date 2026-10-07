@@ -20,7 +20,7 @@ interface WithSqlConnectivity {
 
     val sqlClient: DatabaseClient
 
-    fun String.execute(bindings: List<Pair<String, Any?>>): DatabaseClient.GenericExecuteSpec = bindings.fold(sqlClient.sql(this.trimMargin())) { spec, binding -> spec + binding }
+    fun String.execute(bindings: List<Pair<String, Any?>>): DatabaseClient.GenericExecuteSpec = bindings.fold(trimMargin().let(sqlClient::sql)) { spec, binding -> spec + binding }
 
     fun String.execute(vararg bindings: Pair<String, Any?>) = trimMargin().execute(bindings.toList())
 

@@ -201,7 +201,7 @@ class JwtExampleTests : CoreDataGenerator by CoreDataGenerator.testProvider {
 
         val issuer = newRandomED25519JwtIssuer("issuer key")
         val processor = newJwtProcessor(issuer.id, issuer.publicKey)
-        val issuedJwt = issuer.issueJwt(validClaims(issuer.id.value) { it.expiryTime = now() - 5.minutes })
+        val issuedJwt = validClaims(issuer.id.value) { it.expiryTime = now() - 5.minutes }.let(issuer::issueJwt)
 
         assertThrows<InvalidJwtException> { processor.readAndVerify(issuedJwt) }
     }
@@ -212,7 +212,7 @@ class JwtExampleTests : CoreDataGenerator by CoreDataGenerator.testProvider {
         val issuer = newRandomED25519JwtIssuer("issuer key")
         val impostor = newRandomED25519JwtIssuer("impostor key", issuer.id)
         val processor = newJwtProcessor(issuer.id, issuer.publicKey)
-        val issuedJwt = impostor.issueJwt(validClaims(issuer.id.value))
+        val issuedJwt = validClaims(issuer.id.value).let(impostor::issueJwt)
 
         assertThrows<InvalidJwtException> { processor.readAndVerify(issuedJwt) }
     }
@@ -222,7 +222,7 @@ class JwtExampleTests : CoreDataGenerator by CoreDataGenerator.testProvider {
 
         val issuer = newRandomED25519JwtIssuer("issuer key")
         val processor = newJwtProcessor(issuer.id, issuer.publicKey)
-        val issuedJwt = issuer.issueJwt(validClaims("another issuer"))
+        val issuedJwt = validClaims("another issuer").let(issuer::issueJwt)
 
         assertThrows<InvalidJwtException> { processor.readAndVerify(issuedJwt) }
     }
@@ -232,8 +232,8 @@ class JwtExampleTests : CoreDataGenerator by CoreDataGenerator.testProvider {
 
         val issuer = newRandomED25519JwtIssuer("issuer key")
         val processor = newJwtProcessor(issuer.id, issuer.publicKey)
-        val (header, _, signature) = issuer.issueJwt(validClaims(issuer.id.value)).split(".")
-        val forgedPayload = Base64.getUrlEncoder().withoutPadding().encodeToString(validClaims(issuer.id.value) { it.subject = "admin" }.toString().toByteArray())
+        val (header, _, signature) = validClaims(issuer.id.value).let(issuer::issueJwt).split(".")
+        val forgedPayload = validClaims(issuer.id.value) { it.subject = "admin" }.toString().toByteArray().let(Base64.getUrlEncoder().withoutPadding()::encodeToString)
 
         assertThrows<InvalidJwtException> { processor.readAndVerify("$header.$forgedPayload.$signature") }
     }

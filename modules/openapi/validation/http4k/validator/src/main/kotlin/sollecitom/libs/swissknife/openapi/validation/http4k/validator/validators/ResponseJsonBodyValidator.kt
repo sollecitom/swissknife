@@ -38,13 +38,13 @@ internal class ResponseJsonBodyValidator(val jsonSchemasDirectoryName: String = 
             }
 
             !bodyAsString.isNullOrEmpty() && !bodySwaggerSchema.isDefined() && declaresAJsonContentType -> {
-                bodySchema ?: return ValidationReport.singleton(CustomValidation.message(RESPONSE_BODY_PATH, "Present but JSON schema is not declared"))
+                bodySchema ?: return validationFailure(RESPONSE_BODY_PATH, "Present but JSON schema is not declared")
                 val json = bodyAsString.toJsonValue() ?: return invalidJson()
                 bodySchema.validate(json).toValidationReport()
             }
 
             else -> when {
-                bodySchema != null -> ValidationReport.singleton(CustomValidation.message(RESPONSE_BODY_PATH, "Empty but JSON schema is declared"))
+                bodySchema != null -> validationFailure(RESPONSE_BODY_PATH, "Empty but JSON schema is declared")
                 else -> ValidationReport.empty()
             }
         }
@@ -60,11 +60,13 @@ internal class ResponseJsonBodyValidator(val jsonSchemasDirectoryName: String = 
 
     private fun SwaggerSchema<*>?.isDefined(): Boolean = this != null && ((properties != null && properties.isNotEmpty()) || (!oneOf.isNullOrEmpty()) || (!allOf.isNullOrEmpty()))
 
-    private fun JsonSchema.ValidationFailure?.toValidationReport() = this?.let { ValidationReport.singleton(CustomValidation.message(it.fullPathAsString, it.message)) } ?: ValidationReport.empty()
+    private fun JsonSchema.ValidationFailure?.toValidationReport() = this?.let { validationFailure(it.fullPathAsString, it.message) } ?: ValidationReport.empty()
 
     private fun ResponseWithHeadersAdapter.mediaType(): String = contentType.getOrNull() ?: acceptHeader.withNoDirectives().toHeaderValue()
 
-    private fun invalidJson() = ValidationReport.singleton(CustomValidation.message(ValidationReportError.Response.InvalidJson.key, "Present but not valid JSON"))
+    private fun invalidJson() = validationFailure(ValidationReportError.Response.InvalidJson.key, "Present but not valid JSON")
+
+    private fun validationFailure(path: String, message: String) = CustomValidation.message(path, message).let(ValidationReport::singleton)
 
     private fun String.resolveAsSchemaLocation(): String = when {
         startsWith("#/components/schemas/") -> "${removePrefix("#/components/schemas/")}.json"

@@ -25,8 +25,8 @@ fun <ACCESS : Access, VALUE : Any> InvocationContext<ACCESS>.withToggle(toggle: 
 
 fun <ACCESS : Access, VALUE : Enum<VALUE>> InvocationContext<ACCESS>.withToggle(toggle: Toggle<VALUE, *>, value: VALUE) = copy(toggles = toggles.withToggle(toggle, value))
 
-fun <VALUE : Enum<VALUE>> Toggles.withToggle(toggle: Toggle<VALUE, *>, value: VALUE): Toggles = withValue(toggle(value))
+fun <VALUE : Enum<VALUE>> Toggles.withToggle(toggle: Toggle<VALUE, *>, value: VALUE): Toggles = toggle(value).let { withValue(it) }
 
-fun <VALUE : Any> Toggles.withToggle(toggle: Toggle<VALUE, VALUE>, value: VALUE): Toggles = withValue(toggle(value))
+fun <VALUE : Any> Toggles.withToggle(toggle: Toggle<VALUE, VALUE>, value: VALUE): Toggles = toggle(value).let { withValue(it) }
 
 private fun Toggles.withValue(value: ToggleValue<*>): Toggles = copy(values = values.filterNot { it.id == value.id }.toSet() + value)

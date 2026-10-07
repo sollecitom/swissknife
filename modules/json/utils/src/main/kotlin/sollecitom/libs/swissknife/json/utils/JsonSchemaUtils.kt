@@ -29,7 +29,7 @@ fun jsonSchemaAt(location: String): JsonSchema = openAsStream(location).use {
 /** Interprets this JSONObject as a JSON Schema definition. */
 fun JSONObject.asSchema(): JsonSchema {
 
-    val parsedJsonSchema = JsonParser(toString()).parse()
+    val parsedJsonSchema = toString().let(::JsonParser).parse()
     val resolvedSchema = SchemaLoader(parsedJsonSchema, SchemaLoaderConfig(schemaClient, initialBaseURI)).load()
     return JsonSchema(resolvedSchema, this)
 }

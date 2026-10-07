@@ -20,7 +20,7 @@ private fun pulsarDockerImageName(version: String) = DockerImageName.parse("apac
 
 fun newPulsarContainer(version: String = DEFAULT_PULSAR_DOCKER_IMAGE_VERSION, startupAttempts: Int = 10, startupTimeout: Duration = 2.minutes, waitStrategy: WaitStrategy = PulsarWaitStrategies.availableAdminClusterHttpEndpoint): PulsarContainer {
 
-    return PulsarContainer(pulsarDockerImageName(version))
+    return pulsarDockerImageName(version).let(::PulsarContainer)
         .withStartupAttempts(startupAttempts)
         .withStartupTimeout(startupTimeout.toJavaDuration())
         .withEnv("PULSAR_PREFIX_advertisedAddress", "localhost")

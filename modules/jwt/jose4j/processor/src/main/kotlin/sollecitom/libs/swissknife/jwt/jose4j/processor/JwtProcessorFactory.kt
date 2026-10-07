@@ -38,7 +38,7 @@ fun newJKSJwtProcessor(issuerName: Name, jksUrl: URI): JwtProcessor {
     val builder = JwtConsumerBuilder()
     builder.setExpectedIssuer(issuerName.value)
     builder.setSkipDefaultAudienceValidation()
-    builder.setVerificationKeyResolver(HttpsJwksVerificationKeyResolver(HttpsJwks(jksUrl.toString())))
+    jksUrl.toString().let(::HttpsJwks).let(::HttpsJwksVerificationKeyResolver).let(builder::setVerificationKeyResolver)
     return JoseJwtProcessor(builder.build())
 }
 

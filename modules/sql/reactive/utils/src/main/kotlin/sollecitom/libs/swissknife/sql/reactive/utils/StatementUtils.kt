@@ -29,7 +29,7 @@ suspend fun Statement.executeSingle(): Long = execute().awaitSingle().rowsUpdate
 suspend fun Statement.executeMulti(): List<Long> = execute().asFlow().map { it.rowsUpdated.awaitSingle() }.toList()
 
 context(connection: Connection)
-fun String.asStatement(): Statement = connection.createStatement(trimMargin())
+fun String.asStatement(): Statement = trimMargin().let(connection::createStatement)
 
 fun <VALUE : Any> Statement.bindEach(values: Collection<VALUE>, bind: Statement.(VALUE) -> Unit): Statement {
 

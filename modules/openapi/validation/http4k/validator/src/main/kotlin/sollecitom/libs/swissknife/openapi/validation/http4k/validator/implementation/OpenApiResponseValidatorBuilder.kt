@@ -45,8 +45,7 @@ private class CustomizedOpenApiResponseValidatorBuilder(openApi: OpenAPI) : Open
 
         override fun validateResponse(path: String, method: Request.Method, response: Response): ValidationReport {
 
-            val messages = delegate.validateResponse(path, method, response).messages
-            return ValidationReport.from(messages.filterOutStandardResponseJsonSchemaErrors())
+            return delegate.validateResponse(path, method, response).messages.filterOutStandardResponseJsonSchemaErrors().let { ValidationReport.from(it) }
         }
 
         private fun List<Message>.filterOutStandardResponseJsonSchemaErrors() = filterNot { it.key.startsWith(responseBodySchemaPath) && !CustomValidation.produced(it) }

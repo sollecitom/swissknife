@@ -20,7 +20,7 @@ class LocalWebService(requestedPort: RequestedPort, handler: (Request) -> Respon
     private val port: Port get() = server.port().let(::Port)
     override val webInterface by lazy { WebInterface.local(port = port) }
 
-    private fun HttpHandler.asServer(fn: (Int) -> ServerConfig, port: RequestedPort) = asServer(fn(port.value))
+    private fun HttpHandler.asServer(fn: (Int) -> ServerConfig, port: RequestedPort) = port.value.let(fn).let { asServer(it) }
 
     override suspend fun start() {
 

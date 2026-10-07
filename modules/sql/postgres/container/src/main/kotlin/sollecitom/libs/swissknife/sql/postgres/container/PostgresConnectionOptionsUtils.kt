@@ -12,5 +12,5 @@ internal fun SqlConnectionOptions.createPostgresR2dbcClient(connectTimeout: Dura
 
     require(enumsToRegister.isNotEmpty()) { "Postgres specific client is designed for enum support (of which none have been passed in), use createSqlClient() instead" }
     val registrar = enumsToRegister.fold(EnumCodec.builder()) { builder, (name, enum) -> builder.withEnum(name, enum) }.build()
-    return PostgresqlConnectionFactoryProvider.builder(asConnectionFactoryOptions(connectTimeout).build()).codecRegistrar(registrar).build().let(::PostgresqlConnectionFactory).let(DatabaseClient::create)
+    return asConnectionFactoryOptions(connectTimeout).build().let(PostgresqlConnectionFactoryProvider::builder).codecRegistrar(registrar).build().let(::PostgresqlConnectionFactory).let(DatabaseClient::create)
 }

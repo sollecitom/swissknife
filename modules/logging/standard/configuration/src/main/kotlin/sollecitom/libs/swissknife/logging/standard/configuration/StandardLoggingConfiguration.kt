@@ -54,7 +54,7 @@ object StandardLoggingConfiguration {
         name to parseLoggingLevel(level)
     }
 
-    private fun parseLoggingLevel(value: String): LoggingLevel = LoggingLevel.valueOf(value.uppercase(ROOT))
+    private fun parseLoggingLevel(value: String): LoggingLevel = value.uppercase(ROOT).let(LoggingLevel::valueOf)
 
     private fun logFormatFromEnvironment(key: String, readConfigurationValue: (String) -> String?): LogFormat? = readConfigurationValue(key)?.lowercase()?.let(::parseLogFormat)
 

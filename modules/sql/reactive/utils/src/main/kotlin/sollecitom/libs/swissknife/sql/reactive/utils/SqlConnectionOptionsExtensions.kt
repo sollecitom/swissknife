@@ -18,7 +18,7 @@ fun DatabaseClient.close() {
     (connectionFactory as? Disposable)?.dispose()
 }
 
-fun SqlConnectionOptions.asConnectionFactoryOptions(connectTimeout: Duration? = null): ConnectionFactoryOptions.Builder = ConnectionFactoryOptions.builder().from(ConnectionFactoryOptions.parse(r2dbcURI.toString())).option(ConnectionFactoryOptions.USER, user.value).option(ConnectionFactoryOptions.PASSWORD, password.value).apply { connectTimeout?.toJavaDuration()?.let { option(ConnectionFactoryOptions.CONNECT_TIMEOUT, it) } }
+fun SqlConnectionOptions.asConnectionFactoryOptions(connectTimeout: Duration? = null): ConnectionFactoryOptions.Builder = r2dbcURI.toString().let(ConnectionFactoryOptions::parse).let(ConnectionFactoryOptions.builder()::from).option(ConnectionFactoryOptions.USER, user.value).option(ConnectionFactoryOptions.PASSWORD, password.value).apply { connectTimeout?.toJavaDuration()?.let { option(ConnectionFactoryOptions.CONNECT_TIMEOUT, it) } }
 
 private fun ConnectionFactoryOptions.pooled(): ConnectionFactoryOptions = ConnectionFactoryOptions.builder().from(this).option(PROTOCOL, getRequiredValue(DRIVER).toString()).option(DRIVER, POOLING_DRIVER).build()
 

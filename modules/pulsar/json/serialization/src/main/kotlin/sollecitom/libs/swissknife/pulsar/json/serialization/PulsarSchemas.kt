@@ -13,7 +13,7 @@ private class JsonPulsarSchema<VALUE : Any>(private val serde: JsonSerde.SchemaA
     override fun encode(message: VALUE): ByteArray = serde.serialize(message).toString().encodeToByteArray()
 
     override fun decode(bytes: ByteArray): VALUE = try {
-        serde.deserialize(JSONObject(bytes.decodeToString()))
+        bytes.decodeToString().let(::JSONObject).let(serde::deserialize)
     } catch (error: Exception) {
         throw SchemaSerializationException(error)
     }

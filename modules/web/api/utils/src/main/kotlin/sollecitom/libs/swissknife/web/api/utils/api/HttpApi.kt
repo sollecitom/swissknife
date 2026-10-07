@@ -33,7 +33,7 @@ class HttpApi(private val app: HttpHandler, private val requestedPort: Requested
 
     private fun server(mainApp: SuspendingHttpHandler) = mainApp.asBlockingHandler().asServer({ JettyLoom(it) }, requestedPort)
 
-    private fun HttpHandler.asServer(fn: (Int) -> ServerConfig, port: RequestedPort) = asServer(fn(port.value))
+    private fun HttpHandler.asServer(fn: (Int) -> ServerConfig, port: RequestedPort) = port.value.let(fn).let { asServer(it) }
 
     companion object {
 

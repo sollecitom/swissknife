@@ -62,7 +62,7 @@ data class JsonSchema(internal val value: Schema, private val source: JSONObject
 
     fun validate(json: Boolean, parentPath: List<String> = emptyList()): ValidationFailure? = value.validate(json)?.adapted(parentPath)
 
-    private fun Schema.validate(json: Any) = Validator.forSchema(this).validate(JsonParser(JSONObject.valueToString(json)).parse())
+    private fun Schema.validate(json: Any) = JSONObject.valueToString(json).let(::JsonParser).parse().let(Validator.forSchema(this)::validate)
 
     private fun SkemaValidationFailure.adapted(parentPath: List<String>) = ValidationFailure(this, parentPath)
 
