@@ -52,22 +52,11 @@ fun GenericRecord.getRecordList(key: String) = getRecordListOrNull(key) ?: missi
 fun GenericRecord.getHexStringAsByteArrayOrNull(key: String): ByteArray? = getStringOrNull(key)?.let(HexFormat.of()::parseHex)
 fun GenericRecord.getHexStringAsByteArray(key: String): ByteArray = getHexStringAsByteArrayOrNull(key) ?: missingField(key)
 
-/** Extracts and deserializes a record from an envelope-style union (string type discriminator + nested record). */
-fun <T> GenericRecord.getRecordFromUnion(deserialize: (type: String, record: GenericRecord) -> T): T {
+/** Reads the `envelope` union field of an envelope record, passing the branch's record schema name (e.g. `DirectActor`) and the record to [deserialize]. */
+fun <T> GenericRecord.getRecordFromUnion(deserialize: (branchName: String, record: GenericRecord) -> T): T {
 
-    val envelopeType = getString(EnvelopeFields.ENVELOPE_TYPE)
-    val envelope = getRecord(EnvelopeFields.ENVELOPE)
-
-    return deserialize(envelopeType, envelope)
-}
-
-/** Like [getRecordFromUnion] but reads the type discriminator as an Avro enum instead of a string. */
-fun <T> GenericRecord.getRecordFromUnionWithEnumType(deserialize: (type: String, record: GenericRecord) -> T): T {
-
-    val envelopeType = getEnum(EnvelopeFields.ENVELOPE_TYPE)
-    val envelope = getRecord(EnvelopeFields.ENVELOPE)
-
-    return deserialize(envelopeType, envelope)
+    val envelope = getRecord(ENVELOPE_FIELD)
+    return deserialize(envelope.schema.name, envelope)
 }
 
 /** Deserializes this [GenericRecord] using the given [deserializer]. */

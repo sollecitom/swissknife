@@ -1,13 +1,13 @@
 package sollecitom.libs.swissknife.avro.serialization.utils
 
 import org.apache.avro.Schema
+import java.util.HexFormat
 import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.generic.GenericRecordBuilder
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.time.Instant
-import java.util.*
 
 internal class AvroRecordBuilderImpl(schema: Schema) : GenericRecordBuilder(schema), AvroRecordBuilder {
 
@@ -51,25 +51,13 @@ internal class AvroRecordBuilderImpl(schema: Schema) : GenericRecordBuilder(sche
         unset(fieldName)
     }
 
-    override fun setRecordInUnion(unionType: String, record: GenericRecord?): AvroRecordBuilder {
+    override fun setRecordInUnion(record: GenericRecord?): AvroRecordBuilder {
 
-        super.set(EnvelopeFields.ENVELOPE_TYPE, unionType)
-        super.set(EnvelopeFields.ENVELOPE, record)
+        super.set(ENVELOPE_FIELD, record)
         return this
     }
 
-    override fun setRecordInUnionWithEnumType(unionType: String, record: GenericRecord?): AvroRecordBuilder {
-
-        setEnum(EnvelopeFields.ENVELOPE_TYPE, unionType)
-        super.set(EnvelopeFields.ENVELOPE, record)
-        return this
-    }
-
-    override fun setRecordInUnion(unionType: String, customizeRecord: AvroRecordBuilder.() -> Unit): AvroRecordBuilder {
-
-        setRecordInUnion(unionType, buildGenericRecord(actualUnionTypeSchema(unionType, schema), customizeRecord))
-        return this
-    }
+    override fun setRecordInUnion(branchName: String, customizeRecord: AvroRecordBuilder.() -> Unit): AvroRecordBuilder = setRecordInUnion(buildGenericRecord(envelopeBranchSchema(branchName), customizeRecord))
 
     override fun setInstants(fieldName: String, value: List<Instant>?): AvroRecordBuilder = value?.map(Instant::toString).ifNotNullOrUnset(fieldName, ::setStrings)
 
@@ -81,7 +69,7 @@ internal class AvroRecordBuilderImpl(schema: Schema) : GenericRecordBuilder(sche
         unset(fieldName)
     }
 
-    private fun actualUnionTypeSchema(unionType: String, schema: Schema): Schema = schema.referencedSchemas().first { it.name == unionType }
+    private fun envelopeBranchSchema(branchName: String): Schema = schema.getField(ENVELOPE_FIELD).schema().types.firstOrNull { it.name == branchName } ?: throw IllegalArgumentException("Union field '$ENVELOPE_FIELD' of ${schema.fullName} has no branch named '$branchName'")
 
     private fun Schema.getEnumFieldSchema(fieldName: String): Schema {
 
@@ -117,24 +105,3 @@ internal class AvroRecordBuilderImpl(schema: Schema) : GenericRecordBuilder(sche
         return if (this != null) action(fieldName, this) else unset(fieldName)
     }
 }
-
-private fun Schema.referencedSchemas(): Set<Schema> {
-
-    val toExplore = Stack<Schema>()
-    toExplore.push(this)
-    val descendants = mutableSetOf<Schema>()
-    while (!toExplore.isEmpty()) {
-        val currentSchema = toExplore.pop()
-        val referencedSchemas = if (currentSchema.isUnion) {
-            currentSchema.types
-        } else {
-            currentSchema.fields.map(Schema.Field::schema)
-        }
-        toExplore.addAll(referencedSchemas.filter(Schema::isUnionOrRecord).filter { it !in descendants })
-        descendants += referencedSchemas
-    }
-    return descendants
-}
-
-
-private fun Schema.isUnionOrRecord(): Boolean = type == Schema.Type.UNION || type == Schema.Type.RECORD

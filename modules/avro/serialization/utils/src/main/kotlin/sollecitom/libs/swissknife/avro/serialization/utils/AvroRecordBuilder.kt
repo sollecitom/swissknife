@@ -35,12 +35,10 @@ interface AvroRecordBuilder {
     fun setLongs(fieldName: String, value: List<Long>?): AvroRecordBuilder
     fun setBooleans(fieldName: String, value: List<Boolean>?): AvroRecordBuilder
     fun setEnum(fieldName: String, value: Any?): AvroRecordBuilder
-    /** Sets an envelope-style union field with a string type discriminator and a nested record. */
-    fun setRecordInUnion(unionType: String, record: GenericRecord?): AvroRecordBuilder
-    /** Sets an envelope-style union field with an enum type discriminator and a nested record. */
-    fun setRecordInUnionWithEnumType(unionType: String, record: GenericRecord?): AvroRecordBuilder
-    /** Sets an envelope-style union field, building the nested record via the DSL. */
-    fun setRecordInUnion(unionType: String, customizeRecord: AvroRecordBuilder.() -> Unit): AvroRecordBuilder
+    /** Sets the `envelope` union field of an envelope record: the branch is identified by [record]'s schema. */
+    fun setRecordInUnion(record: GenericRecord?): AvroRecordBuilder
+    /** Sets the `envelope` union field to the branch whose record schema is named [branchName], building it via the DSL. */
+    fun setRecordInUnion(branchName: String, customizeRecord: AvroRecordBuilder.() -> Unit): AvroRecordBuilder
     fun setInstants(fieldName: String, value: List<Instant>?): AvroRecordBuilder
 
     fun setRecords(fieldName: String, value: List<GenericRecord>?): AvroRecordBuilder
