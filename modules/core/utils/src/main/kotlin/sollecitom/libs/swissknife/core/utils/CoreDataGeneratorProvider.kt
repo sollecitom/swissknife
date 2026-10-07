@@ -17,24 +17,19 @@ import java.time.Clock as JavaClock
 
 internal class CoreDataGeneratorProvider(private val environment: Environment, initialisedClock: Clock? = null, randomSeed: ByteArray? = null) : Loggable(), CoreDataGenerator {
 
-    private val configuredSeed: ByteArray? = randomSeed ?: readConfiguredSeed()
-    private val seed: ByteArray = configuredSeed ?: SecureRandom().nextLong().also { logger.info { "Initialised random from seed: $it" } }.toByteArray()
-
-    override val secureRandom: SecureRandom = configuredSeed?.let { seededSecureRandom(it).also { logger.warn { "secureRandom is seeded from configuration: key material is predictable, use only in tests" } } } ?: SecureRandom()
-    override val random: Random = seededSecureRandom(seed).asKotlinRandom()
+    override val secureRandom: SecureRandom = (randomSeed ?: configuredSeed())?.let(::seededSecureRandom) ?: SecureRandom()
+    override val random: Random = secureRandom.asKotlinRandom()
     override val clock: Clock = initialisedClock ?: initialiseClock()
     override val javaClock: JavaClock by lazy { clock.toJavaClock() }
     override val newId: UniqueIdFactory by lazy { UniqueIdFactory.invoke(random = random, clock = clock) }
 
-    private fun readConfiguredSeed(): ByteArray? {
+    private fun configuredSeed(): ByteArray? = EnvironmentKey.randomSeed(environment)?.toByteArray()
 
-        logger.info { "Reading random seed from property ${EnvironmentKey.randomSeed.meta.name}" }
-        val seed = EnvironmentKey.randomSeed(environment) ?: return null
-        logger.info { "Initialised random from configured seed: $seed" }
-        return seed.toByteArray()
+    private fun seededSecureRandom(seed: ByteArray): SecureRandom {
+
+        logger.warn { "Random data generation is seeded: ids and key material are predictable, use only in tests" }
+        return SecureRandom.getInstance(SECURE_RANDOM_ALGORITHM).apply { setSeed(seed) }
     }
-
-    private fun seededSecureRandom(seed: ByteArray) = SecureRandom.getInstance(SECURE_RANDOM_ALGORITHM).apply { setSeed(seed) }
 
     private fun initialiseClock(): Clock {
 
