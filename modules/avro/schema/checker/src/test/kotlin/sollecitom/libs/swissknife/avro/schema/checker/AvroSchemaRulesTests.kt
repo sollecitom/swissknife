@@ -140,6 +140,43 @@ class AvroSchemaRulesTests {
         }
     }
 
+    @Nested
+    @TestInstance(PER_CLASS)
+    inner class TopicEventUnion {
+
+        private val rule = TopicEventUnionRule()
+
+        @Test
+        fun `a topic schema reaching a union of event records complies`() {
+
+            val schema = record("""{"name":"data","type":{"type":"record","name":"ThingEventData","fields":[{"name":"envelope","type":[{"type":"record","name":"Created","fields":[]},{"type":"record","name":"Deleted","fields":[]}]}]}}""")
+
+            val result = rule(schema)
+
+            assertThat(result).isInstanceOf<ComplianceRule.Result.Compliant<Schema>>()
+        }
+
+        @Test
+        fun `a topic schema holding a single event record is a violation`() {
+
+            val schema = record("""{"name":"data","type":{"type":"record","name":"ThingEventData","fields":[{"name":"envelope","type":{"type":"record","name":"Created","fields":[]}}]}}""")
+
+            val result = rule(schema)
+
+            assertThat(result).isEqualTo(nonCompliant(TopicEventUnionRule.Violation(topicSchemaName = "acme.Thing", eventsFieldPath = listOf("data", "envelope"))))
+        }
+
+        @Test
+        fun `a topic schema without the events path is a violation`() {
+
+            val schema = record("""{"name":"payload","type":"string"}""")
+
+            val result = rule(schema)
+
+            assertThat(result).isEqualTo(nonCompliant(TopicEventUnionRule.Violation(topicSchemaName = "acme.Thing", eventsFieldPath = listOf("data", "envelope"))))
+        }
+    }
+
     private fun record(vararg fields: String) = Schema.Parser().parse("""{"type":"record","name":"Thing","namespace":"acme","fields":[${fields.joinToString(",")}]}""")
 
     private fun nonCompliant(vararg violations: ComplianceRule.Result.Violation<Schema>) = ComplianceRule.Result.NonCompliant(violations.toSet())
