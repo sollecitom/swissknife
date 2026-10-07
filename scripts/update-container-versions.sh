@@ -5,23 +5,26 @@ workspace_root="$(cd "$(dirname "$0")/../.." && pwd)"
 
 echo "Checking for container image version updates..."
 
+fetch_tags() {
+    local repository="$1"
+    curl -s "https://hub.docker.com/v2/repositories/$repository/tags?page_size=100&ordering=last_updated" 2>/dev/null \
+        | grep -o '"name":"[^"]*"' | sed 's/"name":"//;s/"//'
+}
+
+highest_version() {
+    sort -V | tail -1
+}
+
 fetch_latest_tag() {
     local image="$1"
-    local filter="${2:-}"
-    if [ -n "$filter" ]; then
-        curl -s "https://hub.docker.com/v2/repositories/library/$image/tags?page_size=100&ordering=last_updated" 2>/dev/null \
-            | grep -o '"name":"[^"]*"' | sed 's/"name":"//;s/"//' | grep "$filter" | head -1
-    else
-        curl -s "https://hub.docker.com/v2/repositories/library/$image/tags?page_size=10&ordering=last_updated" 2>/dev/null \
-            | grep -o '"name":"[^"]*"' | sed 's/"name":"//;s/"//' | grep -v latest | head -1
-    fi
+    local filter="$2"
+    fetch_tags "library/$image" | grep -E "$filter" | highest_version
 }
 
 fetch_latest_org_tag() {
     local org="$1"
     local image="$2"
-    curl -s "https://hub.docker.com/v2/repositories/$org/$image/tags?page_size=10&ordering=last_updated" 2>/dev/null \
-        | grep -o '"name":"[^"]*"' | sed 's/"name":"//;s/"//' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -1
+    fetch_tags "$org/$image" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | highest_version
 }
 
 append_workspace_event_if_configured() {
@@ -31,42 +34,18 @@ append_workspace_event_if_configured() {
 
 update_version() {
     local key="$1" current="$2" latest="$3"
-    if [ -n "$latest" ] && [ "$current" != "$latest" ]; then
+    if [ -z "$latest" ]; then
+        echo "  $key: $current (no matching tag found)"
+    elif [ "$current" = "$latest" ]; then
+        echo "  $key: $current (up to date)"
+    elif [ "$(printf '%s\n%s\n' "$current" "$latest" | highest_version)" = "$current" ]; then
+        echo "  $key: kept $current (highest tag found was older: $latest)"
+    else
         local message="$key: $current → $latest"
         echo "  $message"
         append_workspace_event_if_configured "$message"
         sed -i '' "s/^$key=.*/$key=$latest/" "$props"
-    else
-        echo "  $key: $current (up to date)"
     fi
-}
-
-update_major_version_without_downgrade() {
-    local key="$1" current="$2" latest="$3"
-
-    if ! [[ "$current" =~ ^[0-9]+$ ]]; then
-        update_version "$key" "$current" "$latest"
-        return
-    fi
-
-    if ! [[ "$latest" =~ ^[0-9]+$ ]]; then
-        echo "  $key: $current (no numeric major tag found)"
-        return
-    fi
-
-    if [ "$latest" -gt "$current" ]; then
-        update_version "$key" "$current" "$latest"
-        return
-    fi
-
-    if [ "$latest" -lt "$current" ]; then
-        local message="$key: kept $current (latest recently updated tag was older major $latest)"
-        echo "  $message"
-        append_workspace_event_if_configured "$message"
-        return
-    fi
-
-    echo "  $key: $current (up to date)"
 }
 
 source "$props"
@@ -74,13 +53,13 @@ source "$props"
 latest_trivy=$(fetch_latest_org_tag "aquasec" "trivy")
 latest_pulsar=$(fetch_latest_org_tag "apachepulsar" "pulsar")
 latest_keycloak=$(fetch_latest_org_tag "keycloak" "keycloak")
-latest_postgres=$(fetch_latest_tag "postgres" "^[0-9]*$")
-latest_nats=$(fetch_latest_tag "nats" "^alpine")
+latest_postgres=$(fetch_latest_tag "postgres" "^[0-9]+$")
+latest_nats=$(fetch_latest_tag "nats" "^alpine[0-9.]+$")
 
 update_version "trivy" "$trivy" "$latest_trivy"
 update_version "pulsar" "$pulsar" "$latest_pulsar"
 update_version "keycloak" "$keycloak" "$latest_keycloak"
-update_major_version_without_downgrade "postgres" "$postgres" "$latest_postgres"
+update_version "postgres" "$postgres" "$latest_postgres"
 update_version "nats" "$nats" "$latest_nats"
 
 sed -i '' "s/DEFAULT_TRIVY_VERSION = \"[^\"]*\"/DEFAULT_TRIVY_VERSION = \"$(grep '^trivy=' "$props" | cut -d= -f2)\"/" \

@@ -9,13 +9,19 @@ import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.toPath
 
+/** Loads resources by URL or classpath name. Resources packaged inside a jar have no file-system [Path]: read them with [openAsStream] or [readAsText]. */
 object ResourceLoader {
 
+    /** Only for resources on the file system; fails for resources inside a jar. */
     fun resolveAbsolutePath(resourceName: String): String = resolvePath(resourceName).absolutePathString()
 
     fun openAsStream(resourceName: String): InputStream = resolve(resourceName).openStream()
 
-    fun resolvePath(resourceName: String): Path = resolve(resourceName).toURI().toPath()
+    /** Only for resources on the file system; fails for resources inside a jar. */
+    fun resolvePath(resourceName: String): Path = resolve(resourceName).let { url ->
+        require(url.protocol == "file") { "Resource $resourceName is not on the file system ($url), so it has no Path: use openAsStream or readAsText instead." }
+        url.toURI().toPath()
+    }
 
     fun readAsText(resourceName: String): String = resolve(resourceName).readText()
 

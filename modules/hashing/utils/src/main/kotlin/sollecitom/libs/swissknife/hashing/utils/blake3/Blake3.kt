@@ -8,16 +8,16 @@ import org.apache.commons.codec.digest.Blake3 as CommonsBlake3
 /** BLAKE3 hash function implementations with configurable output length and optional keying. */
 object Blake3 {
 
-    const val MIN_HASH_LENGTH_BITES = 32
-    const val KEY_LENGTH_BITES = 32
+    const val MIN_HASH_LENGTH_BYTES = 32
+    const val KEY_LENGTH_BYTES = 32
 
     /** A standard 256-bit (32-byte) BLAKE3 hash function. */
     val hash256: HashFunction<Hash> by lazy { hash256WithKey() }
 
-    /** Creates a 256-bit BLAKE3 hash function, optionally keyed. Key must be exactly [KEY_LENGTH_BITES] bytes. */
-    fun hash256WithKey(key: ByteArray? = null): HashFunction<Hash> = hashVariable(MIN_HASH_LENGTH_BITES, key)
+    /** Creates a 256-bit BLAKE3 hash function, optionally keyed. Key must be exactly [KEY_LENGTH_BYTES] bytes. */
+    fun hash256WithKey(key: ByteArray? = null): HashFunction<Hash> = hashVariable(MIN_HASH_LENGTH_BYTES, key)
 
-    /** Creates a BLAKE3 hash function with a custom output length (minimum [MIN_HASH_LENGTH_BITES] bytes). */
+    /** Creates a BLAKE3 hash function with a custom output length (minimum [MIN_HASH_LENGTH_BYTES] bytes). */
     fun hashVariable(hashBytesLength: Int, key: ByteArray? = null): HashFunction<Hash> = object : HashFunction<Hash> {
 
         override fun invoke(bytes: ByteArray, offset: Int, length: Int): Hash {
@@ -28,7 +28,7 @@ object Blake3 {
 
     private fun blake3(bytes: ByteArray, offset: Int, length: Int, hashBytesLength: Int, key: ByteArray?): ByteArray {
 
-        require(hashBytesLength >= MIN_HASH_LENGTH_BITES) { "Minimum hash length for BLAKE3 is $MIN_HASH_LENGTH_BITES, but $hashBytesLength was requested." }
+        require(hashBytesLength >= MIN_HASH_LENGTH_BYTES) { "Minimum hash length for BLAKE3 is $MIN_HASH_LENGTH_BYTES, but $hashBytesLength was requested." }
         val hasher = hasher(key)
         hasher.update(bytes, offset, length)
         val hash = ByteArray(hashBytesLength)
@@ -39,7 +39,7 @@ object Blake3 {
     private fun hasher(key: ByteArray? = null): CommonsBlake3 {
 
         if (key != null) {
-            require(key.size == KEY_LENGTH_BITES) { "Invalid key length for Blake3! Must be $KEY_LENGTH_BITES but was ${key.size}." }
+            require(key.size == KEY_LENGTH_BYTES) { "Invalid key length for Blake3! Must be $KEY_LENGTH_BYTES but was ${key.size}." }
         }
         return key?.let { CommonsBlake3.initKeyedHash(it) } ?: CommonsBlake3.initHash()
     }

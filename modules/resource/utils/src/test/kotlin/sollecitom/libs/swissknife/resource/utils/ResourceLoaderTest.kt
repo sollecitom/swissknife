@@ -4,6 +4,8 @@ import assertk.assertThat
 import assertk.assertions.hasMessage
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFailure
+import assertk.assertions.isInstanceOf
+import assertk.assertions.isSuccess
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
@@ -55,5 +57,25 @@ private class ResourceLoaderTest {
         val result = runCatching { ResourceLoader.openAsStream("db:FileThatDoesNotExist.sql") }
 
         assertThat(result).isFailure().hasMessage("resource db:FileThatDoesNotExist.sql not found.")
+    }
+
+    @Test
+    fun `a resource inside a jar can be streamed`() {
+
+        val result = runCatching { ResourceLoader.openAsStream(JAR_RESOURCE).use { it.readBytes() } }
+
+        assertThat(result).isSuccess()
+    }
+
+    @Test
+    fun `a resource inside a jar has no path`() {
+
+        val result = runCatching { ResourceLoader.resolvePath(JAR_RESOURCE) }
+
+        assertThat(result).isFailure().isInstanceOf(IllegalArgumentException::class)
+    }
+
+    private companion object {
+        const val JAR_RESOURCE = "kotlin/kotlin.kotlin_builtins"
     }
 }

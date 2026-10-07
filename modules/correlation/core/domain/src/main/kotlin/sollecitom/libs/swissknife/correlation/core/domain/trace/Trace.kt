@@ -13,7 +13,7 @@ data class Trace(val invocation: InvocationTrace, val parent: InvocationTrace = 
     fun fork(invocation: InvocationTrace) = Trace(parent = this.invocation, invocation = invocation, originating = originating, external = this.external)
 
     val isOriginating: Boolean get() = invocation == originating
-    val isParent: Boolean get() = invocation == parent
+    val isRoot: Boolean get() = invocation == parent
 
     val elapsedTime: ElapsedTimeSelector = ElapsedTimeSelectorAdapter()
 
