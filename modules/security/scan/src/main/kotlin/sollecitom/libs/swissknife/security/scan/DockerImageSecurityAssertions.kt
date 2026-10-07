@@ -35,12 +35,13 @@ fun Assert<DockerImage>.hasNoUnacceptableVulnerabilities(
     val acceptedContent = acceptedVulnerabilitiesContent ?: readAcceptedVulnerabilitiesFile()
     val accepted = acceptedContent?.let(::parseAcceptedVulnerabilities).orEmpty()
 
-    val vulnerabilities = TrivyImageScanner.scan(image.name, severities)
+    val allVulnerabilities = TrivyImageScanner.scan(image.name, Severity.entries.toSet())
+    val vulnerabilities = allVulnerabilities.filter { it.severity in severities }
     val (acceptedPresent, unacceptable) = vulnerabilities.partition { it.id in accepted }
 
-    // A `.trivyignore` entry whose CVE is no longer present means the fix has landed (e.g. base-image rebuild):
-    // flag it so the stale suppression gets removed, instead of lingering and masking a future re-occurrence.
-    val staleAcceptedIds = accepted.keys - vulnerabilities.mapTo(mutableSetOf()) { it.id }
+    // A `.trivyignore` entry whose CVE is no longer present at any severity means the fix has landed (e.g. base-image
+    // rebuild): flag it so the stale suppression gets removed, instead of lingering and masking a future re-occurrence.
+    val staleAcceptedIds = accepted.keys - allVulnerabilities.mapTo(mutableSetOf()) { it.id }
     if (staleAcceptedIds.isNotEmpty()) {
         println(formatStaleWarning(image.name, staleAcceptedIds, accepted))
         System.out.flush()

@@ -23,5 +23,8 @@ interface JWT {
 
 }
 
-/** Checks whether this JWT is still valid at the given [time] (i.e., not expired). Returns true if there is no expiration time. */
-fun JWT.isValidAtTime(time: Instant): Boolean = expirationTime.let { it == null || it >= time }
+/** Whether this JWT is not yet expired at [time] (RFC 7519: [time] is before the expiration time). True if there is no expiration time. */
+fun JWT.isNotExpiredAt(time: Instant): Boolean = expirationTime.let { it == null || time < it }
+
+/** Whether this JWT is valid at [time]: not expired, and not before its not-before time. */
+fun JWT.isValidAtTime(time: Instant): Boolean = isNotExpiredAt(time) && notBeforeTime.let { it == null || time >= it }
