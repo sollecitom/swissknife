@@ -33,11 +33,11 @@ spring-data-r2dbc = "4.1.1"
 liquibase = "5.0.4"
 snakeyaml = "2.7"
 liquibase-slf4j = "5.1.0"
-classgraph = "4.8.197"
+classgraph = "6.0.0"
 opentelemetry = "1.67.0"
-commons-codec = "1.22.1"
+commons-codec = "1.23.0"
 # plugins
-sollecitom-gradle-plugins = "1.0.48"
+sollecitom-gradle-plugins = "1.0.49"
 palantir-git-plugin = "5.1.0"
 
 [libraries]
