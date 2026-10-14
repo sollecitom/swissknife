@@ -73,7 +73,7 @@ object TrivyImageScanner {
             // A missing image is a real error rather than a flaky download, so there is nothing to gain by retrying.
             isWorthRetrying = { failed -> isWorthRetrying(failed.output) },
             beforeRetry = { failed, attemptsLeft ->
-                println("Trivy scan of '$imageName' failed (${failureSummary(failed.output)}); retrying, $attemptsLeft attempt(s) left.")
+                println("Trivy scan of '$imageName' failed (${failureSummary(failed)}); retrying, $attemptsLeft attempt(s) left.")
                 System.out.flush()
                 Thread.sleep(DELAY_BETWEEN_ATTEMPTS.toMillis())
             },
@@ -147,7 +147,11 @@ object TrivyImageScanner {
 
     internal fun isWorthRetrying(output: String) = !output.contains("unable to find the specified image")
 
-    private fun failureSummary(output: String) = output.lineSequence().lastOrNull { it.contains("FATAL") }?.trim()?.take(200) ?: "no Trivy output captured"
+    private fun failureSummary(failed: Attempt.Failed) = failed.output.lastMeaningfulLine()
+        ?: failed.cause.message?.let { "no Trivy output; ${failed.cause.javaClass.simpleName}: ${it.take(200)}" }
+        ?: "no Trivy output; ${failed.cause.javaClass.simpleName}"
+
+    private fun String.lastMeaningfulLine() = lineSequence().map(String::trim).filter(String::isNotEmpty).let { lines -> lines.lastOrNull { "FATAL" in it } ?: lines.lastOrNull() }?.take(200)
 
     internal fun parseVulnerabilities(output: String): List<Vulnerability> {
 

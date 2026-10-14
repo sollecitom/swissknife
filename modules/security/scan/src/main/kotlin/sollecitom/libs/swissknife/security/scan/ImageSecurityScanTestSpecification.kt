@@ -3,11 +3,14 @@ package sollecitom.libs.swissknife.security.scan
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
+import org.junit.jupiter.api.Timeout
+import java.util.concurrent.TimeUnit.MINUTES
 
 @TestInstance(PER_CLASS)
 interface ImageSecurityScanTestSpecification {
 
     @Test
+    @Timeout(value = 20, unit = MINUTES)
     fun `the Docker image has no unacceptable vulnerabilities`() {
 
         assertThatImage(imageUnderScan).hasNoUnacceptableVulnerabilities()
