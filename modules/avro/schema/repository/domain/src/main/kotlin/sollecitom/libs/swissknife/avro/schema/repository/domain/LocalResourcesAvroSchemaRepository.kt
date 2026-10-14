@@ -19,7 +19,7 @@ class LocalResourcesAvroSchemaRepository(private val rootPackage: String, privat
 
     override fun findAllInNamespace(namespace: Name): Sequence<AvroSchemaLocator> {
 
-        val resources = ClassGraph().acceptPaths(namespace.directory()).scan().use { it.getResourcesWithExtension(extension) }.asSequence()
+        val resources = ClassGraph().enableClasspath().enableNonSystemModules().acceptPaths(namespace.directory()).scan().use { it.getResourcesWithExtension(extension) }.asSequence()
         return resources.map { ResourceAvroSchemaLocator(it.path) }
     }
 
