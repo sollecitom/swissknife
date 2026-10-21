@@ -37,7 +37,7 @@ classgraph = "6.0.0"
 opentelemetry = "1.67.0"
 commons-codec = "1.23.0"
 # plugins
-sollecitom-gradle-plugins = "1.0.49"
+sollecitom-gradle-plugins = "1.0.50"
 palantir-git-plugin = "5.1.0"
 
 [libraries]
