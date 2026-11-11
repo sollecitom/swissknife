@@ -37,8 +37,8 @@ classgraph = "6.0.2"
 opentelemetry = "1.68.0"
 commons-codec = "1.23.0"
 # plugins
-sollecitom-gradle-plugins = "1.0.52"
-palantir-git-plugin = "5.1.0"
+sollecitom-gradle-plugins = "1.0.53"
+palantir-git-plugin = "5.2.0"
 
 [libraries]
 sollecitom-gradle-plugins-base = { module = "sollecitom.gradle-plugins:base", version.ref = "sollecitom-gradle-plugins" }
