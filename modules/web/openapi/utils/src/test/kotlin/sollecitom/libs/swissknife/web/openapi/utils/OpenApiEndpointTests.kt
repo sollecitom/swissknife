@@ -2,6 +2,8 @@ package sollecitom.libs.swissknife.web.openapi.utils
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import io.swagger.v3.core.util.Json
+import io.swagger.v3.core.util.Yaml
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Status
@@ -23,6 +25,15 @@ class OpenApiEndpointTests {
 
         assertThat(response.status).isEqualTo(Status.OK)
         assertThat(response.header("Content-Type")).isEqualTo("application/json; charset=utf-8")
+    }
+
+    @Test
+    fun `the JSON and YAML representations describe the same definition`() {
+
+        val json = endpoint.route(Request(GET, endpoint.path).header("Accept", "application/json")).bodyString()
+        val yaml = endpoint.route(Request(GET, endpoint.path).header("Accept", "application/yaml")).bodyString()
+
+        assertThat(Json.mapper().readTree(json)).isEqualTo(Yaml.mapper().readTree(yaml))
     }
 
     @Test
