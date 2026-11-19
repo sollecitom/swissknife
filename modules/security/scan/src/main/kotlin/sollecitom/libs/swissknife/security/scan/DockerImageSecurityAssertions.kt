@@ -20,10 +20,11 @@ data class DockerImage(val name: String)
  * `securityScan` convention). Accepted CVEs do NOT fail the build — but, unlike Trivy's `--ignorefile`, they are NOT
  * silently dropped: any accepted CVE that is still present in the image is reported as a loud WARNING. This keeps
  * suppressed issues visible and the warning self-clears once the CVE is no longer present (e.g. after a base-image
- * rebuild), at which point the stale `.trivyignore` entry can be removed.
+ * rebuild), at which point the stale `.trivyignore` entry is reported, and written to the file pointed to by the
+ * `securityScan.staleAcceptedVulnerabilitiesFile` system property, so the workspace update can remove it.
  *
- * `.trivyignore` format: one CVE ID per line; lines starting with `#` are comments; an inline `# reason` after a CVE
- * ID is shown in the warning to explain why it was accepted.
+ * `.trivyignore` format: one CVE ID per line, each with an inline `# reason` shown in the warning; lines starting with
+ * `#` are comments.
  *
  * @param severities which severity levels are unacceptable (default: CRITICAL, HIGH)
  * @param acceptedVulnerabilitiesContent optional `.trivyignore` content listing accepted (warned, non-failing) CVEs
@@ -42,6 +43,7 @@ fun Assert<DockerImage>.hasNoUnacceptableVulnerabilities(
     // A `.trivyignore` entry whose CVE is no longer present means the fix has landed (e.g. base-image rebuild):
     // flag it so the stale suppression gets removed, instead of lingering and masking a future re-occurrence.
     val staleAcceptedIds = accepted.keys - allVulnerabilities.mapTo(mutableSetOf()) { it.id }
+    if (acceptedVulnerabilitiesContent == null) writeStaleAcceptedVulnerabilitiesFile(staleAcceptedIds)
     if (staleAcceptedIds.isNotEmpty()) {
         println(formatStaleWarning(image.name, staleAcceptedIds, accepted))
         System.out.flush()
@@ -58,7 +60,7 @@ fun Assert<DockerImage>.hasNoUnacceptableVulnerabilities(
 private fun formatStaleWarning(imageName: String, staleIds: Set<String>, reasons: Map<String, String>): String = buildString {
     appendLine()
     appendLine("╔══════════════════════════════════════════════════════════════════════════════")
-    appendLine("║ ✅ SECURITY SCAN — ${staleIds.size} accepted vulnerability(ies) NO LONGER present — remove from .trivyignore")
+    appendLine("║ ✅ SECURITY SCAN — ${staleIds.size} accepted vulnerability(ies) NO LONGER present in this image")
     appendLine("║ $imageName")
     appendLine("╠══════════════════════════════════════════════════════════════════════════════")
     appendLine("║")
@@ -67,13 +69,18 @@ private fun formatStaleWarning(imageName: String, staleIds: Set<String>, reasons
         reasons[id]?.takeIf { it.isNotBlank() }?.let { appendLine("║     was accepted because: $it") }
     }
     appendLine("║")
-    appendLine("║ The underlying issue appears fixed. Delete these lines from .trivyignore so a")
-    appendLine("║ future re-occurrence of the same CVE is not silently suppressed.")
+    appendLine("║ The underlying issue appears fixed. update-workspace removes these entries from .trivyignore")
+    appendLine("║ once no image in the repo reports them, so a re-occurrence is not silently suppressed.")
     appendLine("╚══════════════════════════════════════════════════════════════════════════════")
 }
 
 private fun readAcceptedVulnerabilitiesFile(): String? = System.getProperty("securityScan.trivyIgnoreFile")
     ?.let { path -> runCatching { File(path).readText() }.getOrNull() }
+
+private fun writeStaleAcceptedVulnerabilitiesFile(staleIds: Set<String>) {
+    val path = System.getProperty("securityScan.staleAcceptedVulnerabilitiesFile") ?: return
+    File(path).apply { parentFile.mkdirs() }.writeText(staleIds.sorted().joinToString(separator = "") { "$it\n" })
+}
 
 /** Parses `.trivyignore` content into a map of CVE ID to its (optional) acceptance reason (the inline `# ...` comment). */
 private fun parseAcceptedVulnerabilities(content: String): Map<String, String> = buildMap {

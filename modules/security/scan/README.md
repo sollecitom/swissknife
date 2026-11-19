@@ -2,4 +2,4 @@
 
 Docker image vulnerability scanning using Trivy (via Docker). Provides `assertThatImage(imageName).hasNoUnacceptableVulnerabilities()` for use in security scan tests.
 
-Requires Docker to be running. Trivy runs as a container — no host installation needed. Supports CVE suppression via `.trivyignore` content and configurable severity thresholds.
+Requires Docker to be running. Trivy runs as a container — no host installation needed. Supports CVE suppression via `.trivyignore` content and configurable severity thresholds. When the `securityScan.staleAcceptedVulnerabilitiesFile` system property is set (the Gradle `securityScan` convention sets it), accepted CVEs the image no longer has are written there, one per line.
