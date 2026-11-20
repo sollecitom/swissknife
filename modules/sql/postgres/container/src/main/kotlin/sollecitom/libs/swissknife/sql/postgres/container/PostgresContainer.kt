@@ -80,7 +80,7 @@ class PostgresDockerContainer(imageName: DockerImageName = DockerImageName.parse
     companion object {
         private val SQL_IDENTIFIER = Regex("[a-z_][a-z0-9_]*")
         const val defaultImageName = "postgres"
-        const val defaultImageVersion = "18"
+        const val defaultImageVersion = "19"
     }
 }
 
